@@ -1,17 +1,24 @@
 {
+  "id": "app.vercel.watchpick-dun",
   "name": "WatchPick",
   "short_name": "WatchPick",
   "description": "Taste-filtered cinema discovery, streaming in India right now. One great film always leads to the next.",
   "start_url": "/",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",
   "orientation": "portrait",
   "lang": "en-IN",
+  "dir": "ltr",
   "scope": "/",
   "categories": [
     "entertainment"
   ],
+  "iarc_rating_id": "",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -24,6 +31,29 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "WatchPick \u2014 Taste-filtered cinema discovery"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Discover Films",
+      "short_name": "Discover",
+      "description": "Browse taste-filtered cinema streaming in India",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
