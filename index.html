@@ -1,0 +1,3988 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<meta name="theme-color" content="#0a0a0a">
+
+<title>WatchPick</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+
+  --bg:#0a0a0a;--s1:#141414;--s2:#1c1c1c;--s3:#242424;--s4:#2e2e2e;
+
+  --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.11);
+
+  --t1:#f2f2f2;--t2:#9a9a9a;--t3:#555;
+
+  --gold:#e8c97a;--gold2:rgba(232,201,122,.12);
+
+  --red:#e05555;--green:#58b885;--blue:#6aaad4;
+
+  --r:10px;--rs:7px;
+
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+
+body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;flex-direction:column}
+
+.hdr{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--b1);flex-shrink:0}
+
+.logo{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);letter-spacing:-.4px}
+
+.logo small{display:block;font-family:'Inter',sans-serif;font-size:8px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:-3px}
+
+.hbtns{display:flex;gap:5px}
+
+.ibtn{background:var(--s2);border:.5px solid var(--b2);border-radius:7px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:14px;transition:all .15s;position:relative;user-select:none;flex-shrink:0}
+
+.ibtn:active{background:var(--s3)}
+
+.badge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#0a0a0a;font-size:8px;font-weight:700;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+.nav{display:flex;gap:3px;padding:7px 12px;border-bottom:.5px solid var(--b1);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+
+.nav::-webkit-scrollbar{display:none}
+
+.ntab{padding:5px 13px;border-radius:16px;font-size:11px;font-weight:500;white-space:nowrap;cursor:pointer;border:.5px solid transparent;transition:all .15s;color:var(--t2);user-select:none}
+
+.ntab.on{background:var(--gold);color:#0a0a0a;border-color:var(--gold)}
+
+.fbar{display:flex;gap:5px;padding:8px 12px;border-bottom:.5px solid var(--b1);overflow-x:auto;scrollbar-width:none;flex-shrink:0;align-items:center}
+
+.fbar::-webkit-scrollbar{display:none}
+
+.fpill{padding:4px 10px;border-radius:14px;font-size:10px;font-weight:500;white-space:nowrap;cursor:pointer;border:.5px solid var(--b2);color:var(--t3);background:transparent;transition:all .15s;user-select:none;flex-shrink:0}
+
+.fpill.on{background:var(--gold2);border-color:var(--gold);color:var(--gold)}
+
+.fsep{width:.5px;height:16px;background:var(--b2);flex-shrink:0;margin:0 2px}
+
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.scroll::-webkit-scrollbar{width:2px}
+
+.scroll::-webkit-scrollbar-thumb{background:var(--s3);border-radius:1px}
+
+.sbox{position:relative;margin-bottom:12px}
+
+.sinput{width:100%;background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);color:var(--t1);font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px 9px 35px;outline:none;transition:border .15s}
+
+.sinput:focus{border-color:var(--gold)}
+
+.sinput::placeholder{color:var(--t3)}
+
+.sico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none}
+.smic{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:14px;transition:all .2s;padding:0}
+.smic.listening{background:rgba(232,201,122,.15);color:var(--gold);animation:micpulse 1s ease-in-out infinite}
+@keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(232,201,122,.4)}50%{box-shadow:0 0 0 8px rgba(232,201,122,0)}}
+.vtranscript{font-size:10px;color:var(--gold);padding:4px 12px 2px;font-style:italic;min-height:0;transition:all .2s}
+.fbar-wrap{border-bottom:.5px solid var(--b1);flex-shrink:0}
+.fbar-row1{display:flex;align-items:center;gap:6px;padding:8px 12px 6px;overflow-x:auto;scrollbar-width:none}
+.fbar-row1::-webkit-scrollbar{display:none}
+.fbar-row2{display:flex;align-items:center;gap:5px;padding:0 12px 6px;overflow-x:auto;scrollbar-width:none;border-top:.5px solid var(--b1);padding-top:6px}
+.fbar-row2::-webkit-scrollbar{display:none}
+.fbar-row2:empty{display:none}
+.fbar-row3{display:flex;align-items:center;gap:5px;padding:0 12px 8px;overflow-x:auto;scrollbar-width:none;border-top:.5px solid var(--b1);padding-top:6px}
+.fbar-row3::-webkit-scrollbar{display:none}
+.fbar-label{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--t3);white-space:nowrap;flex-shrink:0;padding-right:2px}
+.imdb-badge{display:inline-flex;align-items:center;gap:3px;background:#F5C518;color:#000;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:700;text-decoration:none;flex-shrink:0}
+.masters-sect{margin-bottom:16px}
+.masters-tags{display:flex;gap:6px;padding:0 0 8px;overflow-x:auto;scrollbar-width:none}
+.masters-tags::-webkit-scrollbar{display:none}
+.mtag{padding:4px 12px;border-radius:12px;font-size:9px;font-weight:600;white-space:nowrap;cursor:pointer;border:.5px solid var(--b2);color:var(--t3);background:transparent;transition:all .15s;flex-shrink:0;user-select:none}
+.mtag.on{background:var(--gold2);border-color:var(--gold);color:var(--gold)}
+.mscroll{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.mscroll::-webkit-scrollbar{display:none}
+.mcard{flex-shrink:0;width:90px;cursor:pointer;user-select:none}
+.mcard:active{opacity:.7}
+.mphoto{width:90px;height:90px;border-radius:50%;overflow:hidden;background:var(--s3);position:relative;border:2px solid var(--b2);margin-bottom:6px;transition:border-color .15s}
+.mcard:hover .mphoto,.mcard:active .mphoto{border-color:var(--gold)}
+.mphoto-fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--t3)}
+.mphoto img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.mname{font-size:9.5px;font-weight:600;color:var(--t1);text-align:center;line-height:1.3;margin-bottom:2px}
+.mrole{font-size:8px;color:var(--gold);text-align:center;margin-bottom:2px}
+.mnote{font-size:7.5px;color:var(--t3);text-align:center;line-height:1.3}
+
+.secrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+
+.slabel{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3)}
+
+.more{font-size:10px;color:var(--gold);cursor:pointer;padding:2px 6px;user-select:none}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+
+.card{background:var(--s1);border:.5px solid var(--b1);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:opacity .15s;position:relative}
+
+.card:active{opacity:.75}
+
+.card.liked{border-color:rgba(232,201,122,.3)}
+
+.card.seen{opacity:.38}
+
+.pw{position:relative;width:100%;aspect-ratio:2/3;background:var(--s2);overflow:hidden}
+
+.pw img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;opacity:0}
+
+.pw img.loaded{opacity:1}
+
+.pfb{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);font-size:20px;position:absolute;inset:0}
+
+.pfb span{font-size:8px;margin-top:4px;color:var(--t3);letter-spacing:.5px}
+
+.pgrd{position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(transparent,rgba(0,0,0,.85));pointer-events:none}
+
+.cplt{position:absolute;top:5px;left:5px;padding:2px 5px;border-radius:3px;font-size:7px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;line-height:1.3;z-index:2}
+
+.cstat{position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;z-index:2}
+
+.crating{position:absolute;bottom:5px;left:5px;font-size:8px;color:var(--gold);font-weight:600;line-height:1;z-index:2}
+
+.cavail{position:absolute;bottom:5px;right:5px;font-size:6px;font-weight:700;padding:2px 4px;border-radius:3px;text-transform:uppercase;letter-spacing:.3px;z-index:2}
+
+.av-stream{background:rgba(88,184,133,.3);color:#7dd6a8}
+
+.av-rent{background:rgba(232,201,122,.25);color:var(--gold)}
+
+.av-none{background:rgba(224,85,85,.25);color:#ff9090}
+
+.cbody{padding:7px 7px 4px}
+
+.ctitle{font-size:10px;font-weight:600;line-height:1.35;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--t1)}
+
+.cmeta{font-size:8px;color:var(--t3);display:flex;gap:4px;flex-wrap:wrap}
+
+.ctag{font-size:7px;color:var(--t3);background:var(--s3);padding:1px 4px;border-radius:3px}
+
+.cbtns{display:flex;gap:2px;padding:4px 7px 7px}
+
+.cbtn{flex:1;padding:4px 1px;border-radius:4px;font-size:7px;font-weight:600;cursor:pointer;border:.5px solid var(--b2);background:transparent;color:var(--t3);transition:all .15s;text-align:center;user-select:none;line-height:1.4}
+
+.cbtn:active{opacity:.7}
+
+.cbtn.want{background:rgba(110,170,212,.12);border-color:rgba(110,170,212,.4);color:var(--blue)}
+
+.cbtn.liked{background:var(--gold2);border-color:rgba(232,201,122,.4);color:var(--gold)}
+
+.cbtn.seen{background:rgba(150,150,150,.1);border-color:rgba(150,150,150,.25);color:var(--t3)}
+
+.plt-netflix{background:rgba(229,9,20,.28);color:#ff7070}
+
+.plt-prime{background:rgba(0,168,255,.22);color:#5acfff}
+
+.plt-hotstar{background:rgba(60,120,220,.22);color:#8ab4ff}
+
+.plt-mubi{background:rgba(140,60,200,.22);color:#c9a0ff}
+
+.plt-youtube{background:rgba(255,0,0,.22);color:#ff8a8a}
+
+.plt-apple{background:rgba(255,255,255,.12);color:#e8e8e8}
+
+.plt-sonyliv{background:rgba(255,140,0,.22);color:#ffb347}
+
+.plt-zee5{background:rgba(90,200,90,.22);color:#7dd67d}
+
+.plt-none{background:rgba(120,120,120,.2);color:#999}
+.mtbtn{flex:1;padding:8px 4px;border-radius:var(--rs);border:.5px solid var(--b2);background:var(--s2);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s}
+.mtbtn.active{background:var(--gold2);border-color:rgba(232,201,122,.5);color:var(--gold);font-weight:600}
+
+.overlay{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+.overlay.open{display:block}
+
+.dpage{min-height:100%;display:flex;flex-direction:column;animation:fadeup .22s ease}
+
+@keyframes fadeup{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.dhero{position:relative;width:100%;aspect-ratio:16/9;background:var(--s2);overflow:hidden;flex-shrink:0}
+
+.dhero img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;opacity:0}
+
+.dhero img.loaded{opacity:1}
+
+.dhero-grd{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.15) 0%,rgba(0,0,0,0) 40%,rgba(10,10,10,.97) 100%)}
+
+.dclose{position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--t1);border:.5px solid var(--b2);z-index:10;user-select:none}
+
+.dclose:active{opacity:.7}
+
+.dback{position:absolute;top:12px;right:12px;width:auto;padding:0 11px;height:30px;border-radius:15px;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:var(--t1);border:.5px solid var(--b2);z-index:10;user-select:none;gap:4px}
+
+.dmeta{padding:14px 16px 0;flex:1;background:var(--bg)}
+
+.dtitle{font-family:'Playfair Display',serif;font-size:22px;line-height:1.2;margin-bottom:5px}
+
+.dtagline{font-size:11px;color:var(--t2);font-style:italic;margin-bottom:10px}
+
+.dpills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:13px;align-items:center}
+
+.dpill{padding:3px 8px;border-radius:4px;font-size:9px;font-weight:600;letter-spacing:.3px}
+
+.dpill.year{background:var(--s3);color:var(--t2)}
+
+.dpill.rating{background:rgba(232,201,122,.18);color:var(--gold)}
+
+.dpill.runtime{background:var(--s3);color:var(--t2)}
+
+.dpill.lang{background:var(--s3);color:var(--t2)}
+
+.dpill.cert{background:rgba(255,255,255,.06);border:.5px solid var(--b2);color:var(--t2)}
+
+.dpill.in-yes{background:rgba(88,184,133,.18);color:#7dd6a8}
+
+.dpill.in-no{background:rgba(224,85,85,.18);color:#ff9090}
+
+.dactions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:16px}
+
+.dact{padding:9px 3px;border-radius:var(--rs);border:.5px solid var(--b2);text-align:center;font-size:8px;font-weight:600;cursor:pointer;background:var(--s2);color:var(--t2);transition:all .15s;user-select:none;line-height:1.4}
+
+.dact:active{opacity:.7}
+
+.dact .ai{font-size:16px;display:block;margin-bottom:3px}
+
+.dact.on{background:var(--gold2);border-color:rgba(232,201,122,.4);color:var(--gold)}
+
+.dact.on-seen{background:rgba(150,150,150,.1);border-color:rgba(150,150,150,.25);color:var(--t2)}
+
+.dact.on-hidden{background:rgba(224,85,85,.12);border-color:rgba(224,85,85,.4);color:#ff9090}
+
+.cbtn.hidden{background:rgba(224,85,85,.1);border-color:rgba(224,85,85,.35);color:#ff9090}
+
+.sortsel{background:var(--s2);border:.5px solid var(--b2);border-radius:6px;color:var(--t2);font-family:'Inter',sans-serif;font-size:10px;padding:4px 6px;outline:none;-webkit-appearance:none}
+
+.dsect{margin-bottom:18px}
+
+.trivia-list{display:flex;flex-direction:column;gap:10px}
+.trivia-item{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--s2);border-radius:var(--rs);border:.5px solid var(--b2)}
+.trivia-ico{font-size:14px;flex-shrink:0;margin-top:1px}
+.trivia-text{font-size:11px;color:var(--t2);line-height:1.6;flex:1}
+.trivia-text b{color:var(--t1)}
+.trivia-link{display:block;color:var(--gold);font-size:10px;margin-top:4px;text-decoration:none}
+.trivia-link:active{opacity:.7}
+.trivia-more{display:inline-block;margin-top:8px;color:var(--gold);font-size:10px;text-decoration:none;font-weight:500}
+.trivia-more:active{opacity:.7}
+.dsectl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:8px}
+
+.plink{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--rs);border:.5px solid var(--b2);margin-bottom:6px;text-decoration:none;background:var(--s2);cursor:pointer;transition:all .15s}
+
+.plink:active{background:var(--s3)}
+
+.plink-lbl{flex:1}
+
+.plink-name{font-weight:500;font-size:12px;color:var(--t1)}
+
+.plink-hint{font-size:9px;color:var(--t3);margin-top:1px}
+
+.plink-arr{color:var(--t3);font-size:13px}
+
+.avtag{font-size:7px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0}
+
+.dsynopsis{font-size:12px;line-height:1.75;color:var(--t2);margin-bottom:16px}
+
+.dsynopsis.clamped{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px}
+
+.readmore{font-size:11px;color:var(--gold);cursor:pointer;margin-bottom:16px;display:inline-block;user-select:none}
+
+.cast-scroll{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+
+.cast-scroll::-webkit-scrollbar{display:none}
+
+.castcard{flex-shrink:0;width:64px;text-align:center;cursor:pointer;user-select:none}
+
+.castcard:active{opacity:.7}
+
+.castthumb{width:64px;height:64px;border-radius:50%;background:var(--s3);overflow:hidden;margin:0 auto 5px;border:.5px solid var(--b2);position:relative}
+
+.castthumb img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;opacity:0}
+
+.castthumb img.loaded{opacity:1}
+
+.castfb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;position:absolute;inset:0}
+
+.castname{font-size:8px;font-weight:600;color:var(--t1);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+.castchar{font-size:7px;color:var(--t3);margin-top:1px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+
+.crew-row{display:flex;flex-wrap:wrap;gap:10px}
+
+.crew-chip{padding:8px 12px;border-radius:var(--rs);background:var(--s2);border:.5px solid var(--b2);cursor:pointer;transition:all .15s;user-select:none}
+
+.crew-chip:active{background:var(--s3)}
+
+.crew-role{font-size:8px;color:var(--t3);margin-bottom:1px;text-transform:uppercase;letter-spacing:.5px}
+
+.crew-name{font-size:11px;font-weight:500;color:var(--gold)}
+
+.sim-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+
+/* TRAILERS */
+
+.trailer-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+
+.trailer-scroll::-webkit-scrollbar{display:none}
+
+.trailer-card{flex-shrink:0;width:240px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:var(--s2);position:relative;cursor:pointer;border:.5px solid var(--b2)}
+
+.trailer-card img{width:100%;height:100%;object-fit:cover;display:block}
+
+.trailer-card:active{opacity:.8}
+
+.trailer-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;padding-left:3px}
+
+.trailer-label{position:absolute;bottom:6px;left:8px;font-size:8px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2px 7px;border-radius:4px;letter-spacing:.3px}
+
+.trailer-frame{flex-shrink:0;width:240px;aspect-ratio:16/9;border-radius:8px;border:.5px solid var(--b2);background:#000}
+
+.sim-scroll::-webkit-scrollbar{display:none}
+
+.scard{flex-shrink:0;width:88px;cursor:pointer;user-select:none}
+
+.scard:active{opacity:.7}
+
+.scard-pw{width:88px;height:132px;border-radius:6px;overflow:hidden;background:var(--s2);position:relative;margin-bottom:5px}
+
+.scard-pw img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;opacity:0}
+
+.scard-pw img.loaded{opacity:1}
+
+.scard-fb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:18px;position:absolute;inset:0}
+
+.scard-title{font-size:9px;font-weight:500;color:var(--t2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
+
+.scard-year{font-size:8px;color:var(--t3);margin-top:1px}
+
+.person-hero{display:flex;gap:14px;padding:50px 16px 16px;align-items:flex-end}
+
+.person-photo{width:96px;height:96px;border-radius:50%;overflow:hidden;background:var(--s3);border:1px solid var(--b2);flex-shrink:0;position:relative}
+
+.person-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;opacity:0}
+
+.person-photo img.loaded{opacity:1}
+
+.person-name{font-family:'Playfair Display',serif;font-size:20px;line-height:1.2;margin-bottom:3px}
+
+.person-role{font-size:10px;color:var(--t2)}
+
+.person-bio{font-size:11px;line-height:1.7;color:var(--t2);padding:0 16px;margin-bottom:16px}
+
+.person-bio.clamped{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+.wsect{margin-bottom:20px}
+
+.whead{font-size:11px;font-weight:600;color:var(--t2);padding:6px 0;border-bottom:.5px solid var(--b1);margin-bottom:10px;display:flex;align-items:center;gap:5px}
+
+.wcount{background:var(--s3);color:var(--t3);font-size:8px;padding:1px 6px;border-radius:7px}
+
+.srow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:.5px solid var(--b1)}
+
+.slbl{font-size:12px;font-weight:500;color:var(--t1)}
+
+.tog{width:36px;height:20px;border-radius:10px;background:var(--s4);position:relative;cursor:pointer;transition:background .18s;border:none;flex-shrink:0}
+
+.tog.on{background:var(--gold)}
+
+.tk{width:14px;height:14px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .16s}
+
+.tog.on .tk{left:19px}
+
+.brow{display:flex;gap:6px;margin-bottom:10px}
+
+.brow button{flex:1;padding:9px;border-radius:var(--rs);border:.5px solid var(--b2);background:var(--s2);color:var(--t2);font-size:10px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none}
+
+.brow button:active{background:var(--s3)}
+
+.brow button.pri{background:var(--gold2);border-color:rgba(232,201,122,.4);color:var(--gold)}
+
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(44px);background:var(--s3);border:.5px solid var(--b2);border-radius:16px;padding:7px 14px;font-size:10px;font-weight:500;color:var(--t1);z-index:400;transition:transform .18s;white-space:nowrap;pointer-events:none}
+
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.loading{text-align:center;padding:30px 0;color:var(--t3);font-size:11px;grid-column:1/-1}
+
+.spin{width:22px;height:22px;border:2px solid var(--b2);border-top-color:var(--gold);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 8px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.empty{text-align:center;padding:30px 0;color:var(--t3);grid-column:1/-1}
+
+.et{font-size:12px;font-weight:500;color:var(--t2);margin-bottom:4px}
+
+.addrow{display:flex;gap:6px;margin-bottom:10px}
+
+.addbtn{background:var(--gold);color:#0a0a0a;border:none;border-radius:var(--rs);padding:0 12px;font-weight:600;cursor:pointer;font-size:11px;white-space:nowrap;flex-shrink:0}
+
+/* GUIDE TAB */
+
+.gsect{margin-bottom:24px;padding-bottom:20px;border-bottom:.5px solid var(--b1)}
+
+.gsect:last-of-type{border-bottom:none}
+
+.gtitle{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:10px;line-height:1.3}
+
+.gsubtitle{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--t3);margin:14px 0 8px}
+
+.gbody{font-size:12px;line-height:1.75;color:var(--t2);margin-bottom:8px}
+
+.gbullet{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start}
+
+.gico{font-size:14px;flex-shrink:0;margin-top:1px;width:20px;text-align:center}
+
+.glabel{font-weight:600;color:var(--t1);font-size:12px}
+
+.gbullet div{font-size:12px;color:var(--t2);line-height:1.6}
+
+.gnote{background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);padding:10px 12px;font-size:11px;color:var(--t2);line-height:1.6;margin-top:10px}
+
+.gstep{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
+
+.gnum{width:22px;height:22px;border-radius:50%;background:var(--gold);color:#0a0a0a;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+
+.gstep-title{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:2px}
+
+.gstep-body{font-size:11px;color:var(--t2);line-height:1.6}
+
+.gtag-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:.5px solid var(--b1)}
+
+.gtag-row:last-child{border-bottom:none}
+
+.gtag-desc{font-size:11px;color:var(--t2);line-height:1.5}
+
+.gfaq{margin-bottom:14px;padding-bottom:14px;border-bottom:.5px solid var(--b1)}
+
+.gfaq:last-child{border-bottom:none}
+
+.gfaq-q{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:4px}
+
+.gfaq-a{font-size:11px;color:var(--t2);line-height:1.65}
+
+.glink{color:var(--gold);text-decoration:none;border-bottom:.5px solid rgba(232,201,122,.3)}
+
+.legend-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.75);display:none;align-items:flex-end}
+
+.legend-overlay.open{display:flex}
+
+.legend{background:var(--s1);border-top:.5px solid var(--b2);border-radius:18px 18px 0 0;width:100%;max-height:80vh;overflow-y:auto;padding:18px;animation:fadeup .2s ease}
+
+.lhandle{width:32px;height:3px;border-radius:2px;background:var(--s4);margin:0 auto 16px}
+
+.lrow{display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:.5px solid var(--b1)}
+
+.lrow:last-child{border:none}
+
+.lsample{flex-shrink:0;min-width:62px;display:flex;justify-content:flex-start}
+
+.ldesc{font-size:11px;color:var(--t2);line-height:1.5}
+
+.ltitle{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--t1)}
+
+.ltitle:first-of-type{margin-top:0}
+.guide-overlay{position:fixed;inset:0;z-index:300;background:var(--bg);display:none;flex-direction:column}
+.welcome-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.85);display:none;align-items:flex-end;justify-content:center}
+.welcome-overlay.open{display:flex}
+.welcome-card{background:var(--s1);border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:28px 20px 36px;animation:fadeup .3s ease}
+.welcome-logo{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold);margin-bottom:4px}
+.welcome-sub{font-size:11px;color:var(--t3);margin-bottom:20px;letter-spacing:.5px}
+.welcome-feat{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.wfeat{display:flex;gap:12px;align-items:flex-start}
+.wfeat-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.wfeat-text{font-size:11px;color:var(--t2);line-height:1.55}
+.wfeat-text b{color:var(--t1);font-size:11.5px}
+.welcome-btn{width:100%;padding:14px;border-radius:var(--r);background:var(--gold);color:#0a0a0a;font-size:13px;font-weight:700;border:none;cursor:pointer;letter-spacing:.3px}
+.welcome-skip{width:100%;padding:8px;background:transparent;border:none;color:var(--t3);font-size:10px;cursor:pointer;margin-top:6px}
+.guide-overlay.open{display:flex}
+.guide-hdr{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--b2);flex-shrink:0;background:var(--s1)}
+.guide-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold)}
+.guide-close{width:30px;height:30px;border-radius:50%;background:var(--s3);border:.5px solid var(--b2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t1);font-size:13px;user-select:none;flex-shrink:0}
+.guide-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.guide-toc{background:var(--s2);border-bottom:.5px solid var(--b1);padding:14px 16px}
+.guide-toc-title{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:10px}
+.guide-toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.toc-item{padding:7px 10px;background:var(--s1);border:.5px solid var(--b2);border-radius:6px;font-size:10px;color:var(--gold);cursor:pointer;user-select:none;text-decoration:none;display:block}
+.toc-item:active{opacity:.7}
+.gsect{padding:18px 16px;border-bottom:.5px solid var(--b1)}
+.gsect:last-child{border:none}
+.gh1{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:10px}
+.gh2{font-size:11px;font-weight:600;color:var(--t1);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.8px}
+.gbody{font-size:12px;color:var(--t2);line-height:1.75;margin-bottom:8px}
+.grow{display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--b1);align-items:flex-start}
+.grow:last-of-type{border:none}
+.gtag{flex-shrink:0;min-width:72px}
+.gdesc{font-size:11px;color:var(--t2);line-height:1.55;flex:1}
+.glink{color:var(--gold);text-decoration:none;font-weight:500}
+.glink:active{opacity:.7}
+.gnote{background:var(--s2);border:.5px solid var(--b2);border-radius:6px;padding:9px 12px;font-size:11px;color:var(--t3);line-height:1.6;margin:8px 0;border-left:2px solid var(--gold)}
+.gstep{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.gstep-n{width:22px;height:22px;border-radius:50%;background:var(--gold);color:#0a0a0a;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.gstep-body{flex:1}
+.gstep-title{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.gstep-desc{font-size:11px;color:var(--t2);line-height:1.6}
+
+.pagerow{display:flex;gap:6px;align-items:center;justify-content:center;padding:14px 0 6px}
+
+.pagebtn{padding:8px 18px;border-radius:18px;background:var(--gold2);border:.5px solid rgba(232,201,122,.4);color:var(--gold);font-size:11px;font-weight:600;cursor:pointer;user-select:none}
+
+.pagebtn:active{opacity:.7}
+
+.pageinfo{font-size:9px;color:var(--t3)}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<div class="hdr">
+
+  <div class="logo">WatchPick<small>cinema companion · india</small></div>
+
+  <div class="hbtns">
+
+    <div class="ibtn" onclick="openLegend()" title="Tag reference">ℹ️</div>
+
+    <div class="ibtn" onclick="showTab('settings')">⚙️</div>
+
+    <div class="ibtn" onclick="showTab('watchlist')">
+
+      🔖<div class="badge" id="wbadge" style="display:none">0</div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<div class="nav">
+
+  <div class="ntab on" data-tab="discover" onclick="showTab('discover')">Discover</div>
+
+  <div class="ntab" data-tab="watchlist" onclick="showTab('watchlist')">My List</div>
+
+  <div class="ntab" data-tab="settings" onclick="showTab('settings')">Platforms & Genres</div>
+
+
+</div>
+
+
+
+<div class="fbar-wrap">
+  <div class="fbar-row1" id="fbar-row1"></div>
+  <div class="fbar-row2" id="fbar-row2"></div>
+  <div class="fbar-row3" id="fbar-row3"></div>
+</div>
+
+
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay"><div class="dpage" id="dpage"></div></div>
+
+
+
+<!-- WELCOME OVERLAY -->
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-card">
+    <div class="welcome-logo">WatchPick</div>
+    <div class="welcome-sub">CINEMA COMPANION · INDIA</div>
+    <div class="welcome-feat">
+      <div class="wfeat">
+        <div class="wfeat-ico">🎭</div>
+        <div class="wfeat-text"><b>Taste genres, not content tags</b> — Philosophy, World Cinema, Brilliant Screenplay, Cinematography. Built for how a cinephile thinks.</div>
+      </div>
+      <div class="wfeat">
+        <div class="wfeat-ico">✅</div>
+        <div class="wfeat-text"><b>India availability, verified</b> — every title cross-checked across 8 platforms. Stream or Rent/Buy, clearly labelled.</div>
+      </div>
+      <div class="wfeat">
+        <div class="wfeat-ico">🎬</div>
+        <div class="wfeat-text"><b>Masters of Cinema</b> — tap any director, writer, or cinematographer to explore their full India-available filmography.</div>
+      </div>
+      <div class="wfeat">
+        <div class="wfeat-ico">☁️</div>
+        <div class="wfeat-text"><b>Save your list</b> — go to My List and set a passphrase to sync your watchlist across all your devices.</div>
+      </div>
+    </div>
+    <button class="welcome-btn" onclick="dismissWelcome(false)">Start Discovering →</button>
+    <button class="welcome-skip" onclick="dismissWelcome(true)">Already know WatchPick — skip</button>
+  </div>
+</div>
+
+<div class="guide-overlay" id="legendOverlay">
+  <div class="guide-hdr">
+    <div class="guide-title">WatchPick &middot; User Guide</div>
+    <div class="guide-close" onclick="closeLegend()">&#x2715;</div>
+  </div>
+  <div class="guide-body" id="guidebody">
+    <div class="guide-toc">
+      <div class="guide-toc-title">Jump to section</div>
+      <div class="guide-toc-grid">
+        <a class="toc-item" onclick="scrollGuide('gs1')">1 &middot; What is WatchPick</a>
+        <a class="toc-item" onclick="scrollGuide('gs2')">2 &middot; Getting Started</a>
+        <a class="toc-item" onclick="scrollGuide('gs3')">3 &middot; The Three Tabs</a>
+        <a class="toc-item" onclick="scrollGuide('gs4')">4 &middot; Filter Bar</a>
+        <a class="toc-item" onclick="scrollGuide('gs5')">5 &middot; Title Detail Page</a>
+        <a class="toc-item" onclick="scrollGuide('gs6')">6 &middot; Tag Reference</a>
+        <a class="toc-item" onclick="scrollGuide('gs7')">7 &middot; Search</a>
+        <a class="toc-item" onclick="scrollGuide('gs8')">8 &middot; Cloud Sync</a>
+        <a class="toc-item" onclick="scrollGuide('gs9')">9 &middot; Tips</a>
+        <a class="toc-item" onclick="scrollGuide('gs10')">10 &middot; FAQ</a>
+      </div>
+    </div>
+    <div class="gsect" id="gs1">
+      <div class="gh1">1 &middot; What is WatchPick?</div>
+      <p class="gbody">WatchPick is a personal cinema discovery app for people who care about what they watch. It shows films streaming in India right now, filtered by your taste, with verified availability across 8 platforms.</p>
+      <p class="gbody">Built for world cinema, philosophy films, critically acclaimed titles, music documentaries, brilliant screenplays, and visually extraordinary cinema &mdash; all verified streaming in India via JustWatch data.</p>
+      <p class="gbody">Access: <a class="glink" href="https://shomikprth.pythonanywhere.com/watch/watchpick.html" target="_blank">shomikprth.pythonanywhere.com/watch/watchpick.html &rarr;</a></p>
+    </div>
+    <div class="gsect" id="gs2">
+      <div class="gh1">2 &middot; Getting Started</div>
+      <div class="gh2">Install on your phone</div>
+      <div class="gstep"><div class="gstep-n">1</div><div class="gstep-body"><div class="gstep-title">Open in Chrome</div><div class="gstep-desc">Go to <a class="glink" href="https://shomikprth.pythonanywhere.com/watch/watchpick.html" target="_blank">the WatchPick URL &rarr;</a> in Chrome on your phone.</div></div></div>
+      <div class="gstep"><div class="gstep-n">2</div><div class="gstep-body"><div class="gstep-title">Add to Home Screen</div><div class="gstep-desc">Chrome menu (&vellip;) &rarr; Add to Home Screen &rarr; Add. WatchPick appears on your home screen and opens full-screen.</div></div></div>
+      <div class="gstep"><div class="gstep-n">3</div><div class="gstep-body"><div class="gstep-title">Set up Cloud Sync</div><div class="gstep-desc">My List &rarr; Cloud Sync panel &rarr; enter a passphrase &rarr; tap Save &uarr;. Use same passphrase on any device to Load &darr; your list.</div></div></div>
+      <div class="gnote">Always open WatchPick from your home screen icon or bookmarked URL &mdash; never from a downloaded HTML file.</div>
+    </div>
+    <div class="gsect" id="gs3">
+      <div class="gh1">3 &middot; The Three Tabs</div>
+      <div class="gh2">Discover</div>
+      <div class="grow"><div class="gtag"><span style="font-size:12px">&#128269;</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:12px">&#128226;</span></div><div class="gdesc"><strong>New Arrivals</strong> &mdash; films added to Indian streaming in the last 60 days. Horizontal scroll at top.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">&#8635; Refresh</span></div><div class="gdesc">Fresh batch for your current filters.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Load Page &darr;</span></div><div class="gdesc">Next page of results &mdash; genuinely new titles.</div></div>
+      <div class="gh2">My List</div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">&#9729;&#65039; Sync</span></div><div class="gdesc">Save &uarr; pushes list to server. Load &darr; pulls it on any device.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">&#128229; Export</span></div><div class="gdesc">Downloads JSON backup &mdash; save to Google Drive.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">&#128194; Import</span></div><div class="gdesc">Restores from a JSON backup file.</div></div>
+      <div class="gh2">Platforms &amp; Genres</div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Platforms</span></div><div class="gdesc">Toggle streaming services on/off. Only enabled platforms appear in Discover.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Genres</span></div><div class="gdesc">Toggle genre categories. Select All / Clear All for quick resets.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">+ Custom</span></div><div class="gdesc">Pin any specific film to your Discover feed.</div></div>
+    </div>
+    <div class="gsect" id="gs4">
+      <div class="gh1">4 &middot; The Filter Bar</div>
+      <p class="gbody">Horizontal scroll bar below the nav tabs &mdash; instant filters without going into Settings.</p>
+      <div class="grow"><div class="gtag"><span class="fpill on" style="position:static;font-size:9px;padding:3px 8px">All</span></div><div class="gdesc">Selects every enabled genre and refreshes the feed.</div></div>
+      <div class="grow"><div class="gtag"><span class="fpill" style="position:static;font-size:9px;padding:3px 8px">None</span></div><div class="gdesc">Clears all genres &mdash; pick just one or two to focus the feed.</div></div>
+      <div class="grow"><div class="gtag"><span class="fpill on" style="position:static;font-size:9px;padding:3px 8px">Genre pills</span></div><div class="gdesc">Tap to toggle on/off. Gold = active in current feed.</div></div>
+      <div class="grow"><div class="gtag"><span class="fpill on" style="position:static;font-size:9px;padding:3px 8px">Language</span></div><div class="gdesc">Filter current feed by original language instantly.</div></div>
+      <div class="grow"><div class="gtag"><span class="fpill on" style="position:static;font-size:9px;padding:3px 8px">Sort</span></div><div class="gdesc">Mix, Top Rated, Newest, Oldest, Newest + Rated, A&ndash;Z. Changing sort restarts from Page 1.</div></div>
+      <div class="grow"><div class="gtag"><span class="fpill on" style="position:static;font-size:9px;padding:3px 8px">Stream only</span></div><div class="gdesc">Stream only (subscription), Rent/Buy only, or All.</div></div>
+      <div class="gnote">Newest + Rated: fetches by year descending, then sorts by rating within each year &mdash; best for recent acclaimed films.</div>
+    </div>
+    <div class="gsect" id="gs5">
+      <div class="gh1">5 &middot; Title Detail Page</div>
+      <p class="gbody">Tap any card to open the full detail view.</p>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Pills row</span></div><div class="gdesc">&#10003; Available in India &middot; Year &middot; &#9733; Rating &middot; Vote count &middot; Runtime &middot; Language &middot; Age cert &middot; Genre tags.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Actions</span></div><div class="gdesc">&#128278; Want &middot; &#9733; Liked &middot; &#10003; Seen &middot; &#128683; Not Interested. Tap again to remove. Seen and Not Interested permanently remove from Discover.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Where to Watch</span></div><div class="gdesc">Every India platform with Stream or Rent/Buy tags. Tap to open that platform's search directly.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Letterboxd &rarr;</span></div><div class="gdesc">Opens <a class="glink" href="https://letterboxd.com" target="_blank">Letterboxd &rarr;</a> search for that exact film. Letterboxd is a dedicated film community of nearly 30 million users who rate on a 5-star scale (with half-stars). Its ratings run 0.3&ndash;0.5 stars colder than TMDB because the audience takes film seriously &mdash; making it the most trustworthy rating source for world cinema, philosophy films, and arthouse titles. A film rated 4.0&nbsp;on Letterboxd by 200,000 cinephiles is a stronger signal than an 8.2 on TMDB from a general audience. Tap to read reviews and see what dedicated film watchers think before you commit your evening.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">&#9654; Trailers</span></div><div class="gdesc">Tap thumbnail to play in-app. Only works on hosted URL.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Crew &rarr;</span></div><div class="gdesc">Tap Director, Writer, or Cinematographer name to open their India filmography.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Cast &rarr;</span></div><div class="gdesc">Tap any actor for their India-available filmography with platform badges.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">More Like This</span></div><div class="gdesc">TMDB recommendations filtered to India &mdash; tap to explore.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">&larr; Back</span></div><div class="gdesc">Phone back gesture or &larr; returns to previous screen. &#10005; Close exits the detail overlay entirely.</div></div>
+    </div>
+    <div class="gsect" id="gs6">
+      <div class="gh1">6 &middot; Tag Reference</div>
+      <div class="gh2">Platform tags</div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-netflix" style="position:static">Netflix</span></div><div class="gdesc"><a class="glink" href="https://www.netflix.com" target="_blank">Netflix India &rarr;</a></div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-prime" style="position:static">Prime</span></div><div class="gdesc"><a class="glink" href="https://www.amazon.in/gp/video/storefront" target="_blank">Prime Video India &rarr;</a></div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-hotstar" style="position:static">JioHotstar</span></div><div class="gdesc"><a class="glink" href="https://www.hotstar.com/in" target="_blank">JioHotstar &rarr;</a></div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-mubi" style="position:static">Mubi</span></div><div class="gdesc"><a class="glink" href="https://mubi.com/en/in" target="_blank">MUBI India &rarr;</a></div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-youtube" style="position:static">YouTube</span></div><div class="gdesc"><a class="glink" href="https://www.youtube.com/movies" target="_blank">YouTube India &rarr;</a> &mdash; rent/buy or free with YouTube Premium</div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-apple" style="position:static">Apple TV+</span></div><div class="gdesc"><a class="glink" href="https://tv.apple.com" target="_blank">Apple TV+ &rarr;</a></div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-sonyliv" style="position:static">SonyLIV</span></div><div class="gdesc"><a class="glink" href="https://www.sonyliv.com" target="_blank">SonyLIV India &rarr;</a></div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-zee5" style="position:static">ZEE5</span></div><div class="gdesc"><a class="glink" href="https://www.zee5.com" target="_blank">ZEE5 India &rarr;</a></div></div>
+      <div class="gh2">Availability tags</div>
+      <div class="grow"><div class="gtag"><span class="cavail av-stream" style="position:static">Stream</span></div><div class="gdesc">Included with subscription &mdash; no extra cost</div></div>
+      <div class="grow"><div class="gtag"><span class="cavail av-rent" style="position:static">Rent/Buy</span></div><div class="gdesc">Paid rental or purchase only</div></div>
+      <div class="grow"><div class="gtag"><span class="cavail av-none" style="position:static">Not in IN</span></div><div class="gdesc">Not currently streaming in India &mdash; shown in search only</div></div>
+      <div class="gh2">Status icons</div>
+      <div class="grow"><div class="gtag"><span style="font-size:14px">&#128278;</span></div><div class="gdesc">Want to Watch &mdash; saved to My List</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:14px;color:var(--gold)">&#9733;</span></div><div class="gdesc">Liked It &mdash; gold border on card. Surfaces similar titles in More Like This.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:14px;color:#888">&#10003;</span></div><div class="gdesc">Already Seen &mdash; removed from Discover permanently. Undoable in My List.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:14px">&#128683;</span></div><div class="gdesc">Not Interested &mdash; excluded from Discover. Undoable in My List.</div></div>
+      <div class="gh2">Other tags</div>
+      <div class="grow"><div class="gtag"><span class="crating" style="position:static">&#9733; 8.4</span></div><div class="gdesc"><a class="glink" href="https://www.themoviedb.org" target="_blank">TMDB &rarr;</a> community rating out of 10</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--t2)">12,430 votes</span></div><div class="gdesc">Higher count = more reliable rating</div></div>
+      <div class="grow"><div class="gtag"><span class="ctag">Drama</span></div><div class="gdesc">Genre tag from TMDB</div></div>
+      <div class="grow"><div class="gtag"><span class="ctag" style="text-transform:uppercase">KO</span></div><div class="gdesc">Original language code (non-English)</div></div>
+      <div class="grow"><div class="gtag"><span class="dpill cert" style="font-size:8px">U/A</span></div><div class="gdesc">Age certification &mdash; India CBFC where available</div></div>
+    </div>
+    <div class="gsect" id="gs7">
+      <div class="gh1">7 &middot; Search</div>
+      <p class="gbody">Type any title, director, actor, or crew member in the search bar on Discover.</p>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Film results</span></div><div class="gdesc">Cards with India availability, platform badges, Stream/Rent tags.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Gold card</span></div><div class="gdesc">Person identified by TMDB &mdash; tap to open their India filmography.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Filmography</span></div><div class="gdesc">"Streaming in India" (full brightness) and "Other notable work" (dimmed). Back button returns to search.</div></div>
+      <div class="gnote">Search is not filtered by your genre or platform settings &mdash; shows all results with India availability checked.</div>
+    </div>
+    <div class="gsect" id="gs8">
+      <div class="gh1">8 &middot; Cloud Sync</div>
+      <p class="gbody">Your list lives in browser storage AND on the server. The server copy survives everything.</p>
+      <div class="gstep"><div class="gstep-n">1</div><div class="gstep-body"><div class="gstep-title">Choose a passphrase</div><div class="gstep-desc">Memorable &mdash; e.g. your-name-films-2026. No email or sign-up needed.</div></div></div>
+      <div class="gstep"><div class="gstep-n">2</div><div class="gstep-body"><div class="gstep-title">Save &uarr; regularly</div><div class="gstep-desc">Tap Save &uarr; after any marking session. Pushes your full list to the server.</div></div></div>
+      <div class="gstep"><div class="gstep-n">3</div><div class="gstep-body"><div class="gstep-title">Load &darr; on new device</div><div class="gstep-desc">My List &rarr; enter passphrase &rarr; Load &darr;. Full list restored instantly.</div></div></div>
+      <div class="gnote">Passphrase is case-sensitive. No recovery if forgotten. Also use Export JSON as a Google Drive backup.</div>
+    </div>
+    <div class="gsect" id="gs9">
+      <div class="gh1">9 &middot; Tips</div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Start narrow</span></div><div class="gdesc">Tap None then pick one or two genre pills for a focused feed.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Mark Seen</span></div><div class="gdesc">Tap &#10003; on anything you have already watched &mdash; it never appears again in Discover.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Use &#9733; Liked</span></div><div class="gdesc">More Like This on any Liked film surfaces similar India-available titles.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Tap the director</span></div><div class="gdesc">See every film of theirs available in India right now.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">New Arrivals</span></div><div class="gdesc">Top row refreshes on open &mdash; quick scroll shows what just landed.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Newest + Rated</span></div><div class="gdesc">Best sort for recent acclaimed films.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)"><a class="glink" href="https://letterboxd.com" target="_blank">Letterboxd &rarr;</a></span></div><div class="gdesc">For every film in WatchPick &mdash; especially world cinema, philosophy, and critically acclaimed titles &mdash; tap "View on Letterboxd" on the detail page. Letterboxd uses a 5-star scale rated by nearly 30 million dedicated film watchers. Its scores run colder than TMDB (a 3.8 on Letterboxd is genuinely good; a 4.2 is exceptional). Read the short reviews &mdash; they are written by people who watch 200+ films a year, not casual viewers. For the genres WatchPick covers, Letterboxd is the most honest measure of whether a film is worth your time.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Save often</span></div><div class="gdesc">Tap Save &uarr; after every marking session &mdash; your list is then safe on all devices.</div></div>
+    </div>
+    <div class="gsect" id="gs10">
+      <div class="gh1">10 &middot; FAQ</div>
+      <div class="gh2">My list disappeared</div>
+      <p class="gbody">You likely cleared browser cache or opened a downloaded file. Open the hosted URL &rarr; My List &rarr; enter passphrase &rarr; Load &darr;.</p>
+      <div class="gh2">A film I know is on Netflix is not showing</div>
+      <p class="gbody">Availability is from <a class="glink" href="https://www.justwatch.com/in" target="_blank">JustWatch &rarr;</a> via TMDB. Rights change frequently &mdash; data may lag by a day or two for very recent additions.</p>
+      <div class="gh2">Trailers are not playing</div>
+      <p class="gbody">Trailers only work on the hosted URL &mdash; not a downloaded file. If "Video unavailable", the studio has disabled embedding; find it directly on <a class="glink" href="https://www.youtube.com" target="_blank">YouTube &rarr;</a>.</p>
+      <div class="gh2">Feed keeps showing same titles</div>
+      <p class="gbody">Tap Load Page N &darr; for new pages. If many titles are marked Seen or Not Interested they are filtered out &mdash; use &uarr; Refresh for a completely fresh batch.</p>
+      <div class="gh2">YouTube shows Rent/Buy under Stream only</div>
+      <p class="gbody">JustWatch India does not consistently report YouTube Premium streaming as "flatrate". This is a JustWatch data limitation, not a WatchPick bug. Some Stream titles do appear.</p>
+      <div style="font-size:9px;color:var(--t3);text-align:center;margin-top:20px;padding-bottom:8px">
+        WatchPick &middot; Availability: <a class="glink" href="https://www.justwatch.com/in" target="_blank" style="font-size:9px">JustWatch &rarr;</a> via <a class="glink" href="https://www.themoviedb.org" target="_blank" style="font-size:9px">TMDB &rarr;</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div id="tab-discover" class="scroll">
+
+  <div class="sbox">
+    <span class="sico">🔍</span>
+    <input class="sinput" type="search" id="sinput" placeholder="Search titles, directors, actors…" oninput="onSearch(this.value)" autocomplete="off" style="padding-right:40px">
+    <button class="smic" id="micbtn" onclick="toggleVoice()" title="Voice search">🎤</button>
+  </div>
+  <div class="vtranscript" id="vtranscript"></div>
+
+  <!-- MEDIA TYPE TOGGLE -->
+  <div style="display:flex;gap:6px;padding:0 0 10px;flex-shrink:0">
+    <button id="mt-movie" onclick="setMediaType('movie')" class="mtbtn">🎬 Films</button>
+    <button id="mt-both"  onclick="setMediaType('both')"  class="mtbtn active">🎬📺 Both</button>
+    <button id="mt-tv"    onclick="setMediaType('tv')"    class="mtbtn">📺 Series</button>
+  </div>
+
+  <!-- MASTERS OF CINEMA -->
+  <div id="masters-sect" class="masters-sect" style="display:none">
+    <div class="secrow" style="margin-bottom:8px">
+      <div class="slabel">🎬 Masters of Cinema</div>
+      <div style="font-size:9px;color:var(--t3)">tap to explore filmography</div>
+    </div>
+    <div class="masters-tags" id="masters-tags"></div>
+    <div class="mscroll" id="masters-scroll"></div>
+  </div>
+
+  <div id="newarrivals-sect" style="margin-bottom:16px;display:none">
+
+    <div class="secrow" style="margin-bottom:8px">
+
+      <div class="slabel">🆕 New on Streaming · India this month</div>
+
+      <div class="more" onclick="loadNewArrivals(true)">↻</div>
+
+    </div>
+
+    <div class="sim-scroll" id="newarrivals-scroll">
+
+      <div class="loading" style="grid-column:unset;padding:10px 0"><div class="spin"></div></div>
+
+    </div>
+
+  </div>
+
+  <div class="secrow">
+
+    <div class="slabel" id="rlabel">Curated · India</div>
+
+    <div style="display:flex;gap:8px;align-items:center">
+
+      <select class="sortsel" id="sortsel" onchange="setSort(this.value)">
+
+        <option value="default">Sort: Curated</option>
+
+        <option value="rating">Rating ↓</option>
+
+        <option value="year_desc">Year — Newest</option>
+
+        <option value="year_asc">Year — Oldest</option>
+
+        <option value="title">Title A–Z</option>
+
+      </select>
+
+      <div class="more" onclick="refreshDiscover()">↻ Refresh</div>
+
+    </div>
+
+  </div>
+
+  <div class="grid" id="cgrid"></div>
+
+  <div class="pagerow" id="pagerow" style="display:none">
+
+    <div class="pagebtn" onclick="loadMore()">Load Page <span id="nextpage">2</span> ↓</div>
+
+  </div>
+
+</div>
+
+
+
+<div id="tab-watchlist" class="scroll" style="display:none">
+
+  <!-- SYNC PANEL -->
+
+  <div id="syncpanel" style="background:var(--s2);border:.5px solid var(--b2);border-radius:var(--r);padding:12px;margin-bottom:12px">
+
+    <div style="font-size:11px;font-weight:600;color:var(--t1);margin-bottom:8px">☁️ Cloud Sync</div>
+
+    <div style="font-size:10px;color:var(--t2);margin-bottom:8px">Enter a passphrase to sync your list across devices. Use the same phrase on any device to access your list.</div>
+
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+
+      <input class="sinput" type="text" id="synctoken" placeholder="Your passphrase (e.g. shomik-films)" style="flex:1;padding:8px 12px;font-size:12px">
+
+      <button onclick="syncSave()" style="background:var(--gold);color:#0a0a0a;border:none;border-radius:var(--rs);padding:0 12px;font-weight:600;cursor:pointer;font-size:11px;white-space:nowrap">Save ↑</button>
+
+      <button onclick="syncLoad()" style="background:var(--s3);color:var(--t1);border:.5px solid var(--b2);border-radius:var(--rs);padding:0 12px;font-weight:600;cursor:pointer;font-size:11px;white-space:nowrap">Load ↓</button>
+
+    </div>
+
+    <div id="syncstatus" style="font-size:10px;color:var(--t3)">Not synced — enter passphrase and tap Save or Load</div>
+
+    <div style="margin-top:10px;padding-top:10px;border-top:.5px solid var(--b1);display:flex;gap:6px">
+
+      <button onclick="exportBackup()" style="flex:1;padding:7px;border-radius:var(--rs);border:.5px solid var(--b2);background:transparent;color:var(--t2);font-size:10px;font-weight:500;cursor:pointer">📥 Export JSON</button>
+
+      <button onclick="triggerImport()" style="flex:1;padding:7px;border-radius:var(--rs);border:.5px solid var(--b2);background:transparent;color:var(--t2);font-size:10px;font-weight:500;cursor:pointer">📂 Import JSON</button>
+
+    </div>
+
+  </div>
+
+  <input type="file" id="importfile" accept=".json" style="display:none" onchange="importBackup(event)">
+
+  <div id="wcontent"></div>
+
+</div>
+
+
+
+<div id="tab-guide" class="scroll" style="display:none">
+
+  <div style="padding:4px 0 20px">
+
+
+
+    <!-- HEADER -->
+
+    <div style="text-align:center;padding:20px 0 16px;border-bottom:.5px solid var(--b1);margin-bottom:20px">
+
+      <div style="font-family:'Playfair Display',serif;font-size:24px;color:var(--gold);letter-spacing:-.3px">WatchPick</div>
+
+      <div style="font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-top:2px">User Guide · Cinema Companion · India</div>
+
+    </div>
+
+
+
+    <!-- TOC -->
+
+    <div style="background:var(--s2);border:.5px solid var(--b2);border-radius:var(--r);padding:14px;margin-bottom:20px">
+
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:10px">Contents</div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+
+        <a href="#g1" style="color:var(--gold);font-size:12px;text-decoration:none">1 · What is WatchPick?</a>
+
+        <a href="#g2" style="color:var(--gold);font-size:12px;text-decoration:none">2 · Getting Started</a>
+
+        <a href="#g3" style="color:var(--gold);font-size:12px;text-decoration:none">3 · The Three Tabs</a>
+
+        <a href="#g4" style="color:var(--gold);font-size:12px;text-decoration:none">4 · The Filter Bar</a>
+
+        <a href="#g5" style="color:var(--gold);font-size:12px;text-decoration:none">5 · Title Detail Page</a>
+
+        <a href="#g6" style="color:var(--gold);font-size:12px;text-decoration:none">6 · Tag Reference</a>
+
+        <a href="#g7" style="color:var(--gold);font-size:12px;text-decoration:none">7 · Search</a>
+
+        <a href="#g8" style="color:var(--gold);font-size:12px;text-decoration:none">8 · Cloud Sync</a>
+
+        <a href="#g9" style="color:var(--gold);font-size:12px;text-decoration:none">9 · Tips</a>
+
+        <a href="#g10" style="color:var(--gold);font-size:12px;text-decoration:none">10 · FAQ</a>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- SECTIONS -->
+
+    <div id="g1" class="gsect">
+
+      <div class="gtitle">1 · What is WatchPick?</div>
+
+      <p class="gbody">WatchPick is a personal cinema discovery app for people who care about what they watch — not just what is popular. It shows films streaming in India right now, filtered by your taste, with verified availability across Netflix, Prime Video, JioHotstar, MUBI, YouTube, Apple TV+, SonyLIV, and ZEE5.</p>
+
+      <p class="gbody">It is built for world cinema, philosophy films, critically acclaimed titles, music documentaries, brilliant screenplays, and visually extraordinary cinema — not mass-market browsing.</p>
+
+    </div>
+
+
+
+    <div id="g2" class="gsect">
+
+      <div class="gtitle">2 · Getting Started</div>
+
+      <div class="gstep"><span class="gnum">1</span><div><div class="gstep-title">Open WatchPick</div><div class="gstep-body">Go to <a href="https://shomikprth.pythonanywhere.com/watch/watchpick.html" target="_blank" class="glink">shomikprth.pythonanywhere.com/watch/watchpick.html</a> in Chrome.</div></div></div>
+
+      <div class="gstep"><span class="gnum">2</span><div><div class="gstep-title">Add to Home Screen (phone)</div><div class="gstep-body">Chrome menu (⋮) → Add to Home Screen → Add. Opens full-screen like a native app.</div></div></div>
+
+      <div class="gstep"><span class="gnum">3</span><div><div class="gstep-title">Set up Cloud Sync</div><div class="gstep-body">My List tab → Cloud Sync panel → enter a passphrase → tap Save ↑. Same passphrase on any device to Load ↓ your list.</div></div></div>
+
+      <div class="gnote">⚠ Always open from your home screen icon or the bookmarked URL — never from a downloaded HTML file, or your watchlist will not persist.</div>
+
+    </div>
+
+
+
+    <div id="g3" class="gsect">
+
+      <div class="gtitle">3 · The Three Tabs</div>
+
+      <div class="gsubtitle">Discover</div>
+
+      <p class="gbody">The main feed — films verified streaming in India, curated to your active genres and platforms.</p>
+
+      <div class="gbullet"><span class="gico">🔍</span><div><span class="glabel">Search bar</span> — Search by title, director, or actor. Person results show a gold card — tap to see their filmography streaming in India.</div></div>
+
+      <div class="gbullet"><span class="gico">🆕</span><div><span class="glabel">New Arrivals row</span> — Films added to Indian streaming in the last 60 days — horizontal scroll at the top.</div></div>
+
+      <div class="gbullet"><span class="gico">↻</span><div><span class="glabel">Refresh</span> — Fetches a fresh batch for your current filters.</div></div>
+
+      <div class="gbullet"><span class="gico">📄</span><div><span class="glabel">Load Page N ↓</span> — Fetches the next page of results — genuinely new titles each time.</div></div>
+
+
+
+      <div class="gsubtitle">My List</div>
+
+      <p class="gbody">Your personal watchlist — Want to Watch, Liked, Already Seen, and Not Interested.</p>
+
+      <div class="gbullet"><span class="gico">☁️</span><div><span class="glabel">Cloud Sync</span> — Save ↑ pushes to server. Load ↓ pulls on any device.</div></div>
+
+      <div class="gbullet"><span class="gico">📥</span><div><span class="glabel">Export JSON</span> — Downloads a backup file. Upload to Google Drive for safekeeping.</div></div>
+
+      <div class="gbullet"><span class="gico">📂</span><div><span class="glabel">Import JSON</span> — Restores from a backup file.</div></div>
+
+
+
+      <div class="gsubtitle">Platforms & Genres</div>
+
+      <p class="gbody">Your preference settings — controls what appears in Discover.</p>
+
+      <div class="gbullet"><span class="gico">⚙️</span><div><span class="glabel">Platforms</span> — Toggle any streaming service on or off.</div></div>
+
+      <div class="gbullet"><span class="gico">🎬</span><div><span class="glabel">Genres</span> — Toggle categories. Select All / Clear All for quick resets.</div></div>
+
+      <div class="gbullet"><span class="gico">➕</span><div><span class="glabel">Add custom title</span> — Pin any specific film to your Discover feed.</div></div>
+
+    </div>
+
+
+
+    <div id="g4" class="gsect">
+
+      <div class="gtitle">4 · The Filter Bar</div>
+
+      <p class="gbody">The horizontal scroll bar below the nav tabs — instant filters without going into Settings.</p>
+
+      <div class="gbullet"><span class="gico">🔘</span><div><span class="glabel">All / None</span> — Master genre toggle. All selects every enabled genre. None clears all so you can pick just one.</div></div>
+
+      <div class="gbullet"><span class="gico">🎭</span><div><span class="glabel">Genre pills</span> — Tap to include/exclude. Gold = active.</div></div>
+
+      <div class="gbullet"><span class="gico">🌍</span><div><span class="glabel">Language filter</span> — All Languages, English, Hindi, Korean, Japanese, French, Spanish, Italian, German.</div></div>
+
+      <div class="gbullet"><span class="gico">↕️</span><div><span class="glabel">Sort</span> — Mix · Top Rated · Newest · Oldest · Newest + Rated · A–Z. Sort applies server-side — each new page continues in the same order.</div></div>
+
+      <div class="gbullet"><span class="gico">📡</span><div><span class="glabel">Availability</span> — Stream only (subscription-included) · Rent/Buy only · All.</div></div>
+
+    </div>
+
+
+
+    <div id="g5" class="gsect">
+
+      <div class="gtitle">5 · Title Detail Page</div>
+
+      <p class="gbody">Tap any card to open the full detail view.</p>
+
+      <div class="gbullet"><span class="gico">🖼</span><div><span class="glabel">Pills row</span> — ✓ Available in India · Year · ★ Rating · Vote count · Runtime · Language · Age cert · Genre tags.</div></div>
+
+      <div class="gbullet"><span class="gico">🔖</span><div><span class="glabel">Action buttons</span> — Want to Watch · ★ Liked It · ✓ Already Seen · 🚫 Not Interested. Tap again to remove.</div></div>
+
+      <div class="gbullet"><span class="gico">📺</span><div><span class="glabel">Where to Watch</span> — Every platform carrying the title in India with Stream or Rent/Buy tag. Tap to search on that platform.</div></div>
+
+      <div class="gbullet"><span class="gico">🍿</span><div><span class="glabel">View on Letterboxd →</span> — Opens <a href="https://letterboxd.com" target="_blank" class="glink">letterboxd.com</a> search for the film — cinephile community ratings alongside TMDB score.</div></div>
+
+      <div class="gbullet"><span class="gico">▶️</span><div><span class="glabel">Trailers</span> — Tap thumbnail to play in-app. Scroll for multiple trailers.</div></div>
+
+      <div class="gbullet"><span class="gico">👥</span><div><span class="glabel">Cast & Crew</span> — Tap any name to open their filmography page showing India-available titles.</div></div>
+
+      <div class="gbullet"><span class="gico">🎞</span><div><span class="glabel">More Like This</span> — TMDB recommendations filtered to India availability with platform badges.</div></div>
+
+    </div>
+
+
+
+    <div id="g6" class="gsect">
+
+      <div class="gtitle">6 · Tag Reference</div>
+
+      <div class="gsubtitle">Platform Tags</div>
+
+      <div class="gtag-row"><span class="cplt plt-netflix" style="position:static">Netflix</span><span class="gtag-desc">Streaming on Netflix India</span></div>
+
+      <div class="gtag-row"><span class="cplt plt-prime" style="position:static">Prime Video</span><span class="gtag-desc">Streaming on Amazon Prime Video India</span></div>
+
+      <div class="gtag-row"><span class="cplt plt-hotstar" style="position:static">JioHotstar</span><span class="gtag-desc">Streaming on JioHotstar</span></div>
+
+      <div class="gtag-row"><span class="cplt plt-mubi" style="position:static">Mubi</span><span class="gtag-desc">Streaming on MUBI India</span></div>
+
+      <div class="gtag-row"><span class="cplt plt-youtube" style="position:static">YouTube</span><span class="gtag-desc">Available on YouTube India (rent/buy or free with YouTube Premium)</span></div>
+
+      <div class="gtag-row"><span class="cplt plt-apple" style="position:static">Apple TV+</span><span class="gtag-desc">Streaming or rent/buy on Apple TV+</span></div>
+
+      <div class="gtag-row"><span class="cplt plt-sonyliv" style="position:static">SonyLIV</span><span class="gtag-desc">Streaming on SonyLIV India</span></div>
+
+      <div class="gtag-row"><span class="cplt plt-zee5" style="position:static">ZEE5</span><span class="gtag-desc">Streaming on ZEE5 India</span></div>
+
+
+
+      <div class="gsubtitle">Availability Tags</div>
+
+      <div class="gtag-row"><span class="cavail av-stream" style="position:static">Stream</span><span class="gtag-desc">Included with your subscription — no extra cost</span></div>
+
+      <div class="gtag-row"><span class="cavail av-rent" style="position:static">Rent/Buy</span><span class="gtag-desc">Paid rental or purchase only</span></div>
+
+      <div class="gtag-row"><span class="cavail av-none" style="position:static">Not in IN</span><span class="gtag-desc">Not streaming in India — shown in search results only</span></div>
+
+
+
+      <div class="gsubtitle">Status Icons</div>
+
+      <div class="gtag-row"><span style="font-size:14px">🔖</span><span class="gtag-desc"><strong>Want to Watch</strong> — Saved to your watchlist</span></div>
+
+      <div class="gtag-row"><span style="font-size:14px;color:var(--gold)">★</span><span class="gtag-desc"><strong>Liked It</strong> — Gold border on card. Used to surface more like this.</span></div>
+
+      <div class="gtag-row"><span style="font-size:14px;color:#888">✓</span><span class="gtag-desc"><strong>Already Seen</strong> — Card dims and is permanently excluded from Discover</span></div>
+
+      <div class="gtag-row"><span style="font-size:14px">🚫</span><span class="gtag-desc"><strong>Not Interested</strong> — Excluded from Discover. Undo from My List.</span></div>
+
+
+
+      <div class="gsubtitle">Other Tags</div>
+
+      <div class="gtag-row"><span class="crating" style="position:static">★ 8.4</span><span class="gtag-desc">TMDB community rating out of 10</span></div>
+
+      <div class="gtag-row"><span style="font-size:9px;color:var(--t2)">45,230 votes</span><span class="gtag-desc">Number of ratings — higher = more reliable score</span></div>
+
+      <div class="gtag-row"><span class="ctag">Drama</span><span class="gtag-desc">TMDB genre classification</span></div>
+
+      <div class="gtag-row"><span class="ctag" style="text-transform:uppercase">KO</span><span class="gtag-desc">Original language code (non-English titles)</span></div>
+
+    </div>
+
+
+
+    <div id="g7" class="gsect">
+
+      <div class="gtitle">7 · Search</div>
+
+      <p class="gbody">Type any title, director, actor, or crew member in the search bar on Discover.</p>
+
+      <div class="gbullet"><span class="gico">🎬</span><div><span class="glabel">Film search</span> — Matching films shown as cards with India availability, platform badges, and Stream/Rent tags.</div></div>
+
+      <div class="gbullet"><span class="gico">👤</span><div><span class="glabel">Person search</span> — A gold card appears above film results when TMDB identifies a person. Tap to open their filmography with India availability.</div></div>
+
+      <div class="gbullet"><span class="gico">🎞</span><div><span class="glabel">Filmography page</span> — "Streaming in India" at full brightness. "Other notable work" at 50% opacity.</div></div>
+
+      <div class="gnote">ℹ Search shows all results regardless of your genre or platform settings. India availability is still checked and displayed on each result.</div>
+
+    </div>
+
+
+
+    <div id="g8" class="gsect">
+
+      <div class="gtitle">8 · Cloud Sync</div>
+
+      <p class="gbody">Your watchlist lives in browser storage AND on the WatchPick server. The server copy survives device switches, cache clears, and fresh sessions.</p>
+
+      <div class="gstep"><span class="gnum">1</span><div><div class="gstep-title">Choose a passphrase</div><div class="gstep-body">Something memorable — e.g. your-name-films-2026. No email or sign-up required.</div></div></div>
+
+      <div class="gstep"><span class="gnum">2</span><div><div class="gstep-title">Save ↑ regularly</div><div class="gstep-body">Tap Save ↑ after any marking session. Takes 2 seconds.</div></div></div>
+
+      <div class="gstep"><span class="gnum">3</span><div><div class="gstep-title">Load ↓ on a new device</div><div class="gstep-body">My List → enter passphrase → Load ↓. Your full list appears instantly.</div></div></div>
+
+      <div class="gnote">⚠ Passphrase is case-sensitive. Keep it safe — there is no recovery if forgotten. Use Export JSON as an additional backup to Google Drive.</div>
+
+    </div>
+
+
+
+    <div id="g9" class="gsect">
+
+      <div class="gtitle">9 · Tips</div>
+
+      <div class="gbullet"><span class="gico">🎯</span><div><span class="glabel">Start narrow</span> — Tap None in the filter bar, then select just one or two genre pills. The feed becomes highly focused.</div></div>
+
+      <div class="gbullet"><span class="gico">✓</span><div><span class="glabel">Mark as you go</span> — Tap Seen on anything you have already watched. It is permanently removed from Discover.</div></div>
+
+      <div class="gbullet"><span class="gico">★</span><div><span class="glabel">Use Liked strategically</span> — More Like This on any liked film surfaces similar titles streaming in India.</div></div>
+
+      <div class="gbullet"><span class="gico">🎬</span><div><span class="glabel">Tap the director</span> — Found a film you love? Tap the director to see every film of theirs available in India.</div></div>
+
+      <div class="gbullet"><span class="gico">🆕</span><div><span class="glabel">New Arrivals daily habit</span> — A quick scroll of the top row tells you what just landed on Indian streaming.</div></div>
+
+      <div class="gbullet"><span class="gico">↕️</span><div><span class="glabel">Newest + Rated sort</span> — Best recent films by year then rating — the most useful sort for finding acclaimed new titles.</div></div>
+
+      <div class="gbullet"><span class="gico">🍿</span><div><span class="glabel">Letterboxd link</span> — For arthouse and world cinema, the <a href="https://letterboxd.com" target="_blank" class="glink">Letterboxd</a> score from cinephiles is often more meaningful than the TMDB score from a general audience.</div></div>
+
+    </div>
+
+
+
+    <div id="g10" class="gsect">
+
+      <div class="gtitle">10 · FAQ</div>
+
+      <div class="gfaq">
+
+        <div class="gfaq-q">My list disappeared.</div>
+
+        <div class="gfaq-a">You likely opened a downloaded file or cleared browser cache. Open the <a href="https://shomikprth.pythonanywhere.com/watch/watchpick.html" target="_blank" class="glink">hosted URL</a>, go to My List, enter your passphrase, and tap Load ↓.</div>
+
+      </div>
+
+      <div class="gfaq">
+
+        <div class="gfaq-q">A film I know is on Netflix is not showing.</div>
+
+        <div class="gfaq-a">India availability is sourced from <a href="https://www.justwatch.com/in" target="_blank" class="glink">JustWatch</a> via TMDB and is updated regularly but not in real time. Rights change frequently — recently added titles may have a short lag.</div>
+
+      </div>
+
+      <div class="gfaq">
+
+        <div class="gfaq-q">Trailers are not playing.</div>
+
+        <div class="gfaq-a">Trailers only play from the hosted URL (not a downloaded file). Some studios disable embedding — if a trailer shows "Video unavailable", it will still open on <a href="https://youtube.com" target="_blank" class="glink">YouTube</a> directly.</div>
+
+      </div>
+
+      <div class="gfaq">
+
+        <div class="gfaq-q">The feed keeps showing the same titles.</div>
+
+        <div class="gfaq-a">Tap Load Page N ↓ for genuinely new titles. If you have marked many titles as Seen they are filtered out — use ↻ Refresh for a completely fresh batch.</div>
+
+      </div>
+
+      <div class="gfaq">
+
+        <div class="gfaq-q">YouTube shows Rent/Buy even on Stream only.</div>
+
+        <div class="gfaq-a">JustWatch India does not consistently report YouTube Premium's streaming catalogue as flatrate. Most YouTube content in India appears as rental/purchase data — this is a JustWatch data limitation, not a WatchPick bug.</div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- FOOTER -->
+
+    <div style="text-align:center;padding:20px 0;border-top:.5px solid var(--b1);margin-top:8px">
+
+      <div style="font-size:9px;color:var(--t3)">WatchPick · Cinema Companion · India</div>
+
+      <div style="font-size:9px;color:var(--t3);margin-top:3px">Availability data: <a href="https://www.justwatch.com/in" target="_blank" class="glink">JustWatch</a> via <a href="https://www.themoviedb.org" target="_blank" class="glink">TMDB</a></div>
+
+    </div>
+
+
+
+  </div>
+
+</div>
+
+
+
+<div id="tab-settings" class="scroll" style="display:none">
+
+  <div class="slabel" style="margin-bottom:8px">Platforms</div>
+
+  <div id="ptogs"></div>
+
+  <div class="slabel" style="margin-top:16px;margin-bottom:8px">Genres</div>
+
+  <div id="gtogs"></div>
+
+  <div class="slabel" style="margin-top:16px;margin-bottom:8px">Add custom title</div>
+
+  <div class="addrow">
+
+    <input class="sinput" type="text" id="ctinput" placeholder="e.g. All Quiet on the Western Front" style="flex:1;padding:9px 12px">
+
+    <button class="addbtn" onclick="addCustom()">Add</button>
+
+  </div>
+
+  <div id="custlist"></div>
+
+</div>
+
+
+
+<script>
+
+// ════════════ CONFIG ════════════
+
+const TMDB='2dca580c2a14b55200e784d157207b4d';
+
+function img(path,size){
+
+  if(!path) return null;
+
+  return `https://wsrv.nl/?url=${encodeURIComponent('image.tmdb.org/t/p/'+size+path)}&output=webp`;
+
+}
+
+function imgTag(path,size,cls){
+
+  if(!path) return '';
+
+  return `<img src="${img(path,size)}" alt="" loading="lazy" class="${cls||''}"
+
+    onload="this.classList.add('loaded')" onerror="this.remove()">`;
+
+}
+
+
+
+const PLAT={
+
+  netflix: {label:'Netflix',    match:/netflix/i,                           url:q=>`https://www.netflix.com/search?q=${enc(q)}`},
+
+  prime:   {label:'Prime Video',match:/amazon prime|prime video|amazon video/i, url:q=>`https://www.amazon.in/s?k=${enc(q)}&i=instant-video`},
+
+  hotstar: {label:'JioHotstar', match:/hotstar|jiocinema|jiohotstar/i,      url:q=>`https://www.hotstar.com/in/search?q=${enc(q)}`},
+
+  mubi:    {label:'Mubi',       match:/mubi/i,                              url:q=>`https://mubi.com/en/in/search?q=${enc(q)}`},
+
+  youtube: {label:'YouTube',    match:/youtube/i,                           url:q=>`https://www.youtube.com/results?search_query=${enc(q+' full movie')}`},
+
+  apple:   {label:'Apple TV+',  match:/apple tv/i,                          url:q=>`https://tv.apple.com/search?term=${enc(q)}`},
+
+  sonyliv: {label:'SonyLIV',    match:/sony liv|sonyliv|sony/i,             url:q=>`https://www.sonyliv.com/search?q=${enc(q)}`},
+
+  zee5:    {label:'ZEE5',       match:/zee5|zee/i,                          url:q=>`https://www.zee5.com/search?q=${enc(q)}`}
+
+};
+
+// TMDB provider IDs used to pre-filter discover to India-watchable titles
+
+const PROV_IDS='8|9|11|119|122|188|192';
+
+
+
+const GENRE_NAMES={28:'Action',12:'Adventure',16:'Animation',35:'Comedy',80:'Crime',99:'Documentary',18:'Drama',10751:'Family',14:'Fantasy',36:'History',27:'Horror',10402:'Music',9648:'Mystery',10749:'Romance',878:'Sci-Fi',10770:'TV Movie',53:'Thriller',10752:'War',37:'Western'};
+
+
+
+const LANG_ROTATION=['ko','ja','fr','es','it','de','fa','tr','pt','sv','pl','da'];
+
+
+
+// Real TMDB Discover queries per interest.
+
+// Honest mapping: philosophy & superhero use TMDB keyword tags; world cinema rotates
+
+// original languages; "critically acclaimed" & "screenplay" use rating+vote-count proxies.
+
+// ════════════ GENRE CONFIG ════════════
+
+// Each genre has: label, tmdbId (for unified query), and optional kwFn (keyword override)
+
+// TMDB genre IDs: https://developers.themoviedb.org/3/genres/get-movie-list
+
+const GENRES={
+
+  // Original 8 — using TMDB IDs or keyword overrides
+
+  philosophy:    {label:'🧠 Philosophy',          tmdbId:null,  kwKey:'philosophy',    voteMin:50},
+
+  worldcinema:   {label:'🌍 World Cinema',         tmdbId:null,  worldCinema:true,      voteMin:200},
+
+  critically:    {label:'🏆 Critically Acclaimed', tmdbId:null,  voteMin:2500,          noGenre:true},
+
+  rock:          {label:'🎸 Rock & Music',          tmdbId:10402, voteMin:80},
+
+  superhero:     {label:'🦸 Superhero',            tmdbId:null,  kwKey:'superhero',     voteMin:500},
+
+  scifi:         {label:'🚀 Sci-Fi',               tmdbId:878,   voteMin:500},
+
+  screenplay:    {label:'✍️ Brilliant Screenplay', tmdbId:'18|9648|53', voteMin:1500},
+
+  documentary:   {label:'📽️ Documentary',          tmdbId:99,    voteMin:80},
+
+  cinematography:{label:'🎥 Cinematography',       tmdbId:null,  kwKey:'cinematography',voteMin:200},
+
+  // 13 new TMDB genres
+
+  action:        {label:'💥 Action',               tmdbId:28,    voteMin:500},
+
+  adventure:     {label:'🗺️ Adventure',            tmdbId:12,    voteMin:300},
+
+  animation:     {label:'🎨 Animation',            tmdbId:16,    voteMin:200},
+
+  comedy:        {label:'😄 Comedy',               tmdbId:35,    voteMin:500},
+
+  crime:         {label:'🔍 Crime',                tmdbId:80,    voteMin:500},
+
+  family:        {label:'👨‍👩‍👧 Family',              tmdbId:10751, voteMin:200},
+
+  fantasy:       {label:'🧙 Fantasy',              tmdbId:14,    voteMin:300},
+
+  history:       {label:'📜 History',              tmdbId:36,    voteMin:200},
+
+  horror:        {label:'👻 Horror',               tmdbId:27,    voteMin:300},
+
+  mystery:       {label:'🕵️ Mystery',              tmdbId:9648,  voteMin:300},
+
+  romance:       {label:'❤️ Romance',              tmdbId:10749, voteMin:300},
+
+  thriller:      {label:'😰 Thriller',             tmdbId:53,    voteMin:500},
+
+  war:           {label:'⚔️ War',                  tmdbId:10752, voteMin:200},
+
+  western:       {label:'🤠 Western',              tmdbId:37,    voteMin:100},
+
+};
+
+// ════════════ MASTERS OF CINEMA CATALOG ════════════
+// Curated by taste cluster — enables chain discovery
+// TMDB person IDs verified from TMDB database
+const MASTERS=[
+  // ── Contemplative / Philosophical ──
+  {id:8452,   name:"Andrei Tarkovsky",       role:"Director",         tag:"Contemplative",  note:"Solaris · Stalker · Mirror"},
+  {id:6648,   name:"Ingmar Bergman",          role:"Director",         tag:"Contemplative",  note:"The Seventh Seal · Persona · Wild Strawberries"},
+  {id:119294, name:"Abbas Kiarostami",        role:"Director",         tag:"Contemplative",  note:"Taste of Cherry · Close-Up · The Wind Will Carry Us"},
+  {id:30715,  name:"Terrence Malick",         role:"Director",         tag:"Contemplative",  note:"The Tree of Life · The Thin Red Line · Badlands"},
+  {id:85637,  name:"Béla Tarr",              role:"Director",         tag:"Contemplative",  note:"Sátántangó · The Turin Horse · Werckmeister Harmonies"},
+  {id:15189,  name:"Michelangelo Antonioni", role:"Director",         tag:"Contemplative",  note:"L'Avventura · Blow-Up · The Passenger"},
+
+  // ── World Cinema / Humanist ──
+  {id:5026,   name:"Akira Kurosawa",          role:"Director",         tag:"World Cinema",   note:"Rashomon · Seven Samurai · Ikiru"},
+  {id:4415,   name:"Federico Fellini",        role:"Director",         tag:"World Cinema",   note:"8½ · La Dolce Vita · Amarcord"},
+  {id:12453,  name:"Wong Kar-wai",            role:"Director",         tag:"World Cinema",   note:"In the Mood for Love · 2046 · Chungking Express"},
+  {id:10099,  name:"Park Chan-wook",          role:"Director",         tag:"World Cinema",   note:"Oldboy · The Handmaiden · Decision to Leave"},
+  {id:21684,  name:"Bong Joon-ho",            role:"Director/Writer",  tag:"World Cinema",   note:"Parasite · Memories of Murder · Mother"},
+  {id:12160,  name:"Satyajit Ray",            role:"Director",         tag:"World Cinema",   note:"Pather Panchali · Charulata · The Chess Players"},
+  {id:309,    name:"Pedro Almodóvar",         role:"Director",         tag:"World Cinema",   note:"All About My Mother · Talk to Her · Pain and Glory"},
+  {id:68813,  name:"Céline Sciamma",          role:"Director/Writer",  tag:"World Cinema",   note:"Portrait of a Lady on Fire · Petite Maman · Tomboy"},
+  {id:6011,   name:"Michael Haneke",          role:"Director",         tag:"World Cinema",   note:"Amour · The White Ribbon · Caché"},
+
+  // ── Visual Craft ──
+  {id:240,    name:"Stanley Kubrick",         role:"Director",         tag:"Visual Craft",   note:"2001: A Space Odyssey · Barry Lyndon · The Shining"},
+  {id:5655,   name:"Wes Anderson",            role:"Director/Writer",  tag:"Visual Craft",   note:"The Grand Budapest Hotel · Moonrise Kingdom · Rushmore"},
+  {id:525,    name:"Christopher Nolan",       role:"Director/Writer",  tag:"Visual Craft",   note:"Inception · Interstellar · Memento"},
+  {id:7467,   name:"David Fincher",           role:"Director",         tag:"Visual Craft",   note:"Se7en · Fight Club · Zodiac"},
+  {id:11218,  name:"Alfonso Cuarón",          role:"Director",         tag:"Visual Craft",   note:"Roma · Children of Men · Gravity"},
+  {id:56194,  name:"Paolo Sorrentino",        role:"Director/Writer",  tag:"Visual Craft",   note:"The Great Beauty · Youth · Il Divo"},
+  {id:137427, name:"Denis Villeneuve",        role:"Director",         tag:"Visual Craft",   note:"Dune · Arrival · Blade Runner 2049"},
+  {id:1776,   name:"Francis Ford Coppola",    role:"Director",         tag:"Visual Craft",   note:"The Godfather · Apocalypse Now · The Conversation"},
+
+  // ── Screenplay / Writers ──
+  {id:202,    name:"Charlie Kaufman",         role:"Writer",           tag:"Screenplay",     note:"Eternal Sunshine · Being John Malkovich · Adaptation"},
+  {id:13520,  name:"Aaron Sorkin",            role:"Writer",           tag:"Screenplay",     note:"The Social Network · A Few Good Men · Moneyball"},
+  {id:4762,   name:"Paul Thomas Anderson",    role:"Director/Writer",  tag:"Screenplay",     note:"There Will Be Blood · Magnolia · Phantom Thread"},
+  {id:1023483,name:"Phoebe Waller-Bridge",   role:"Writer",           tag:"Screenplay",     note:"Fleabag · Killing Eve · No Time to Die"},
+  {id:1408,   name:"Hayao Miyazaki",          role:"Director/Writer",  tag:"Screenplay",     note:"Spirited Away · Princess Mononoke · My Neighbour Totoro"},
+  {id:1223,   name:"Joel Coen",              role:"Director/Writer",  tag:"Screenplay",     note:"No Country for Old Men · Fargo · The Big Lebowski"},
+  {id:2303,   name:"Wim Wenders",            role:"Director/Writer",  tag:"Screenplay",     note:"Paris, Texas · Wings of Desire · Perfect Days"},
+
+  // ── Cinematography ──
+  {id:151,    name:"Roger Deakins",           role:"Cinematographer",  tag:"Cinematography", note:"Blade Runner 2049 · 1917 · Skyfall · No Country for Old Men"},
+  {id:4185,   name:"Emmanuel Lubezki",        role:"Cinematographer",  tag:"Cinematography", note:"The Revenant · Gravity · Children of Men · Birdman"},
+  {id:74401,  name:"Hoyte van Hoytema",       role:"Cinematographer",  tag:"Cinematography", note:"Oppenheimer · Interstellar · Dunkirk · Her"},
+  {id:7202,   name:"Vittorio Storaro",        role:"Cinematographer",  tag:"Cinematography", note:"Apocalypse Now · The Last Emperor · Reds"},
+  {id:149,    name:"Robert Richardson",       role:"Cinematographer",  tag:"Cinematography", note:"Inglourious Basterds · Kill Bill · JFK · Hugo"},
+  {id:2240,   name:"Darius Khondji",          role:"Cinematographer",  tag:"Cinematography", note:"Se7en · Midnight in Paris · Uncut Gems · Amour"},
+  {id:67113,  name:"Greig Fraser",            role:"Cinematographer",  tag:"Cinematography", note:"Dune · The Batman · Zero Dark Thirty · Lion"},
+  {id:3097,   name:"Gordon Willis",           role:"Cinematographer",  tag:"Cinematography", note:"The Godfather · All the President's Men · Manhattan"},
+  {id:8217,   name:"Conrad Hall",             role:"Cinematographer",  tag:"Cinematography", note:"Road to Perdition · American Beauty · In Cold Blood"},
+];
+
+const MASTER_TAGS=["Contemplative","World Cinema","Visual Craft","Screenplay","Cinematography"];
+// TV-specific genres (TMDB TV genre IDs differ from movie genre IDs)
+const TV_GENRES={
+  drama:       {label:'🎭 Drama',              tmdbId:18,    voteMin:100},
+  crime_tv:    {label:'🔍 Crime',              tmdbId:80,    voteMin:100},
+  comedy_tv:   {label:'😄 Comedy',            tmdbId:35,    voteMin:100},
+  scifi_tv:    {label:'🚀 Sci-Fi & Fantasy',  tmdbId:'10765', voteMin:100},
+  action_tv:   {label:'💥 Action & Adventure',tmdbId:'10759', voteMin:100},
+  thriller_tv: {label:'😰 Thriller',          tmdbId:9648,  voteMin:50},
+  documentary_tv:{label:'📽️ Documentary',     tmdbId:99,    voteMin:50},
+  family_tv:   {label:'👨‍👩‍👧 Family',          tmdbId:10751, voteMin:50},
+  reality:     {label:'🎬 Reality',           tmdbId:10764, voteMin:50},
+  animation_tv:{label:'🎨 Animation',         tmdbId:16,    voteMin:50},
+  // Special TV genres matching existing film special genres
+  critically_tv:{label:'🏆 Critically Acclaimed',tmdbId:null,noGenre:true,voteMin:500},
+  indian_tv:   {label:'🇮🇳 Indian Originals',  tmdbId:null,  indianOnly:true, voteMin:20},
+};
+
+
+
+const LANGS=[['all','All Languages'],['en','English'],['hi','Hindi'],['fr','French'],['ko','Korean'],['ja','Japanese'],['es','Spanish'],['it','Italian'],['de','German']];
+
+
+
+// ════════════ STATE ════════════
+
+let S={
+
+  watchlist:[],
+
+  platforms:{netflix:true,prime:true,hotstar:true,mubi:true,youtube:true,apple:true,sonyliv:true,zee5:true},
+
+  genres:Object.fromEntries(Object.keys(GENRES).map(k=>[k,true])),
+
+  activeG:new Set(Object.keys(GENRES)),
+
+  activeP:new Set(Object.keys(PLAT)),
+
+  activeLang:'all',
+
+  avail:'all',   // 'all' | 'stream' | 'rent'
+
+  results:[],
+
+  custom:[],
+
+  prov:{},
+
+  kw:{},
+
+  pids:{},
+
+  page:1,
+
+  sort:'default',
+
+  searchMode:false,
+
+  searchPersons:[],
+
+  newArrivalsLoaded:false,
+
+  mediaType:'both',  // 'movie' | 'tv' | 'both'
+
+  activeTVG:new Set(Object.keys(TV_GENRES))
+
+};
+
+
+
+const enc=s=>encodeURIComponent(s);
+
+const $=id=>document.getElementById(id);
+
+const seenIds=()=>new Set(S.watchlist.filter(w=>w.status==='seen'||w.status==='hidden').map(w=>w.id));
+
+function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(([,v])=>v);}
+
+
+
+// ════════════ TMDB ════════════
+
+async function tmdb(path){
+
+  const sep=path.includes('?')?'&':'?';
+
+  try{
+
+    const r=await fetch(`https://api.themoviedb.org/3${path}${sep}api_key=${TMDB}`);
+
+    if(!r.ok) return {};
+
+    return await r.json();
+
+  }catch(e){return {};}
+
+}
+
+async function keywordId(q){
+
+  if(S.kw[q]!==undefined)return S.kw[q];
+
+  const d=await tmdb(`/search/keyword?query=${enc(q)}`);
+
+  const id=d.results?.[0]?.id||null;
+
+  S.kw[q]=id; return id;
+
+}
+
+async function personId(name){
+
+  if(S.pids[name]!==undefined)return S.pids[name];
+
+  const d=await tmdb(`/search/person?query=${enc(name)}`);
+
+  const id=d.results?.[0]?.id||null;
+
+  S.pids[name]=id; return id;
+
+}
+
+async function tmdbSearch(q){
+
+  const d=await tmdb(`/search/multi?query=${enc(q)}&language=en-US&include_adult=false&page=1`);
+
+  const all=d.results||[];
+
+  return {persons:all.filter(x=>x.media_type==='person'&&x.known_for_department), titles:all.filter(x=>x.media_type!=='person'&&(x.title||x.name))};
+
+}
+
+
+
+function personCardHTML(p){
+
+  const dept=p.known_for_department==='Directing'?'Director':p.known_for_department==='Writing'?'Writer':'Actor';
+
+  return `<div data-person-id="${p.id}"
+
+    style="grid-column:1/-1;display:flex;align-items:center;gap:12px;
+
+    background:var(--s2);border:.5px solid var(--gold);border-radius:var(--r);
+
+    padding:12px;cursor:pointer;margin-bottom:4px;user-select:none">
+
+    <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;
+
+      background:var(--s3);flex-shrink:0;position:relative;border:.5px solid var(--b2)">
+
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px">👤</div>
+
+      ${imgTag(p.profile_path,'w185','')}
+
+    </div>
+
+    <div style="flex:1">
+
+      <div style="font-size:13px;font-weight:600;color:var(--gold)">${p.name}</div>
+
+      <div style="font-size:10px;color:var(--t2);margin-top:2px">${dept} · tap for filmography & India availability</div>
+
+      ${p.known_for&&p.known_for.length?`<div style="font-size:9px;color:var(--t3);margin-top:3px">Known for: ${p.known_for.map(k=>k.title||k.name).filter(Boolean).slice(0,3).join(', ')}</div>`:''}
+
+    </div>
+
+    <div style="color:var(--gold);font-size:18px">→</div>
+
+  </div>`;
+
+}
+
+async function tmdbDetail(id,type){
+
+  const t=type==='tv'?'tv':'movie';
+
+  const extra=t==='tv'?'content_ratings':'release_dates';
+
+  return tmdb(`/${t}/${id}?append_to_response=credits,videos,${extra}&language=en-US`);
+
+}
+
+async function tmdbPerson(id){
+
+  return tmdb(`/person/${id}?append_to_response=combined_credits&language=en-US`);
+
+}
+
+
+
+// ════════════ INDIA AVAILABILITY ════════════
+
+async function fetchProviders(id,type){
+
+  if(S.prov[id]) return S.prov[id];
+
+  const t=type==='tv'?'tv':'movie';
+
+  const d=await tmdb(`/${t}/${id}/watch/providers?l=1`);
+
+  const IN=(d.results&&d.results.IN)||{};
+
+  const plat={};
+
+  [['flatrate','Stream'],['ads','Free'],['rent','Rent/Buy'],['buy','Rent/Buy']].forEach(([key,label])=>{
+
+    (IN[key]||[]).forEach(p=>{
+
+      for(const [pk,conf] of Object.entries(PLAT)){
+
+        if(conf.match.test(p.provider_name)&&!plat[pk]) plat[pk]=label;
+
+      }
+
+    });
+
+  });
+
+  const others=[...new Set((IN.flatrate||[]).map(p=>p.provider_name)
+
+    .filter(n=>!Object.values(PLAT).some(c=>c.match.test(n))))].slice(0,4);
+
+  const out={plat,others,link:IN.link||null,any:Object.keys(plat).length>0,anyIN:!!(IN.flatrate||IN.rent||IN.buy||IN.ads)};
+
+  S.prov[id]=out;
+
+  return out;
+
+}
+
+async function enrich(item){
+
+  const p=await fetchProviders(item.id,item.type);
+
+  item.platforms=Object.keys(p.plat);
+
+  item.avail=p.plat;
+
+  item.others=p.others;
+
+  item.inIndia=p.anyIN;
+
+  return item;
+
+}
+
+
+
+function mapItem(r,type){
+
+  const t=r.title||r.name||'';
+
+  return{id:r.id,title:t,year:(r.release_date||r.first_air_date||'').slice(0,4),
+
+    overview:r.overview||'',rating:r.vote_average?+r.vote_average.toFixed(1):0,
+
+    poster_path:r.poster_path||null,backdrop_path:r.backdrop_path||null,
+
+    platforms:[],avail:{},type:r.media_type||type||'movie',
+
+    lang:r.original_language||'en',genre_ids:(r.genre_ids||[])};
+
+}
+
+function addToPool(item){
+
+  if(!S.results.find(x=>x.id===item.id)) S.results.push(item);
+
+}
+
+
+
+// ════════════ DISCOVER ENGINE (real TMDB queries, paginated) ════════════
+
+// App sort → TMDB server-side sort_by, so every page arrives pre-sorted
+
+const TMDB_SORT={
+
+  default:   'vote_average.desc',
+
+  rating:    'vote_average.desc',
+
+  year_desc: 'primary_release_date.desc',
+
+  year_asc:  'primary_release_date.asc',
+
+  year_rated:'primary_release_date.desc',  // server: newest first; client: year→rating
+
+  title:     'original_title.asc'
+
+};
+
+
+
+// ════════════ PER-GENRE QUERY BUILDERS ════════════
+
+// Genres that cannot be folded into a unified query each get their own builder.
+
+// This preserves their defining filter (keyword, vote threshold, multi-genre OR)
+
+// across every page load.
+
+
+
+// ════════════ MASTERS OF CINEMA ════════════
+let mastersActiveTag='Contemplative';
+
+function renderMasters(){
+  const sect=$('masters-sect');
+  const tagsEl=$('masters-tags');
+  const scroll=$('masters-scroll');
+  if(!sect||!tagsEl||!scroll) return;
+  sect.style.display='block';
+
+  // Render tag filters
+  tagsEl.innerHTML=MASTER_TAGS.map(t=>
+    `<div class="mtag ${t===mastersActiveTag?'on':''}" onclick="setMasterTag('${t}')">${t}</div>`
+  ).join('');
+
+  // Render person cards for active tag
+  const filtered=MASTERS.filter(m=>m.tag===mastersActiveTag);
+  scroll.innerHTML=filtered.map(m=>{
+    const img=m.profile?
+      `<img src="https://wsrv.nl/?url=https://image.tmdb.org/t/p/w185${m.profile}&w=180&h=180&fit=cover&output=webp" loading="lazy" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'">`:'';
+    return `<div class="mcard" data-master-id="${m.id}">
+      <div class="mphoto">
+        <div class="mphoto-fb">👤</div>
+        ${img}
+      </div>
+      <div class="mname">${m.name}</div>
+      <div class="mrole">${m.role}</div>
+      <div class="mnote">${m.note}</div>
+    </div>`;
+  }).join('');
+}
+
+function setMasterTag(tag){
+  mastersActiveTag=tag;
+  renderMasters();
+}
+
+// Event delegation for master person cards
+document.addEventListener('click',e=>{
+  const card=e.target.closest('[data-master-id]');
+  if(!card) return;
+  e.stopPropagation();
+  const id=+card.dataset.masterId;
+  navStack.push({type:'person',id});
+  history.pushState({wp:true},'');
+  renderPersonView(id);
+});
+
+
+
+async function loadNewArrivals(forceRefresh=false){
+
+  const sect=$('newarrivals-sect');
+
+  const scroll=$('newarrivals-scroll');
+
+  if(!sect||!scroll) return;
+
+  // Skip if already loaded unless explicitly refreshing
+  if(S.newArrivalsLoaded&&!forceRefresh) return;
+
+  sect.style.display='block';
+
+  scroll.innerHTML=`<div style="padding:10px 0"><div class="spin"></div></div>`;
+
+  // Clear provider cache so fresh availability data is fetched on refresh
+  if(forceRefresh) S.prov={};
+
+  S.newArrivalsLoaded=false;
+
+  const today=new Date();
+
+  const from=new Date(today); from.setDate(from.getDate()-60);
+
+  const params=new URLSearchParams({
+
+    sort_by:'primary_release_date.desc',
+
+    'primary_release_date.gte':from.toISOString().slice(0,10),
+
+    'primary_release_date.lte':today.toISOString().slice(0,10),
+
+    'vote_count.gte':30,
+
+    watch_region:'IN',
+
+    with_watch_providers:PROV_IDS,
+
+    with_watch_monetization_types:'flatrate|ads',
+
+    include_adult:false,
+
+    language:'en-US',
+
+    page:1
+
+  });
+
+  const d=await tmdb(`/discover/movie?${params.toString()}`);
+
+  const results=(d.results||[]).filter(r=>r.poster_path).slice(0,14).map(r=>mapItem(r,'movie'));
+
+  await Promise.all(results.map(enrich));
+
+  const avail=results.filter(i=>i.platforms.length>0);
+
+  results.forEach(addToPool);
+
+  if(!avail.length){sect.style.display='none';return;}
+
+  S.newArrivalsLoaded=true;
+
+  scroll.innerHTML=avail.map(s=>{
+
+    const plt=s.platforms[0]; const pc=PLAT[plt];
+
+    const labels=Object.values(s.avail||{});
+
+    const avCls=(labels.includes('Stream')||labels.includes('Free'))?'av-stream':'av-rent';
+
+    const avTxt=(labels.includes('Stream')||labels.includes('Free'))?'Stream':'Rent/Buy';
+
+    return`<div class="scard" onclick="openDetail(${s.id},'${s.type||'movie'}')">
+
+      <div class="scard-pw">
+
+        <div class="scard-fb">🎬</div>${imgTag(s.poster_path,'w342','')}
+
+        ${pc?`<div class="cplt plt-${plt}" style="top:4px;left:4px;font-size:6px;padding:2px 4px">${pc.label}</div>`:''}
+
+        <div class="cavail ${avCls}" style="bottom:4px;right:4px">${avTxt}</div>
+
+      </div>
+
+      <div class="scard-title">${s.title}</div>
+
+      <div class="scard-year">${s.year}${s.rating?` · ★${s.rating}`:''}</div>
+
+    </div>`;
+
+  }).join('');
+
+}
+
+
+
+function baseParams(page, voteMin){
+
+  const isYearSort=S.sort==='year_desc'||S.sort==='year_asc'||S.sort==='year_rated';
+
+  const p=new URLSearchParams({
+
+    sort_by: TMDB_SORT[S.sort]||'vote_average.desc',
+
+    'vote_count.gte': isYearSort?100:voteMin,
+
+    watch_region:'IN',
+
+    with_watch_providers: PROV_IDS,
+
+    with_watch_monetization_types: S.avail==='stream'?'flatrate|ads':S.avail==='rent'?'rent|buy':'flatrate|ads|rent|buy',
+
+    include_adult:false,
+
+    language:'en-US',
+
+    page:page
+
+  });
+
+  if(S.sort==='year_desc'||S.sort==='year_rated') p.set('primary_release_date.lte', new Date().toISOString().slice(0,10));
+
+  if(S.activeLang!=='all') p.set('with_original_language', S.activeLang);
+
+  return p;
+
+}
+
+
+
+// World Cinema — rotates non-English languages per page
+
+async function buildWorldCinemaQuery(page){
+
+  const p=baseParams(Math.floor((page-1)/LANG_ROTATION.length)+1, 200);
+
+  p.set('with_original_language', LANG_ROTATION[(page-1)%LANG_ROTATION.length]);
+
+  p.delete('vote_count.gte'); p.set('vote_count.gte', S.sort==='year_desc'||S.sort==='year_asc'?50:200);
+
+  return `/discover/movie?${p.toString()}`;
+
+}
+
+
+
+// Philosophy — keyword query, own vote floor, never merged
+
+async function buildPhilosophyQuery(page){
+
+  const k=await keywordId('philosophy');
+
+  const p=baseParams(page,50);
+
+  if(k) p.set('with_keywords',k);
+
+  else { p.set('with_genres','18'); p.set('vote_count.gte','3000'); }
+
+  return `/discover/movie?${p.toString()}`;
+
+}
+
+
+
+// Critically Acclaimed — high vote floor is the entire filter; must stay isolated
+
+async function buildCriticallyQuery(page){
+
+  const p=baseParams(page,2500);
+
+  return `/discover/movie?${p.toString()}`;
+
+}
+
+
+
+// Brilliant Screenplay — Drama+Mystery+Thriller combined, high votes
+
+async function buildScreenplayQuery(page){
+
+  const p=baseParams(page,1500);
+
+  return `/discover/movie?${p.toString()}&with_genres=18|9648|53`;
+
+}
+
+
+
+// Cinematography — keyword query
+
+async function buildCinematographyQuery(page){
+
+  const [k1,k2]=await Promise.all([keywordId('cinematography'),keywordId('visually stunning')]);
+
+  const kstr=[k1,k2].filter(Boolean).join('|');
+
+  const p=baseParams(page,200);
+
+  if(kstr) p.set('with_keywords',kstr);
+
+  else { p.set('with_genres','18|878|12'); p.set('vote_count.gte','3000'); }
+
+  return `/discover/movie?${p.toString()}`;
+
+}
+
+
+
+// Superhero — keyword query
+
+async function buildSuperheroQuery(page){
+
+  const k=await keywordId('superhero');
+
+  const p=baseParams(page,500);
+
+  if(k) p.set('with_keywords',k);
+
+  else { p.set('with_genres','28'); p.set('vote_count.gte','2000'); }
+
+  return `/discover/movie?${p.toString()}`;
+
+}
+
+
+
+// Unified query for all remaining genres with real tmdbId (Rock, Sci-Fi, Action, etc.)
+
+// These work correctly in a combined OR query and benefit from sort consistency.
+
+async function buildUnifiedQuery(page){
+
+  const active=[...S.activeG];
+
+  // Genres handled by dedicated builders — excluded from unified query
+
+  const dedicated=new Set(['worldcinema','philosophy','critically','screenplay','cinematography','superhero']);
+
+  const unified=active.filter(g=>!dedicated.has(g));
+
+  if(!unified.length) return null;
+
+
+
+  const minVotes=Math.min(...unified.map(g=>{
+
+    const isYearSort=S.sort==='year_desc'||S.sort==='year_asc'||S.sort==='year_rated';
+
+    return isYearSort?100:(GENRES[g]?.voteMin||100);
+
+  }));
+
+  const genreIds=[];
+
+  for(const g of unified){
+
+    const conf=GENRES[g]; if(!conf||!conf.tmdbId) continue;
+
+    String(conf.tmdbId).split('|').forEach(id=>genreIds.push(id));
+
+  }
+
+  if(!genreIds.length) return null;
+
+
+
+  const p=baseParams(page, minVotes);
+
+
+
+  // Exclude disabled genres (only for unified query — dedicated queries are unaffected)
+
+  const disabledIds=Object.entries(GENRES)
+
+    .filter(([k,v])=>!S.activeG.has(k)&&v.tmdbId&&!String(v.tmdbId).includes('|')&&!dedicated.has(k))
+
+    .map(([,v])=>String(v.tmdbId));
+
+
+
+  let path=`/discover/movie?${p.toString()}&with_genres=${genreIds.join('|')}`;
+
+  if(disabledIds.length) path+=`&without_genres=${disabledIds.join(',')}`;
+
+  return path;
+
+}
+
+
+
+// ════════════ FETCH + ENRICH ════════════
+
+async function fetchAndEnrich(path, seen){
+
+  if(!path) return [];
+
+  const d=await tmdb(path);
+
+  const raw=(d.results||[]).filter(r=>r.poster_path&&(r.title||r.name));
+
+  let items=raw.map(r=>mapItem(r,'movie')).filter(v=>!seen.has(v.id));
+
+
+
+  // Client-side genre exclusion — catches disabled genres that slip through
+
+  // dedicated query builders which don't carry without_genres in their URLs.
+
+  const dedicated=new Set(['worldcinema','philosophy','critically','screenplay','cinematography','superhero']);
+
+  const disabledTmdbIds=new Set(
+
+    Object.entries(GENRES)
+
+      .filter(([k,v])=>!S.activeG.has(k)&&v.tmdbId&&!String(v.tmdbId).includes('|'))
+
+      .map(([,v])=>Number(v.tmdbId))
+
+  );
+
+  if(disabledTmdbIds.size){
+
+    items=items.filter(item=>
+
+      !(item.genre_ids||[]).some(id=>disabledTmdbIds.has(id))
+
+    );
+
+  }
+
+
+
+  await Promise.all(items.map(enrich));
+
+  if(S.avail==='stream') items=items.filter(i=>Object.values(i.avail||{}).some(v=>v==='Stream'||v==='Free'));
+
+  else if(S.avail==='rent') items=items.filter(i=>Object.values(i.avail||{}).some(v=>v==='Rent/Buy'));
+
+  else items=items.filter(i=>i.platforms.length>0);
+
+  return items;
+
+}
+
+
+
+// ════════════ DISCOVER ════════════
+
+// ════════════ TV SERIES QUERY BUILDERS ════════════
+
+async function buildTVQuery(page, tvGenreKey){
+  const conf=TV_GENRES[tvGenreKey];
+  if(!conf) return null;
+  const isYearSort=S.sort==='year_desc'||S.sort==='year_asc'||S.sort==='year_rated';
+  const voteMin=isYearSort?20:(conf.voteMin||50);
+  const sortBy=TMDB_SORT[S.sort]||'vote_average.desc';
+
+  const params=new URLSearchParams({
+    sort_by:sortBy,
+    'vote_count.gte':voteMin,
+    watch_region:'IN',
+    with_watch_providers:PROV_IDS,
+    with_watch_monetization_types:S.avail==='stream'?'flatrate|ads':S.avail==='rent'?'rent|buy':'flatrate|ads|rent|buy',
+    include_adult:false,
+    language:'en-US',
+    page:page
+  });
+
+  if(S.sort==='year_desc'||S.sort==='year_rated') params.set('first_air_date.lte',new Date().toISOString().slice(0,10));
+  if(S.activeLang!=='all') params.set('with_original_language',S.activeLang);
+
+  // Indian originals — Hindi/Tamil/Telugu language
+  if(conf.indianOnly){
+    params.set('with_original_language','hi|ta|te|ml|kn|bn');
+    params.delete('with_original_language'); // use or-style below
+    params.append('with_original_language','hi');
+    // TMDB doesn't support | for language — use separate queries
+    return `/discover/tv?${params.toString()}&with_original_language=hi`;
+  }
+
+  if(conf.noGenre){
+    // Critically acclaimed TV — just high vote count, no genre filter
+    return `/discover/tv?${params.toString()}`;
+  }
+
+  if(conf.tmdbId){
+    return `/discover/tv?${params.toString()}&with_genres=${conf.tmdbId}`;
+  }
+
+  return `/discover/tv?${params.toString()}`;
+}
+
+async function fetchAndEnrichTV(path, seen){
+  if(!path) return [];
+  const d=await tmdb(path);
+  const raw=(d.results||[]).filter(r=>r.poster_path&&(r.title||r.name));
+  let items=raw.map(r=>mapItem(r,'tv')).filter(v=>!seen.has(v.id));
+
+  // Client-side disabled genre exclusion (same as movie fetchAndEnrich)
+  const dedicated=new Set(['worldcinema','philosophy','critically','screenplay','cinematography','superhero']);
+  const disabledTmdbIds=new Set(
+    Object.entries(GENRES)
+      .filter(([k,v])=>!S.activeG.has(k)&&v.tmdbId&&!String(v.tmdbId).includes('|'))
+      .map(([,v])=>Number(v.tmdbId))
+  );
+  if(disabledTmdbIds.size){
+    items=items.filter(item=>!(item.genre_ids||[]).some(id=>disabledTmdbIds.has(id)));
+  }
+
+  await Promise.all(items.map(enrich));
+  if(S.avail==='stream') items=items.filter(i=>Object.values(i.avail||{}).some(v=>v==='Stream'||v==='Free'));
+  else if(S.avail==='rent') items=items.filter(i=>Object.values(i.avail||{}).some(v=>v==='Rent/Buy'));
+  else items=items.filter(i=>i.platforms.length>0);
+  return items;
+}
+
+async function loadDiscover(reset=true){
+  S.searchMode=false;
+  if(reset){S.page=1;S.results=[...S.custom];}
+  const active=[...S.activeG];
+  if(!active.length&&S.mediaType!=='tv'){setLoading(false);renderGrid([]);return;}
+  if(reset)setLoading(true);
+  const modeLabel=S.mediaType==='tv'?'Series':S.mediaType==='movie'?'Films':'Films & Series';
+  $('rlabel').textContent=reset?`Curated · India · ${modeLabel}`:`Curated · India · Page ${S.page}…`;
+  const seen=seenIds();
+  const existingIds=new Set(S.results.map(r=>r.id));
+  const dedup=v=>!seen.has(v.id)&&!existingIds.has(v.id);
+  let movieBatches=[];
+  let tvBatches=[];
+
+  // MOVIE QUERIES (mode = 'movie' or 'both')
+  if(S.mediaType!=='tv'&&active.length){
+    const [uP1,uP2,wcP1,wcP2,phP1,phP2,crP1,crP2,scP1,scP2,ciP1,ciP2,suP1,suP2]=
+      await Promise.all([
+        buildUnifiedQuery(S.page), buildUnifiedQuery(S.page+1),
+        active.includes('worldcinema')?buildWorldCinemaQuery(S.page):null,
+        active.includes('worldcinema')?buildWorldCinemaQuery(S.page+1):null,
+        active.includes('philosophy')?buildPhilosophyQuery(S.page):null,
+        active.includes('philosophy')?buildPhilosophyQuery(S.page+1):null,
+        active.includes('critically')?buildCriticallyQuery(S.page):null,
+        active.includes('critically')?buildCriticallyQuery(S.page+1):null,
+        active.includes('screenplay')?buildScreenplayQuery(S.page):null,
+        active.includes('screenplay')?buildScreenplayQuery(S.page+1):null,
+        active.includes('cinematography')?buildCinematographyQuery(S.page):null,
+        active.includes('cinematography')?buildCinematographyQuery(S.page+1):null,
+        active.includes('superhero')?buildSuperheroQuery(S.page):null,
+        active.includes('superhero')?buildSuperheroQuery(S.page+1):null,
+      ]);
+    movieBatches=await Promise.all([
+      fetchAndEnrich(uP1,seen), fetchAndEnrich(uP2,seen),
+      fetchAndEnrich(wcP1,seen), fetchAndEnrich(wcP2,seen),
+      fetchAndEnrich(phP1,seen), fetchAndEnrich(phP2,seen),
+      fetchAndEnrich(crP1,seen), fetchAndEnrich(crP2,seen),
+      fetchAndEnrich(scP1,seen), fetchAndEnrich(scP2,seen),
+      fetchAndEnrich(ciP1,seen), fetchAndEnrich(ciP2,seen),
+      fetchAndEnrich(suP1,seen), fetchAndEnrich(suP2,seen),
+    ]);
+  }
+
+  // TV QUERIES (mode = 'tv' or 'both')
+  if(S.mediaType!=='movie'){
+    const activeTVGenres=S.activeTVG?[...S.activeTVG]:Object.keys(TV_GENRES);
+    const tvPaths=await Promise.all(
+      activeTVGenres.slice(0,5).flatMap(k=>[
+        buildTVQuery(S.page,k),
+        buildTVQuery(S.page+1,k)
+      ])
+    );
+    tvBatches=await Promise.all(tvPaths.map(p=>fetchAndEnrichTV(p,seen)));
+  }
+
+  let newItems=[...movieBatches.flat(),...tvBatches.flat()]
+    .filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i)
+    .filter(dedup);
+
+  S.results=S.results.concat(newItems);
+
+  if(S.sort==='year_rated'){
+    S.results.sort((a,b)=>{
+      const yd=(+b.year||0)-(+a.year||0);
+      return yd!==0?yd:(b.rating||0)-(a.rating||0);
+    });
+  } else if(S.sort==='default'){
+    const existing=S.results.slice(0,S.results.length-newItems.length);
+    S.results=[...existing,...shuffle(newItems)];
+  }
+
+  if(reset)setLoading(false);
+  $('rlabel').textContent=`${active.length} genre${active.length>1?'s':''} · ${modeLabel} · India · Page${S.page>1?' 1–':' '}${S.page}`;
+  $('pagerow').style.display='flex';
+  $('nextpage').textContent=S.page+1;
+  renderGrid(S.results);
+  if(!newItems.length&&!reset) toast('No new titles on this page — trying next…');
+}
+
+
+
+
+async function loadMore(){
+
+  const before=S.results.length;
+
+  for(let i=0;i<3;i++){
+
+    S.page++;
+
+    toast(`Loading page ${S.page}…`);
+
+    await loadDiscover(false);
+
+    if(S.results.length>before) return;
+
+  }
+
+  toast('Feed exhausted for these filters — try ↻ Refresh or broaden genres');
+
+}
+
+
+
+async function refreshDiscover(){
+
+  toast('↻ Refreshing feed…');
+
+  S.prov={};
+
+  S.newArrivalsLoaded=false;
+
+  loadNewArrivals(true);
+
+  await loadDiscover(true);
+
+}
+
+
+
+let stimer;
+
+function onSearch(q){
+
+  clearTimeout(stimer);
+
+  if(!q.trim()){
+
+    // Clear search — hide new arrivals spinner, restore discover
+
+    S.searchMode=false;
+
+    S.searchPersons=[];
+
+    $('newarrivals-sect').style.display='block';
+
+    loadDiscover(true);
+
+    return;
+
+  }
+
+  // Hide new arrivals while searching
+
+  $('newarrivals-sect').style.display='none';
+
+  stimer=setTimeout(async()=>{
+
+    S.searchMode=true;
+
+    setLoading(true);
+
+    $('pagerow').style.display='none';
+
+    const {persons,titles}=await tmdbSearch(q);
+
+    const items=titles.slice(0,12).map(x=>mapItem(x));
+
+    await Promise.all(items.map(enrich));
+
+    S.results=items;
+
+    S.searchPersons=persons.slice(0,2);
+
+    setLoading(false);
+
+    $('rlabel').textContent=`Results for "${q}"`;
+
+    renderGrid(S.results);
+
+  },400);
+
+}
+
+
+
+// ════════════ MEDIA TYPE TOGGLE ════════════
+function setMediaType(t){
+  S.mediaType=t;
+  ['movie','both','tv'].forEach(m=>{
+    const btn=$('mt-'+m);
+    if(btn) btn.classList.toggle('active',m===t);
+  });
+  // Show/hide TV genre section in filter bar
+  renderFbar();
+  loadDiscover(true);
+}
+
+function togTVGenre(k){
+  if(S.activeTVG.has(k)) S.activeTVG.delete(k);
+  else S.activeTVG.add(k);
+  renderFbar();
+  if(S.mediaType!=='movie') loadDiscover(true);
+}
+
+function tvGenreAllOn(){
+  S.activeTVG=new Set(Object.keys(TV_GENRES));
+  renderFbar();
+  if(S.mediaType!=='movie') loadDiscover(true);
+}
+
+function tvGenreAllOff(){
+  S.activeTVG=new Set();
+  renderFbar();
+  if(S.mediaType!=='movie') loadDiscover(true);
+  else renderGrid([]);
+}
+
+// ════════════ WELCOME OVERLAY ════════════
+function showWelcome(){
+  const seen=localStorage.getItem('wp_welcomed');
+  if(!seen) $('welcomeOverlay').classList.add('open');
+}
+function dismissWelcome(skip){
+  $('welcomeOverlay').classList.remove('open');
+  localStorage.setItem('wp_welcomed','1');
+  // If not skipping — nudge sync setup after a short delay
+  if(!skip){
+    setTimeout(()=>{
+      const token=localStorage.getItem('wp_synctoken');
+      if(!token) toast('💡 Tip: Set a passphrase in My List → Cloud Sync to keep your list safe across devices');
+    },3000);
+  }
+}
+
+// ════════════ VOICE SEARCH ════════════
+let voiceRecog=null;
+let voiceActive=false;
+
+function toggleVoice(){
+  if(voiceActive){stopVoice();return;}
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
+    toast('Voice search not supported in this browser');return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  voiceRecog=new SR();
+  voiceRecog.lang='en-IN';
+  voiceRecog.continuous=false;
+  voiceRecog.interimResults=true;
+  voiceRecog.maxAlternatives=1;
+
+  const mic=$('micbtn');
+  const transcript=$('vtranscript');
+  const input=$('sinput');
+
+  voiceRecog.onstart=()=>{
+    voiceActive=true;
+    if(mic) mic.classList.add('listening');
+    if(transcript) transcript.textContent='🎤 Listening…';
+  };
+
+  voiceRecog.onresult=(e)=>{
+    const interim=[...e.results].map(r=>r[0].transcript).join('');
+    if(transcript) transcript.textContent=interim;
+    if(e.results[e.results.length-1].isFinal){
+      const final=e.results[e.results.length-1][0].transcript.trim();
+      if(input) input.value=final;
+      onSearch(final);
+      // Clear transcript once search is fired
+      setTimeout(()=>{if(transcript) transcript.textContent='';},800);
+    }
+  };
+
+  voiceRecog.onerror=(e)=>{
+    stopVoice();
+    if(e.error==='not-allowed') toast('Microphone access denied — allow mic in browser settings');
+    else toast('Voice search error — try again');
+  };
+
+  voiceRecog.onend=()=>stopVoice();
+  voiceRecog.start();
+}
+
+function stopVoice(){
+  voiceActive=false;
+  const mic=$('micbtn');
+  const transcript=$('vtranscript');
+  if(mic) mic.classList.remove('listening');
+  if(voiceRecog){try{voiceRecog.stop();}catch(e){} voiceRecog=null;}
+  setTimeout(()=>{if(transcript&&!$('sinput').value) transcript.textContent='';},2000);
+}
+
+// ════════════ FILTER BAR ════════════
+
+function renderFbar(){
+  const allOn=[...S.activeG].length===Object.keys(GENRES).filter(k=>S.genres[k]).length;
+  const allOff=S.activeG.size===0;
+
+  // ── ROW 1: Film Genres ──
+  const filmMaster=
+    `<div class="fbar-label">Film Genres</div>`+
+    `<div class="fpill ${allOn?'on':''}" onclick="discoverAllOn()" style="border-color:var(--gold);color:${allOn?'var(--gold)':'var(--t3)'}">All</div>`+
+    `<div class="fpill ${allOff?'on':''}" onclick="discoverAllOff()" style="${allOff?'border-color:var(--red);color:var(--red)':''}">None</div>`;
+
+  const ghtml=S.mediaType!=='tv'?Object.entries(GENRES).filter(([k])=>S.genres[k])
+    .map(([k,v])=>`<div class="fpill ${S.activeG.has(k)?'on':''}" onclick="togActiveG('${k}')">${v.label}</div>`).join(''):'';
+
+  // ── ROW 2: Series Genres (only when TV or Both mode active) ──
+  const tvAllOn=S.activeTVG&&S.activeTVG.size===Object.keys(TV_GENRES).length;
+  const showTV=S.mediaType!=='movie';
+  const tvRow=showTV?
+    `<div class="fbar-label">Series Genres</div>`+
+    `<div class="fpill ${tvAllOn?'on':''}" onclick="tvGenreAllOn()" style="border-color:var(--gold);color:var(--gold)">All</div>`+
+    `<div class="fpill ${S.activeTVG&&S.activeTVG.size===0?'on':''}" onclick="tvGenreAllOff()" style="${S.activeTVG&&S.activeTVG.size===0?'border-color:var(--red);color:var(--red)':''}">None</div>`+
+    Object.entries(TV_GENRES).map(([k,v])=>`<div class="fpill ${S.activeTVG&&S.activeTVG.has(k)?'on':''}" onclick="togTVGenre('${k}')">${v.label}</div>`).join('')
+    :'';
+
+  // ── ROW 3: Lang · Sort · Avail ──
+  const lhtml=`<div class="fbar-label">Lang</div>`+
+    LANGS.map(([code,label])=>`<div class="fpill ${S.activeLang===code?'on':''}" onclick="togLang('${code}')">${label}</div>`).join('');
+  const SORTS=[['default','Mix'],['rating','Top Rated'],['year_desc','Newest'],['year_asc','Oldest'],['year_rated','Newest+Rated'],['title','A–Z']];
+  const shtml=`<div class="fsep"></div><div class="fbar-label">Sort</div>`+
+    SORTS.map(([code,label])=>`<div class="fpill ${S.sort===code?'on':''}" onclick="togSortPill('${code}')">${label}</div>`).join('');
+  const AVAILS=[['all','All'],['stream','Stream'],['rent','Rent/Buy']];
+  const ahtml=`<div class="fsep"></div><div class="fbar-label">Avail</div>`+
+    AVAILS.map(([code,label])=>`<div class="fpill ${S.avail===code?'on':''}" onclick="togAvail('${code}')">${label}</div>`).join('');
+
+  const r1=$('fbar-row1');
+  const r2=$('fbar-row2');
+  const r3=$('fbar-row3');
+  if(r1) r1.innerHTML=filmMaster+ghtml;
+  if(r2) r2.innerHTML=tvRow;
+  if(r3) r3.innerHTML=lhtml+shtml+ahtml;
+}
+
+
+function togAvail(v){
+  S.avail=v;
+  renderFbar();
+  loadDiscover(true);
+}
+
+function togSortPill(s){
+  S.sort=s;
+  renderFbar();
+  if(S.searchMode){renderGrid(S.results);return;}
+  loadDiscover(true);
+}
+
+function togActiveG(k){
+  S.activeG.has(k)?S.activeG.delete(k):S.activeG.add(k);
+  renderFbar();
+  loadDiscover(true);
+}
+
+function togLang(lang){
+  S.activeLang=lang;
+  renderFbar();
+  loadDiscover(true);
+}
+
+function passesLang(item){return S.activeLang==='all'||item.lang===S.activeLang;}
+
+
+
+// ════════════ RENDER GRID ════════════
+
+function setSort(v){
+
+  S.sort=v;
+
+  if(S.searchMode){renderGrid(S.results);return;}
+
+  loadDiscover(true);
+
+}
+
+function renderGrid(items){
+
+  const el=$('cgrid'); if(!el)return;
+
+  const seen=seenIds();
+
+  let vis=items.filter(passesLang);
+
+  if(!S.searchMode){
+
+    S.searchPersons=[];
+
+    vis=vis.filter(i=>!seen.has(i.id));
+
+    vis=vis.filter(i=>i.platforms.some(p=>S.activeP.has(p)));
+
+  }
+
+  const personHTML=S.searchPersons.map(personCardHTML).join('');
+
+  if(!vis.length){
+
+    el.innerHTML=personHTML+`<div class="empty"><div style="font-size:28px;margin-bottom:8px">🎬</div><div class="et">${personHTML?'Tap the card above for their filmography':S.activeG.size||S.activeTVG?.size?'No India-streamable titles match your filters':'Select at least one genre to start discovering'}</div><div style="font-size:10px;color:var(--t3)">${personHTML?'':S.activeG.size||S.activeTVG?.size?'Try different genres, platforms or language — or tap ↻ Refresh':''}</div></div>`;
+
+    return;
+
+  }
+
+  el.innerHTML=personHTML+vis.map(cardHTML).join('');
+
+}
+
+
+
+function availTag(item){
+
+  if(!item.platforms||!item.platforms.length){
+
+    return item.inIndia===false&&S.searchMode?`<div class="cavail av-none">Not in IN</div>`:'';
+
+  }
+
+  const labels=Object.values(item.avail||{});
+
+  if(labels.includes('Stream')||labels.includes('Free'))return`<div class="cavail av-stream">Stream</div>`;
+
+  return`<div class="cavail av-rent">Rent/Buy</div>`;
+
+}
+
+
+
+function cardHTML(item){
+
+  const wl=S.watchlist.find(w=>w.id===item.id);
+
+  const st=wl?.status;
+
+  const plt=item.platforms?.[0];
+
+  const pc=plt?PLAT[plt]:null;
+
+  const stico=st==='liked'?`<div class="cstat" style="background:rgba(232,201,122,.35);color:var(--gold)">★</div>`
+
+    :st==='seen'?`<div class="cstat" style="background:rgba(100,100,100,.35);color:#888">✓</div>`
+
+    :st==='hidden'?`<div class="cstat" style="background:rgba(224,85,85,.3);color:#ff9090">🚫</div>`
+
+    :st==='want'?`<div class="cstat" style="background:rgba(110,170,212,.3);color:var(--blue)">🔖</div>`:'';
+
+  const gtags=(item.genre_ids||[]).map(g=>GENRE_NAMES[g]).filter(Boolean).slice(0,1)
+
+    .map(n=>`<span class="ctag">${n}</span>`).join('');
+
+  return`<div class="card${st==='seen'?' seen':''}${st==='liked'?' liked':''}" onclick="openDetail(${item.id},'${item.type||'movie'}')">
+
+    <div class="pw">
+
+      <div class="pfb"><span>🎬</span><span>${item.type}</span></div>
+
+      ${imgTag(item.poster_path,'w342','')}
+
+      <div class="pgrd"></div>
+
+      ${pc?`<div class="cplt plt-${plt}">${pc.label}</div>`:S.searchMode?`<div class="cplt plt-none">—</div>`:''}
+
+      ${stico}
+
+      ${item.rating?`<div class="crating">★ ${item.rating}</div>`:''}
+
+      ${availTag(item)}
+
+    </div>
+
+    <div class="cbody">
+
+      <div class="ctitle">${item.title}</div>
+
+      <div class="cmeta"><span>${item.year||'–'}</span>${item.lang&&item.lang!=='en'?`<span style="text-transform:uppercase">${item.lang}</span>`:''}${gtags}</div>
+
+    </div>
+
+    <div class="cbtns">
+
+      <div class="cbtn ${st==='want'?'want':''}" onclick="event.stopPropagation();setStatus(${item.id},'want')">🔖</div>
+
+      <div class="cbtn ${st==='liked'?'liked':''}" onclick="event.stopPropagation();setStatus(${item.id},'liked')">★</div>
+
+      <div class="cbtn ${st==='seen'?'seen':''}" onclick="event.stopPropagation();setStatus(${item.id},'seen')">✓</div>
+
+      <div class="cbtn ${st==='hidden'?'hidden':''}" onclick="event.stopPropagation();setStatus(${item.id},'hidden')">🚫</div>
+
+    </div>
+
+  </div>`;
+
+}
+
+
+
+// ════════════ EVENT DELEGATION — person cards ════════════
+
+document.addEventListener('click',e=>{
+
+  const card=e.target.closest('[data-person-id]');
+
+  if(!card) return;
+
+  e.stopPropagation();
+
+  const id=+card.dataset.personId;
+
+  navStack.push({type:'person',id});
+
+  history.pushState({wp:true},'');
+
+  renderPersonView(id);
+
+});
+
+
+
+// ════════════ NAVIGATION ════════════
+
+let navStack=[];
+
+function openDetail(id,type){ navStack.push({type:'detail',id}); history.pushState({wp:true},''); renderDetailView(id,type); }
+
+function openPerson(id){ navStack.push({type:'person',id}); history.pushState({wp:true},''); renderPersonView(id); }
+
+function goBack(){ history.back(); }
+
+window.addEventListener('popstate',()=>{
+
+  if(!$('overlay').classList.contains('open')) return;
+
+  navStack.pop();
+
+  if(navStack.length){
+
+    const top=navStack[navStack.length-1];
+
+    top.type==='detail'?renderDetailView(top.id):renderPersonView(top.id);
+
+  } else {
+
+    $('overlay').classList.remove('open');
+
+    renderGrid(S.results); // refresh feed view — removes anything just marked Seen
+
+  }
+
+});
+
+function closeDetail(){
+
+  const n=navStack.length; navStack=[];
+
+  $('overlay').classList.remove('open');
+
+  renderGrid(S.results); // refresh feed view
+
+  if(n) history.go(-n);
+
+}
+
+
+
+// ════════════ DETAIL ════════════
+
+async function renderDetailView(id, forceType){
+
+  let item=S.results.find(r=>r.id===id&&(!forceType||r.type===forceType))||S.watchlist.find(w=>w.id===id)||{id,type:forceType||'movie'};
+
+
+
+  const overlay=$('overlay'); const page=$('dpage');
+
+  page.innerHTML=`<div style="text-align:center;padding:80px 0"><div class="spin"></div><div style="font-size:10px;color:var(--t3)">Loading details…</div></div>`;
+
+  overlay.classList.add('open');
+
+  overlay.scrollTop=0;
+
+  const [det]=await Promise.all([tmdbDetail(id,item.type),enrich(item)]);
+
+  // Enrich "More Like This" with real India availability before rendering
+  // Use /recommendations (collaborative filtering) not /similar (loose genre match)
+  // Recommendations are based on what users who watched this also watched —
+  // far more thematically relevant than genre overlap alone.
+  const t=item.type==='tv'?'tv':'movie';
+  const recData=await tmdb(`/${t}/${id}/recommendations?language=en-US&page=1`);
+  const recRaw=((recData.results)||[]).filter(s=>s.poster_path).slice(0,16)
+    .map(s=>mapItem({...s,media_type:item.type}));
+
+  // Fall back to similar if recommendations returns nothing
+  const fallbackRaw=recRaw.length?recRaw:
+    ((det.similar&&det.similar.results)||[]).filter(s=>s.poster_path).slice(0,12)
+    .map(s=>mapItem({...s,media_type:item.type}));
+
+  fallbackRaw.forEach(addToPool);
+  await Promise.all(fallbackRaw.map(enrich));
+  const sims=fallbackRaw.filter(s=>s.platforms.length>0);
+
+  const wl=S.watchlist.find(w=>w.id===id);
+
+  page.innerHTML=detailHTML(item,det,wl?.status,sims);
+
+}
+
+
+
+function detailHTML(item,det,st,sims){
+
+  sims=sims||[];
+
+  const backdrop=det.backdrop_path||item.backdrop_path;
+
+  const title=det.title||det.name||item.title;
+
+  const year=(det.release_date||det.first_air_date||item.year||'').slice(0,4);
+
+  const rating=det.vote_average?(+det.vote_average.toFixed(1)):item.rating;
+
+  const runtime=det.runtime?`${det.runtime}m`:(det.episode_run_time?.[0]?`~${det.episode_run_time[0]}m/ep`:'');
+
+  const overview=det.overview||item.overview||'';
+
+  const tagline=det.tagline||'';
+
+  const origLang=(det.original_language||item.lang||'en').toUpperCase();
+
+  // Age certification — prefer India's CBFC rating, fall back to US
+
+  let cert='';
+
+  if(det.release_dates){
+
+    const rd=det.release_dates.results||[];
+
+    const pick=rd.find(c=>c.iso_3166_1==='IN')||rd.find(c=>c.iso_3166_1==='US');
+
+    cert=(pick?.release_dates||[]).map(x=>x.certification).find(Boolean)||'';
+
+  } else if(det.content_ratings){
+
+    const cr=det.content_ratings.results||[];
+
+    cert=(cr.find(c=>c.iso_3166_1==='IN')||cr.find(c=>c.iso_3166_1==='US'))?.rating||'';
+
+  }
+
+  const country=(det.production_countries?.[0]?.iso_3166_1)||(det.origin_country?.[0])||'';
+
+  const votes=det.vote_count?det.vote_count.toLocaleString('en-IN')+' votes':'';
+
+  // TV-specific metadata
+  const isTVItem=item.type==='tv'||!!det.number_of_seasons;
+  const seasons=det.number_of_seasons?`${det.number_of_seasons} season${det.number_of_seasons>1?'s':''}`:null;
+  const episodes=det.number_of_episodes?`${det.number_of_episodes} ep${det.number_of_episodes>1?'s':''}`:null;
+  const tvInfo=[seasons,episodes].filter(Boolean).join(' · ');
+  const network=det.networks?.[0]?.name||null;
+  const cast=(det.credits?.cast||[]).slice(0,12);
+
+  const directors=(det.credits?.crew||[]).filter(c=>c.job==='Director').slice(0,2);
+
+  const writers=(det.credits?.crew||[]).filter(c=>c.job==='Writer'||c.job==='Story').slice(0,2);
+
+  const screenplay=(det.credits?.crew||[]).filter(c=>c.job==='Screenplay').slice(0,2);
+
+  const dop=(det.credits?.crew||[]).filter(c=>c.job==='Director of Photography').slice(0,1);
+
+  // Official YouTube trailers/teasers, official first
+
+  const trailers=(det.videos?.results||[])
+
+    .filter(v=>v.site==='YouTube'&&['Trailer','Teaser'].includes(v.type))
+
+    .sort((a,b)=>(b.official?1:0)-(a.official?1:0)||(a.type==='Trailer'?-1:1))
+
+    .slice(0,3);
+
+
+
+  const availPlats=item.platforms||[];
+
+  const plinks=availPlats.map(plt=>{
+
+    const pc=PLAT[plt]; if(!pc)return'';
+
+    const label=item.avail?.[plt]||'';
+
+    const tagCls=label==='Stream'||label==='Free'?'av-stream':'av-rent';
+
+    return`<a class="plink" href="${pc.url(title)}" target="_blank">
+
+      <div class="cplt plt-${plt}" style="position:static;padding:3px 8px;font-size:8px">${pc.label}</div>
+
+      <div class="plink-lbl" style="padding-left:8px">
+
+        <div class="plink-name">Watch on ${pc.label}</div>
+
+        <div class="plink-hint">Available in India · opens ${pc.label}</div>
+
+      </div>
+
+      ${label?`<span class="avtag ${tagCls}">${label}</span>`:''}
+
+      <span class="plink-arr">→</span>
+
+    </a>`;
+
+  }).join('');
+
+
+
+  const othersRow=(item.others&&item.others.length)?`
+
+    <div style="font-size:9px;color:var(--t3);margin-top:4px">Also streaming in India on: ${item.others.join(', ')}</div>`:'';
+
+
+
+  const inPill=availPlats.length
+
+    ?`<div class="dpill in-yes">✓ Available in India</div>`
+
+    :item.inIndia?`<div class="dpill in-yes">✓ In India (other platforms)</div>`
+
+    :`<div class="dpill in-no">✕ Not streaming in India</div>`;
+
+
+
+  const genreTags=(det.genres||[]).slice(0,4).map(g=>`<div class="dpill cert">${g.name}</div>`).join('');
+
+  // ── TRIVIA PROMPTS ─────────────────────────────────────────
+  // Surface interesting credits as curiosity prompts
+  const allCrew=det.credits?.crew||[];
+
+  // 1. Thanks credits — people acknowledged but not in formal crew
+  const thanksCrew=allCrew.filter(c=>c.job==='Thanks'||c.job==='Special Thanks');
+
+  // 2. Unusual/interesting crew roles worth surfacing
+  const unusualRoles=['Executive Producer','Original Music Composer','Original Story','Based on'];
+  const notableExtra=allCrew
+    .filter(c=>unusualRoles.includes(c.job)&&c.name)
+    .filter((v,i,a)=>a.findIndex(x=>x.name===v.name)===i)
+    .slice(0,3);
+
+  // 3. Detect recurring collaborations between director and key crew
+  const directorName=directors[0]?.name;
+  const dopName=dop[0]?.name;
+  const collaborationNote=directorName&&dopName?
+    `${directorName} and cinematographer ${dopName} are known collaborators.`:null;
+
+  // Build trivia HTML
+  const triviaItems=[];
+
+  thanksCrew.forEach(c=>{
+    triviaItems.push(
+      `<div class="trivia-item">
+        <span class="trivia-ico">🎬</span>
+        <span class="trivia-text"><b>${c.name}</b> is acknowledged in the credits${c.job==='Special Thanks'?' with a special thanks':''}.
+        ${det.imdb_id?`<a href="https://www.imdb.com/title/${det.imdb_id}/trivia/" target="_blank" class="trivia-link">Find out why on IMDB trivia →</a>`:''}
+        </span>
+      </div>`
+    );
+  });
+
+  notableExtra.forEach(c=>{
+    const label=c.job==='Original Music Composer'?`Music composed by <b>${c.name}</b>`:
+                c.job==='Executive Producer'?`Executive produced by <b>${c.name}</b>`:
+                c.job==='Original Story'?`Based on original story by <b>${c.name}</b>`:
+                `<b>${c.name}</b> — ${c.job}`;
+    triviaItems.push(
+      `<div class="trivia-item">
+        <span class="trivia-ico">💡</span>
+        <span class="trivia-text">${label}.
+        ${det.imdb_id?`<a href="https://www.imdb.com/title/${det.imdb_id}/trivia/" target="_blank" class="trivia-link">More on IMDB →</a>`:''}
+        </span>
+      </div>`
+    );
+  });
+
+  if(collaborationNote){
+    triviaItems.push(
+      `<div class="trivia-item">
+        <span class="trivia-ico">🤝</span>
+        <span class="trivia-text">${collaborationNote}
+        ${directorName?`<span onclick="openPerson(${directors[0].id})" style="color:var(--gold);cursor:pointer">See ${directorName}'s filmography →</span>`:''}
+        </span>
+      </div>`
+    );
+  }
+
+  const triviaHTML=triviaItems.length?
+    `<div class="dsect">
+      <div class="dsectl">Did You Know</div>
+      <div class="trivia-list">${triviaItems.join('')}</div>
+      ${det.imdb_id?`<a href="https://www.imdb.com/title/${det.imdb_id}/trivia/" target="_blank" class="trivia-more">More trivia on IMDB →</a>`:''}
+    </div>`:'';
+
+  const crewChips=[
+
+    ...directors.map(d=>({role:'Director',p:d})),
+
+    ...writers.map(w=>({role:'Writer',p:w})),
+
+    ...screenplay.map(s=>({role:'Screenplay',p:s})),
+
+    ...dop.map(d=>({role:'Cinematography',p:d}))
+
+  ].filter((v,i,a)=>a.findIndex(x=>x.p.id===v.p.id)===i) // deduplicate same person in multiple roles
+
+  .map(({role,p})=>`
+
+    <div class="crew-chip" onclick="openPerson(${p.id})">
+
+      <div class="crew-role">${role}</div>
+
+      <div class="crew-name">${p.name} →</div>
+
+    </div>`).join('');
+
+
+
+  return`
+
+  <div class="dhero">
+
+    ${backdrop?imgTag(backdrop,'w780',''):`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--t3)">🎬</div>`}
+
+    <div class="dhero-grd"></div>
+
+    ${navStack.length>1
+
+      ?`<div class="dclose" onclick="goBack()">←</div><div class="dback" onclick="closeDetail()">✕ Close</div>`
+
+      :`<div class="dclose" onclick="closeDetail()">✕</div>`}
+
+  </div>
+
+  <div class="dmeta">
+
+    <div class="dtitle">${title}</div>
+
+    ${tagline?`<div class="dtagline">${tagline}</div>`:''}
+
+    <div class="dpills">
+
+      ${inPill}
+
+      ${year?`<div class="dpill year">${year}</div>`:''}
+
+      ${rating?`<div class="dpill rating">★ ${rating}</div>`:''}
+
+      ${votes?`<div class="dpill year">${votes}</div>`:''}
+
+      ${runtime?`<div class="dpill runtime">⏱ ${runtime}</div>`:''}
+      ${tvInfo?`<div class="dpill runtime">${tvInfo}</div>`:''}
+      ${network?`<div class="dpill cert">${network}</div>`:''}
+
+      ${cert?`<div class="dpill cert">Rated ${cert}</div>`:''}
+
+      ${country?`<div class="dpill cert">${country}</div>`:''}
+
+      ${origLang!=='EN'?`<div class="dpill lang">${origLang}</div>`:''}
+
+      ${genreTags}
+
+    </div>
+
+    <div class="dactions">
+
+      <div class="dact ${st==='want'?'on':''}" id="dact-want" onclick="setStatus(${item.id},'want');refreshDacts(${item.id})"><span class="ai">🔖</span>Want to Watch</div>
+
+      <div class="dact ${st==='liked'?'on':''}" id="dact-liked" onclick="setStatus(${item.id},'liked');refreshDacts(${item.id})"><span class="ai">★</span>Liked It</div>
+
+      <div class="dact ${st==='seen'?'on-seen':''}" id="dact-seen" onclick="setStatus(${item.id},'seen');refreshDacts(${item.id})"><span class="ai">✓</span>Already Seen</div>
+
+      <div class="dact ${st==='hidden'?'on-hidden':''}" id="dact-hidden" onclick="setStatus(${item.id},'hidden');refreshDacts(${item.id})"><span class="ai">🚫</span>Not Interested</div>
+
+    </div>
+
+    ${plinks?`<div class="dsect"><div class="dsectl">Where to Watch — India</div>${plinks}${othersRow}</div>`
+
+      :item.inIndia?`<div class="dsect"><div class="dsectl">Where to Watch — India</div><div style="font-size:11px;color:var(--t2)">Not on your configured platforms, but streaming in India${item.others&&item.others.length?` on: <span style="color:var(--t1)">${item.others.join(', ')}</span>`:''}.</div></div>`
+
+      :`<div class="dsect"><div class="dsectl">Where to Watch</div><div style="font-size:11px;color:var(--t2)">Not currently streaming in India on tracked services.</div></div>`}
+
+    ${trailers.length?`<div class="dsect"><div class="dsectl">Trailer${trailers.length>1?'s':''} — tap to play</div>
+
+      <div class="trailer-scroll">${trailers.map(v=>`
+
+        <div class="trailer-card" id="tr-${v.key}" onclick="playTrailer('${v.key}')">
+
+          <img src="https://i.ytimg.com/vi/${v.key}/hqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+
+          <div class="trailer-play">▶</div>
+
+          <div class="trailer-label">${v.type}${v.official?' · Official':''}</div>
+
+        </div>`).join('')}</div></div>`:''}
+
+    ${overview?`<div class="dsect"><div class="dsectl">Synopsis</div>
+
+      <div class="dsynopsis ${overview.length>280?'clamped':''}" id="dsynopsis">${overview}</div>
+
+      ${overview.length>280?`<span class="readmore" id="rmbtn" onclick="expandSynopsis()">Read more</span>`:''}</div>`:''}
+
+    ${crewChips?`<div class="dsect"><div class="dsectl">Crew — tap for filmography</div><div class="crew-row">${crewChips}</div></div>`:''}
+    ${triviaHTML}
+
+    ${cast.length?`<div class="dsect"><div class="dsectl">Cast — tap for more from each actor</div>
+
+      <div class="cast-scroll">${cast.map(c=>`
+
+        <div class="castcard" onclick="openPerson(${c.id})">
+
+          <div class="castthumb"><div class="castfb">👤</div>${imgTag(c.profile_path,'w185','')}</div>
+
+          <div class="castname">${c.name}</div>
+
+          <div class="castchar">${c.character||''}</div>
+
+        </div>`).join('')}</div></div>`:''}
+
+    ${sims.length?`<div class="dsect"><div class="dsectl">More Like This — Streaming in India</div>
+
+      <div class="sim-scroll">${sims.map(s=>{
+
+        const plt=s.platforms[0];const pc=PLAT[plt];
+
+        const labels=Object.values(s.avail||{});
+
+        const avCls=(labels.includes('Stream')||labels.includes('Free'))?'av-stream':'av-rent';
+
+        const avTxt=(labels.includes('Stream')||labels.includes('Free'))?'Stream':'Rent/Buy';
+
+        return`<div class="scard" onclick="openDetail(${s.id},'${s.type||'movie'}')">
+
+          <div class="scard-pw">
+
+            <div class="scard-fb">🎬</div>${imgTag(s.poster_path,'w342','')}
+
+            ${pc?`<div class="cplt plt-${plt}" style="top:4px;left:4px;font-size:6px;padding:2px 4px">${pc.label}</div>`:''}
+
+            <div class="cavail ${avCls}" style="bottom:4px;right:4px">${avTxt}</div>
+
+          </div>
+
+          <div class="scard-title">${s.title}</div>
+
+          <div class="scard-year">${s.year||''}${s.rating?` · ★ ${s.rating}`:''}</div>
+
+        </div>`;}).join('')}</div></div>`:''}
+
+    <div style="font-size:8px;color:var(--t3);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+      <span>India availability: JustWatch via TMDB</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        ${det.imdb_id?`<a href="https://www.imdb.com/title/${det.imdb_id}/" target="_blank"
+          style="display:inline-flex;align-items:center;background:#F5C518;color:#000;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:700;text-decoration:none">IMDb →</a>`:''}
+        <a href="https://letterboxd.com/search/${enc(title)}/" target="_blank"
+          style="color:var(--gold);font-size:9px;font-weight:500;text-decoration:none;padding:3px 8px;border:.5px solid rgba(232,201,122,.3);border-radius:5px;background:var(--gold2)">Letterboxd →</a>
+      </div>
+    </div>
+
+    <div style="height:24px"></div>
+
+  </div>`;
+
+}
+
+
+
+// ════════════ PERSON PAGE ════════════
+
+// ── Filmography sort state ──
+let filmSort='india'; // 'india' | 'rating' | 'year'
+let wantSort='added'; // 'added' | 'rating' | 'year' | 'az'
+
+function setWantSort(s){
+  wantSort=s;
+  renderWatchlist();
+}
+
+function setFilmSort(s){
+  filmSort=s;
+  // Re-render with current person data — stored on page element
+  const page=$('dpage');
+  if(!page||!page._filmData) return;
+  renderFilmGrid(page._filmData);
+}
+
+function renderFilmGrid({inIN, rest, allCredits}){
+  const page=$('dpage');
+  if(!page) return;
+
+  let sortedIN=[...inIN];
+  let sortedRest=[...rest];
+
+  if(filmSort==='rating'){
+    sortedIN.sort((a,b)=>(b.rating||0)-(a.rating||0));
+    sortedRest.sort((a,b)=>(b.rating||0)-(a.rating||0));
+  } else if(filmSort==='year'){
+    sortedIN.sort((a,b)=>(+b.year||0)-(+a.year||0));
+    sortedRest.sort((a,b)=>(+b.year||0)-(+a.year||0));
+  }
+  // 'india' keeps default (streaming first, vote_count sorted within)
+
+  const SORTS=[['india','Streaming First'],['rating','Top Rated'],['year','Newest']];
+  const sortPills=SORTS.map(([k,l])=>
+    `<div class="fpill ${filmSort===k?'on':''}" style="font-size:9px;padding:3px 10px" onclick="setFilmSort('${k}')">${l}</div>`
+  ).join('');
+
+  const sortBar=`<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+    <span style="font-size:9px;color:var(--t3);align-self:center;font-weight:600;text-transform:uppercase;letter-spacing:1px">Sort</span>
+    ${sortPills}
+  </div>`;
+
+  const gridEl=page.querySelector('#filmgrid');
+  if(gridEl){
+    gridEl.innerHTML=sortBar+
+      (sortedIN.length?`<div class="dsectl" style="margin-bottom:10px">Streaming in India — tap to explore</div>
+        <div class="grid">${sortedIN.map(cardHTML).join('')}</div>`:'') +
+      (sortedRest.length?`<div class="dsectl" style="margin:16px 0 10px;color:var(--t3)">Other notable work (not streaming in India)</div>
+        <div class="grid" style="opacity:.55">${sortedRest.map(cardHTML).join('')}</div>`:'') +
+      `<div style="height:32px"></div>`;
+  }
+}
+
+async function renderPersonView(personId){
+
+  const page=$('dpage');
+
+  page.innerHTML=`<div style="text-align:center;padding:80px 0"><div class="spin"></div><div style="font-size:10px;color:var(--t3)">Loading filmography…</div></div>`;
+
+  $('overlay').classList.add('open');
+
+  $('overlay').scrollTop=0;
+
+  const p=await tmdbPerson(personId);
+
+  if(!p.id){toast('Could not load');goBack();return;}
+
+  const dept=p.known_for_department||'Acting';
+  const primaryJobs={
+    'Directing':  ['Director'],
+    'Writing':    ['Writer','Screenplay','Story','Screenplay/Story'],
+    'Camera':     ['Director of Photography','Cinematography'],
+    'Editing':    ['Editor'],
+    'Production': ['Producer','Executive Producer'],
+  };
+  const jobFilter=primaryJobs[dept];
+  const castCredits=(p.combined_credits?.cast||[]).filter(c=>c.poster_path&&(c.title||c.name));
+  const crewCredits=(p.combined_credits?.crew||[])
+    .filter(c=>c.poster_path&&(c.title||c.name))
+    .filter(c=>c.job!=='Thanks'&&c.job!=='Special Thanks') // exclude acknowledgement credits
+    .filter(c=>!jobFilter||jobFilter.includes(c.job));
+  const isDeptCrew=['Directing','Writing','Camera','Editing'].includes(dept);
+  const primaryCredits=isDeptCrew?crewCredits:castCredits;
+  const secondaryCredits=isDeptCrew?castCredits:crewCredits;
+  const credits=[...primaryCredits,...secondaryCredits]
+    .filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i)
+    .sort((a,b)=>(b.vote_count||0)-(a.vote_count||0))
+    .slice(0,18)
+
+    .map(c=>mapItem(c));
+
+  credits.forEach(addToPool);
+
+  await Promise.all(credits.map(enrich));
+
+  const inIN=credits.filter(c=>c.platforms.length);
+
+  const rest=credits.filter(c=>!c.platforms.length);
+
+  // dept already defined above
+
+  const bio=p.biography||'';
+
+  page.innerHTML=`
+
+    <div style="position:relative">
+
+      <div class="dclose" onclick="goBack()" style="position:absolute">←</div>
+
+      <div class="dback" onclick="closeDetail()" style="position:absolute">✕ Close</div>
+
+      <div class="person-hero">
+
+        <div class="person-photo"><div class="castfb" style="font-size:34px">👤</div>${imgTag(p.profile_path,'w185','')}</div>
+
+        <div>
+
+          <div class="person-name">${p.name}</div>
+
+          <div class="person-role">${dept}${p.birthday?` · b. ${p.birthday.slice(0,4)}`:''}${p.place_of_birth?` · ${p.place_of_birth.split(',').pop().trim()}`:''}</div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    ${bio?`<div class="person-bio clamped" id="pbio">${bio}</div>
+
+      <span class="readmore" style="margin:0 16px 16px" onclick="$('pbio').classList.remove('clamped');this.style.display='none'">Read more</span>`:''}
+
+    <div style="padding:0 16px" id="filmgrid"></div>`;
+
+  // Store data for re-sorting and render initial grid
+  filmSort='india';
+  page._filmData={inIN,rest,allCredits:credits};
+  renderFilmGrid({inIN,rest,allCredits:credits});
+
+}
+
+
+
+function playTrailer(key){
+
+  const card=$('tr-'+key); if(!card)return;
+
+  card.outerHTML=`<iframe class="trailer-frame"
+
+    src="https://www.youtube.com/embed/${key}?autoplay=1&playsinline=1&rel=0&modestbranding=1"
+
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+
+    allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+
+}
+
+function expandSynopsis(){
+
+  const el=$('dsynopsis'); const btn=$('rmbtn');
+
+  if(el)el.classList.remove('clamped');
+
+  if(btn)btn.style.display='none';
+
+}
+
+function refreshDacts(id){
+
+  const wl=S.watchlist.find(w=>w.id===id); const st=wl?.status;
+
+  const mw=$('dact-want'),ml=$('dact-liked'),ms=$('dact-seen'),mh=$('dact-hidden');
+
+  if(mw)mw.className='dact'+(st==='want'?' on':'');
+
+  if(ml)ml.className='dact'+(st==='liked'?' on':'');
+
+  if(ms)ms.className='dact'+(st==='seen'?' on-seen':'');
+
+  if(mh)mh.className='dact'+(st==='hidden'?' on-hidden':'');
+
+}
+
+
+
+// ════════════ STATUS ════════════
+
+function setStatus(id,status){
+
+  const item=S.results.find(r=>r.id===id)||S.watchlist.find(w=>w.id===id);
+
+  if(!item)return;
+
+  const ex=S.watchlist.find(w=>w.id===id);
+
+  if(ex){
+
+    if(ex.status===status){S.watchlist=S.watchlist.filter(w=>w.id!==id);toast('Removed from list');}
+
+    else{ex.status=status;toast(stMsg(status));}
+
+  }else{S.watchlist.push({...item,status,addedAt:Date.now()});toast(stMsg(status));}
+
+  persist();updateBadge();
+
+  if($('tab-watchlist').style.display!=='none')renderWatchlist();
+
+  if(!$('overlay').classList.contains('open'))renderGrid(S.results);
+
+}
+
+function stMsg(s){return s==='liked'?'★ Marked as liked':s==='seen'?'✓ Seen — won\'t suggest again':s==='hidden'?'🚫 Not interested — won\'t suggest again':'🔖 Added to watchlist';}
+
+function removeWL(id){S.watchlist=S.watchlist.filter(w=>w.id!==id);persist();updateBadge();renderWatchlist();toast('Removed');}
+
+
+
+// ════════════ WATCHLIST ════════════
+
+function renderWatchlist(){
+
+  const el=$('wcontent');
+
+  if(!S.watchlist.length){
+
+    el.innerHTML=`<div class="empty"><div style="font-size:28px;margin-bottom:8px">🔖</div><div class="et">Your list is empty</div><div style="font-size:10px;color:var(--t3)">Mark titles from the Discover tab</div></div>`;
+
+    return;
+
+  }
+
+  const gr={want:[],liked:[],seen:[],hidden:[]};
+
+  S.watchlist.forEach(w=>gr[w.status]?.push(w));
+
+  // Want to Watch — apply selected sort
+  const sorted=[...gr.want];
+  if(wantSort==='added')      sorted.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
+  else if(wantSort==='rating') sorted.sort((a,b)=>(b.rating||0)-(a.rating||0));
+  else if(wantSort==='year')   sorted.sort((a,b)=>(+b.year||0)-(+a.year||0));
+  else if(wantSort==='az')     sorted.sort((a,b)=>a.title.localeCompare(b.title));
+
+  const WSORTS=[['added','Recently Added'],['rating','Top Rated'],['year','Newest'],['az','A–Z']];
+  const sortPills=WSORTS.map(([k,l])=>
+    `<div class="fpill ${wantSort===k?'on':''}" style="font-size:9px;padding:3px 10px" onclick="setWantSort('${k}')">${l}</div>`
+  ).join('');
+  const sortBar=`<div style="display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap;align-items:center">
+    <span style="font-size:9px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:1px">Sort</span>
+    ${sortPills}
+  </div>`;
+
+  const wantItems=sorted;
+
+  if(!wantItems.length){
+    el.innerHTML=`<div class="empty"><div style="font-size:28px;margin-bottom:8px">🔖</div><div class="et">Nothing in your watch queue</div><div style="font-size:10px;color:var(--t3)">Mark titles Want to Watch from the Discover tab</div></div>`;
+    return;
+  }
+
+  el.innerHTML=`<div class="wsect">
+      <div class="whead">🔖 Want to Watch<span class="wcount">${wantItems.length}</span></div>
+      ${sortBar}
+      <div class="grid">${wantItems.map(item=>{
+        addToPool(item);
+        const plt=item.platforms?.[0];const pc=plt?PLAT[plt]:null;
+        return`<div class="card" onclick="openDetail(${item.id},'${item.type||'movie'}')">
+          <div class="pw">
+            <div class="pfb"><span>🎬</span></div>
+            ${imgTag(item.poster_path,'w342','')}
+            <div class="pgrd"></div>
+            ${pc?`<div class="cplt plt-${plt}">${pc.label}</div>`:''}
+            ${item.rating?`<div class="crating">★ ${item.rating}</div>`:''}
+          </div>
+          <div class="cbody"><div class="ctitle">${item.title}</div><div class="cmeta"><span>${item.year||'–'}</span></div></div>
+          <div class="cbtns"><div class="cbtn seen" style="flex:unset;width:100%" onclick="event.stopPropagation();removeWL(${item.id})">✕ Remove</div></div>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+
+
+
+}
+
+
+
+// ════════════ SETTINGS ════════════
+
+function renderSettings(){
+
+  $('ptogs').innerHTML=Object.entries(PLAT).map(([k,v])=>`
+
+    <div class="srow"><div class="slbl">${v.label}</div>
+
+      <button class="tog ${S.platforms[k]?'on':''}" onclick="togPlatform('${k}')"><div class="tk"></div></button></div>`).join('');
+
+  $('gtogs').innerHTML=`
+
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+
+      <button onclick="genreAllOn()" style="flex:1;padding:8px;border-radius:var(--rs);background:var(--gold2);border:.5px solid rgba(232,201,122,.4);color:var(--gold);font-size:11px;font-weight:600;cursor:pointer">✓ Select All</button>
+
+      <button onclick="genreAllOff()" style="flex:1;padding:8px;border-radius:var(--rs);background:var(--s2);border:.5px solid var(--b2);color:var(--t2);font-size:11px;font-weight:600;cursor:pointer">✕ Clear All</button>
+
+    </div>`+Object.entries(GENRES).map(([k,v])=>`
+
+    <div class="srow"><div class="slbl">${v.label}</div>
+
+      <button class="tog ${S.genres[k]?'on':''}" onclick="togGenre('${k}')"><div class="tk"></div></button></div>`).join('');
+
+  renderCustList();
+
+}
+
+function togPlatform(k){
+
+  S.platforms[k]=!S.platforms[k];
+
+  if(S.platforms[k])S.activeP.add(k);else S.activeP.delete(k);
+
+  persist();renderSettings();renderGrid(S.results);
+
+}
+
+function genreAllOn(){
+
+  Object.keys(GENRES).forEach(k=>{S.genres[k]=true;S.activeG.add(k);});
+
+  persist();renderSettings();renderFbar();loadDiscover(true);
+
+}
+
+function genreAllOff(){
+
+  Object.keys(GENRES).forEach(k=>{S.genres[k]=false;S.activeG.delete(k);});
+
+  persist();renderSettings();renderFbar();renderGrid([]);
+
+}
+
+function discoverAllOn(){
+
+  Object.keys(GENRES).filter(k=>S.genres[k]).forEach(k=>S.activeG.add(k));
+
+  renderFbar();loadDiscover(true);
+
+}
+
+function discoverAllOff(){
+
+  S.activeG.clear();
+
+  renderFbar();renderGrid([]);
+
+}
+
+function togGenre(k){
+
+  S.genres[k]=!S.genres[k];
+
+  if(S.genres[k])S.activeG.add(k);else S.activeG.delete(k);
+
+  persist();renderSettings();renderFbar();
+
+}
+
+
+
+// ════════════ CUSTOM ════════════
+
+async function addCustom(){
+
+  const inp=$('ctinput'); const q=inp.value.trim(); if(!q)return;
+
+  inp.value=''; toast('Searching…');
+
+  const r=await tmdbSearch(q);
+
+  if(r[0]){
+
+    const item=mapItem(r[0]);
+
+    await enrich(item);
+
+    S.custom.push(item);
+
+    if(!S.results.find(x=>x.id===item.id))S.results.unshift(item);
+
+    renderGrid(S.results);persist();
+
+    toast(item.platforms.length?`Added: ${item.title}`:`Added (not streaming in India): ${item.title}`);
+
+  }else{toast('Not found — try exact title');}
+
+  renderCustList();
+
+}
+
+function removeCustom(id){
+
+  S.custom=S.custom.filter(c=>c.id!==id);
+
+  S.results=S.results.filter(r=>r.id!==id);
+
+  renderGrid(S.results);persist();renderCustList();
+
+}
+
+function renderCustList(){
+
+  const el=$('custlist'); if(!el)return;
+
+  if(!S.custom.length){el.innerHTML='';return;}
+
+  el.innerHTML=`<div class="slabel" style="margin-bottom:7px">Your custom titles</div>`+
+
+    S.custom.map(t=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:.5px solid var(--b1)">
+
+      ${t.poster_path?`<img src="${img(t.poster_path,'w185')}" style="width:30px;height:45px;object-fit:cover;border-radius:4px">`:'<div style="width:30px;height:45px;background:var(--s2);border-radius:4px"></div>'}
+
+      <div style="flex:1"><div style="font-size:11px;font-weight:500">${t.title}</div><div style="font-size:9px;color:var(--t3)">${t.year}</div></div>
+
+      <span onclick="removeCustom(${t.id})" style="color:var(--red);cursor:pointer;font-size:14px;padding:4px">✕</span>
+
+    </div>`).join('');
+
+}
+
+
+
+// ════════════ LEGEND ════════════
+
+function openLegend(){
+  $('legendOverlay').classList.add('open');
+  const b=$('guidebody'); if(b) b.scrollTop=0;
+}
+
+function closeLegend(){$('legendOverlay').classList.remove('open');}
+function scrollGuide(id){
+  const el=document.getElementById(id);
+  const body=$('guidebody');
+  if(el&&body) body.scrollTo({top:el.offsetTop-60,behavior:'smooth'});
+}
+
+
+
+// ════════════ BACKEND SYNC ════════════
+
+// Backend URL — same domain as the app on PythonAnywhere
+
+const API=`${location.origin}/api/watchlist`;
+
+
+
+function getSyncToken(){
+
+  const inp=$('synctoken'); if(!inp) return '';
+
+  const v=inp.value.trim();
+
+  if(v) localStorage.setItem('wp_synctoken',v);
+
+  return v||localStorage.getItem('wp_synctoken')||'';
+
+}
+
+
+
+async function syncSave(){
+
+  const token=getSyncToken();
+
+  if(!token){toast('Enter a passphrase first');return;}
+
+  const status=$('syncstatus');
+
+  if(status) status.textContent='Saving…';
+
+  try{
+
+    const data={watchlist:S.watchlist,custom:S.custom,platforms:S.platforms,genres:S.genres,ts:new Date().toISOString()};
+
+    const r=await fetch(`${API}?token=${encodeURIComponent(token)}`,{
+
+      method:'POST',headers:{'Content-Type':'application/json'},
+
+      body:JSON.stringify(data)
+
+    });
+
+    const d=await r.json();
+
+    if(d.ok){
+
+      toast(`✓ Saved ${d.items} titles to cloud`);
+
+      if(status) status.textContent=`Last saved: ${new Date().toLocaleTimeString('en-IN')} · ${d.items} titles`;
+
+    } else { toast('Save failed: '+(d.error||'unknown error')); }
+
+  }catch(e){
+
+    // Backend not yet deployed — fall back to export
+
+    toast('Backend not running — use Export JSON instead');
+
+    if(status) status.textContent='Backend offline — use Export JSON below';
+
+  }
+
+}
+
+
+
+async function syncLoad(){
+
+  const token=getSyncToken();
+
+  if(!token){toast('Enter a passphrase first');return;}
+
+  const status=$('syncstatus');
+
+  if(status) status.textContent='Loading…';
+
+  try{
+
+    const r=await fetch(`${API}?token=${encodeURIComponent(token)}`);
+
+    const d=await r.json();
+
+    if(d.error){toast('Load failed: '+d.error);return;}
+
+    if(d.watchlist) S.watchlist=d.watchlist;
+
+    if(d.custom) S.custom=d.custom;
+
+    if(d.platforms) S.platforms=d.platforms;
+
+    if(d.genres) S.genres=d.genres;
+
+    Object.keys(PLAT).forEach(k=>{if(S.platforms[k]===undefined)S.platforms[k]=true;});
+
+    Object.keys(GENRES).forEach(k=>{if(S.genres[k]===undefined)S.genres[k]=true;});
+
+    S.activeP=new Set(Object.entries(S.platforms).filter(([,v])=>v).map(([k])=>k));
+
+    S.activeG=new Set(Object.entries(S.genres).filter(([,v])=>v).map(([k])=>k));
+
+    persist(); updateBadge(); renderWatchlist(); renderSettings(); renderFbar();
+
+    toast(`✓ Loaded ${S.watchlist.length} titles from cloud`);
+
+    if(status) status.textContent=`Last loaded: ${new Date().toLocaleTimeString('en-IN')} · ${S.watchlist.length} titles`;
+
+  }catch(e){
+
+    toast('Backend not running — use Import JSON instead');
+
+    if(status) status.textContent='Backend offline — use Import JSON below';
+
+  }
+
+}
+
+
+
+// Auto-restore sync token from localStorage
+
+function restoreSyncToken(){
+
+  const t=localStorage.getItem('wp_synctoken');
+
+  const inp=$('synctoken');
+
+  if(t&&inp){ inp.value=t; $('syncstatus').textContent=`Passphrase loaded — tap Load to sync`; }
+
+}
+
+
+
+
+
+function exportBackup(){
+
+  const data={watchlist:S.watchlist,platforms:S.platforms,genres:S.genres,custom:S.custom,ts:new Date().toISOString()};
+
+  const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+
+  const u=URL.createObjectURL(b); const a=document.createElement('a');
+
+  a.href=u;a.download='watchpick-backup.json';a.click();URL.revokeObjectURL(u);
+
+  toast('✓ Backup downloaded');
+
+}
+
+function triggerImport(){$('importfile').click();}
+
+function importBackup(e){
+
+  const f=e.target.files[0]; if(!f)return;
+
+  const r=new FileReader();
+
+  r.onload=ev=>{
+
+    try{
+
+      const d=JSON.parse(ev.target.result);
+
+      if(d.watchlist)S.watchlist=d.watchlist;
+
+      if(d.platforms)S.platforms=d.platforms;
+
+      if(d.genres)S.genres=d.genres;
+
+      if(d.custom)S.custom=d.custom;
+
+      Object.keys(PLAT).forEach(k=>{if(S.platforms[k]===undefined)S.platforms[k]=true;});
+
+      Object.keys(GENRES).forEach(k=>{if(S.genres[k]===undefined)S.genres[k]=true;});
+
+      S.activeP=new Set(Object.entries(S.platforms).filter(([,v])=>v).map(([k])=>k));
+
+      S.activeG=new Set(Object.entries(S.genres).filter(([,v])=>v).map(([k])=>k));
+
+      persist();updateBadge();renderWatchlist();renderSettings();renderFbar();
+
+      toast('✓ Backup restored');
+
+    }catch(err){toast('Invalid file');}
+
+  };
+
+  r.readAsText(f); e.target.value='';
+
+}
+
+
+
+// ════════════ TABS / UTILS ════════════
+
+function showTab(t){
+
+  ['discover','watchlist','settings','guide'].forEach(x=>{
+
+    $(`tab-${x}`).style.display=x===t?'block':'none';
+
+  });
+
+  document.querySelectorAll('.ntab').forEach(el=>el.classList.toggle('on',el.dataset.tab===t));
+
+  if(t==='watchlist'){renderWatchlist();restoreSyncToken();}
+
+  if(t==='settings')renderSettings();
+
+  if(t==='discover'){renderGrid(S.results);if(!S.newArrivalsLoaded)loadNewArrivals();renderMasters();}
+
+}
+
+function setLoading(on){
+
+  $('cgrid').innerHTML=on?`<div class="loading"><div class="spin"></div>Checking India availability…</div>`:'';
+
+}
+
+function updateBadge(){
+
+  const b=$('wbadge'); const n=S.watchlist.filter(w=>w.status==='want').length;
+
+  b.style.display=n?'flex':'none'; b.textContent=n;
+
+}
+
+let tt;
+
+function toast(msg){
+
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+
+  clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2000);
+
+}
+
+function persist(){
+
+  try{
+
+    localStorage.setItem('wp6_wl',JSON.stringify(S.watchlist));
+
+    localStorage.setItem('wp6_pl',JSON.stringify(S.platforms));
+
+    localStorage.setItem('wp6_gl',JSON.stringify(S.genres));
+
+    localStorage.setItem('wp6_cu',JSON.stringify(S.custom));
+
+  }catch(e){}
+
+}
+
+function hydrate(){
+
+  try{
+
+    ['wp3','wp4','wp5','wp6'].forEach(v=>{
+
+      const wl=localStorage.getItem(v+'_wl'); if(wl)S.watchlist=JSON.parse(wl);
+
+      const cu=localStorage.getItem(v+'_cu'); if(cu)S.custom=JSON.parse(cu);
+
+      const pl=localStorage.getItem(v+'_pl'); if(pl)S.platforms=JSON.parse(pl);
+
+      const gl=localStorage.getItem(v+'_gl'); if(gl)S.genres=JSON.parse(gl);
+
+    });
+
+    S.watchlist.forEach(w=>{
+
+      if(w.poster&&!w.poster_path){
+
+        const m=w.poster.match(/\/t\/p\/w\d+(\/.+)$/);
+
+        if(m)w.poster_path=m[1];
+
+      }
+
+    });
+
+    Object.keys(PLAT).forEach(k=>{if(S.platforms[k]===undefined)S.platforms[k]=true;});
+
+    Object.keys(GENRES).forEach(k=>{if(S.genres[k]===undefined)S.genres[k]=true;});    S.activeP=new Set(Object.entries(S.platforms).filter(([,v])=>v).map(([k])=>k));
+
+    S.activeG=new Set(Object.entries(S.genres).filter(([,v])=>v).map(([k])=>k));
+
+  }catch(e){}
+
+}
+
+
+
+// ════════════ PWA MANIFEST ════════════
+
+(function(){
+
+  const icon='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#0a0a0a"/><text x="256" y="330" font-size="240" text-anchor="middle" fill="#e8c97a" font-family="Georgia,serif" font-weight="bold">W</text><rect x="96" y="380" width="320" height="14" rx="7" fill="#e8c97a"/></svg>');
+
+  const manifest={
+
+    name:'WatchPick',short_name:'WatchPick',
+
+    start_url:location.href,scope:location.href.replace(/[^/]*$/,''),
+
+    display:'standalone',background_color:'#0a0a0a',theme_color:'#0a0a0a',
+
+    icons:[{src:icon,sizes:'512x512',type:'image/svg+xml',purpose:'any'}]
+
+  };
+
+  const link=document.createElement('link');
+
+  link.rel='manifest';
+
+  link.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(manifest));
+
+  document.head.appendChild(link);
+
+})();
+
+
+
+// ════════════ INIT ════════════
+
+(async()=>{
+
+  hydrate();
+
+  renderFbar();
+
+  updateBadge();
+
+
+
+  showWelcome();
+
+  renderMasters();
+
+  loadNewArrivals();
+
+  await loadDiscover(true);
+
+})();
+
+</script>
+
+</body>
+
+</html>
