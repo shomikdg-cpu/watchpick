@@ -13,6 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="/manifest.json">
 
 <title>WatchPick</title>
 
@@ -2441,6 +2442,13 @@ function tvGenreAllOff(){
   renderFbar();
   if(S.mediaType!=='movie') loadDiscover(true);
   else renderGrid([]);
+}
+
+// ════════════ SERVICE WORKER ════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/sw.js').catch(()=>{});
+  });
 }
 
 // ════════════ WELCOME OVERLAY ════════════
