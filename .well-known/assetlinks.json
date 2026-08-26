@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.examinedscreen.watchpick",
+        "sha256_cert_fingerprints": ["2B:B7:71:1E:77:88:14:17:6C:35:61:CC:50:D7:5F:A4:44:3B:E9:29:CA:82:52:87:8B:F4:AE:39:CE:AD:E8:BC"]
+      }
+    }]
