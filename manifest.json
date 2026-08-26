@@ -35,11 +35,25 @@
   ],
   "screenshots": [
     {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1485x812",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Discover feed with genre filters and India streaming availability"
+    },
+    {
+      "src": "/screenshots/desktop-2.png",
+      "sizes": "1485x812",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Movie detail page with ratings, cast, and where to stream in India"
+    },
+    {
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "WatchPick \u2014 Taste-filtered cinema discovery"
+      "label": "WatchPick — Taste-filtered cinema discovery"
     }
   ],
   "shortcuts": [
