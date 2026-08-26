@@ -3995,7 +3995,29 @@ function hydrate(){
 
   await loadDiscover(true);
 
+  openFromDeepLink();
+
 })();
+
+// ════════════ DEEP LINK ════════════
+// Lets a shared/newsletter URL open a specific title directly, e.g.
+//   https://watchpick-dun.vercel.app/?tmdb=517814&type=movie
+// or, when a TMDB id isn't known ahead of time, fall back to a prefilled search:
+//   https://watchpick-dun.vercel.app/?q=Capernaum
+function openFromDeepLink(){
+  try{
+    const dp=new URLSearchParams(location.search);
+    const tmdbId=dp.get('tmdb')||dp.get('id');
+    const type=dp.get('type')||'movie';
+    const q=dp.get('q')||dp.get('search');
+    if(tmdbId && !isNaN(Number(tmdbId))){
+      openDetail(Number(tmdbId), type);
+    } else if(q){
+      const el=$('sinput');
+      if(el){ el.value=q; onSearch(q); }
+    }
+  }catch(e){ /* deep link is best-effort, never block normal app load */ }
+}
 
 </script>
 
