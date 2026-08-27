@@ -3769,36 +3769,6 @@ function hydrate(){
 
 
 
-// ════════════ PWA MANIFEST ════════════
-
-(function(){
-
-  const icon='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#0a0a0a"/><text x="256" y="330" font-size="240" text-anchor="middle" fill="#e8c97a" font-family="Georgia,serif" font-weight="bold">W</text><rect x="96" y="380" width="320" height="14" rx="7" fill="#e8c97a"/></svg>');
-
-  const manifest={
-
-    name:'WatchPick',short_name:'WatchPick',
-
-    start_url:location.href,scope:location.href.replace(/[^/]*$/,''),
-
-    display:'standalone',background_color:'#0a0a0a',theme_color:'#0a0a0a',
-
-    icons:[{src:icon,sizes:'512x512',type:'image/svg+xml',purpose:'any'}]
-
-  };
-
-  const link=document.createElement('link');
-
-  link.rel='manifest';
-
-  link.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(manifest));
-
-  document.head.appendChild(link);
-
-})();
-
-
-
 // ════════════ INIT ════════════
 
 (async()=>{
