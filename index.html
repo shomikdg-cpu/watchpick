@@ -57,11 +57,11 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .badge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#0a0a0a;font-size:8px;font-weight:700;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 
-.nav{display:flex;gap:3px;padding:7px 12px;border-bottom:.5px solid var(--b1);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.nav{display:flex;gap:3px;padding:7px 12px;border-bottom:1px solid var(--b2);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
 
 .nav::-webkit-scrollbar{display:none}
 
-.ntab{padding:5px 13px;border-radius:16px;font-size:11px;font-weight:500;white-space:nowrap;cursor:pointer;border:.5px solid transparent;transition:all .15s;color:var(--t2);user-select:none}
+.ntab{padding:5px 13px;border-radius:16px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;border:.5px solid transparent;transition:all .15s;color:var(--t2);user-select:none}
 
 .ntab.on{background:var(--gold);color:#0a0a0a;border-color:var(--gold)}
 
@@ -105,6 +105,8 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .fbar-label{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--t3);white-space:nowrap;flex-shrink:0;padding-right:2px}
 .imdb-badge{display:inline-flex;align-items:center;gap:3px;background:#F5C518;color:#000;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:700;text-decoration:none;flex-shrink:0}
 .masters-sect{margin-bottom:16px}
+.sect-block{margin-bottom:20px}
+.sect-block+.sect-block{padding-top:16px;border-top:.5px solid var(--b1)}
 .masters-tags{display:flex;gap:6px;padding:0 0 8px;overflow-x:auto;scrollbar-width:none}
 .masters-tags::-webkit-scrollbar{display:none}
 .mtag{padding:4px 12px;border-radius:12px;font-size:9px;font-weight:600;white-space:nowrap;cursor:pointer;border:.5px solid var(--b2);color:var(--t3);background:transparent;transition:all .15s;flex-shrink:0;user-select:none}
@@ -115,15 +117,15 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .mcard:active{opacity:.7}
 .mphoto{width:90px;height:90px;border-radius:50%;overflow:hidden;background:var(--s3);position:relative;border:2px solid var(--b2);margin-bottom:6px;transition:border-color .15s}
 .mcard:hover .mphoto,.mcard:active .mphoto{border-color:var(--gold)}
-.mphoto-fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--t3)}
+.mphoto-fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;letter-spacing:.5px;color:var(--t2)}
 .mphoto img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
 .mname{font-size:9.5px;font-weight:600;color:var(--t1);text-align:center;line-height:1.3;margin-bottom:2px}
-.mrole{font-size:8px;color:var(--gold);text-align:center;margin-bottom:2px}
-.mnote{font-size:7.5px;color:var(--t3);text-align:center;line-height:1.3}
+.mrole{font-size:9px;color:var(--gold);text-align:center;margin-bottom:2px}
+.mnote{font-size:8.5px;color:var(--t3);text-align:center;line-height:1.3}
 
-.secrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.secrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;padding-bottom:7px;border-bottom:.5px solid var(--b1)}
 
-.slabel{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3)}
+.slabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t1)}
 
 .more{font-size:10px;color:var(--gold);cursor:pointer;padding:2px 6px;user-select:none}
 
@@ -139,13 +141,13 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .pw{position:relative;width:100%;aspect-ratio:2/3;background:var(--s2);overflow:hidden}
 
-.pw img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;opacity:0}
+.pw img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
 
 .pw img.loaded{opacity:1}
 
-.pfb{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);font-size:20px;position:absolute;inset:0}
+.pfb{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;inset:0}
 
-.pfb span{font-size:8px;margin-top:4px;color:var(--t3);letter-spacing:.5px}
+.pfb span{font-size:8px;margin-top:4px;color:var(--t3);letter-spacing:.5px;text-transform:none;font-weight:500}
 
 .pgrd{position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(transparent,rgba(0,0,0,.85));pointer-events:none}
 
@@ -167,9 +169,9 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .ctitle{font-size:10px;font-weight:600;line-height:1.35;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--t1)}
 
-.cmeta{font-size:8px;color:var(--t3);display:flex;gap:4px;flex-wrap:wrap}
+.cmeta{font-size:9px;color:var(--t2);display:flex;gap:4px;flex-wrap:wrap}
 
-.ctag{font-size:7px;color:var(--t3);background:var(--s3);padding:1px 4px;border-radius:3px}
+.ctag{font-size:8px;color:var(--t2);background:var(--s3);padding:1px 4px;border-radius:3px}
 
 .cbtns{display:flex;gap:2px;padding:4px 7px 7px}
 
@@ -267,7 +269,8 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .sortsel{background:var(--s2);border:.5px solid var(--b2);border-radius:6px;color:var(--t2);font-family:'Inter',sans-serif;font-size:10px;padding:4px 6px;outline:none;-webkit-appearance:none}
 
-.dsect{margin-bottom:18px}
+.dsect{margin-bottom:20px}
+.dsect+.dsect{padding-top:16px;border-top:.5px solid var(--b1)}
 
 .trivia-list{display:flex;flex-direction:column;gap:10px}
 .trivia-item{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--s2);border-radius:var(--rs);border:.5px solid var(--b2)}
@@ -278,7 +281,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .trivia-link:active{opacity:.7}
 .trivia-more{display:inline-block;margin-top:8px;color:var(--gold);font-size:10px;text-decoration:none;font-weight:500}
 .trivia-more:active{opacity:.7}
-.dsectl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:8px}
+.dsectl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t1);margin-bottom:8px;padding-bottom:7px;border-bottom:.5px solid var(--b1)}
 
 .plink{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--rs);border:.5px solid var(--b2);margin-bottom:6px;text-decoration:none;background:var(--s2);cursor:pointer;transition:all .15s}
 
@@ -310,11 +313,11 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .castthumb{width:64px;height:64px;border-radius:50%;background:var(--s3);overflow:hidden;margin:0 auto 5px;border:.5px solid var(--b2);position:relative}
 
-.castthumb img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;opacity:0}
+.castthumb img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
 
 .castthumb img.loaded{opacity:1}
 
-.castfb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;position:absolute;inset:0}
+.castfb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;letter-spacing:.5px;color:var(--t2);position:absolute;inset:0}
 
 .castname{font-size:8px;font-weight:600;color:var(--t1);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
@@ -358,11 +361,11 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .scard-pw{width:88px;height:132px;border-radius:6px;overflow:hidden;background:var(--s2);position:relative;margin-bottom:5px}
 
-.scard-pw img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;opacity:0}
+.scard-pw img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
 
 .scard-pw img.loaded{opacity:1}
 
-.scard-fb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:18px;position:absolute;inset:0}
+.scard-fb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;inset:0}
 
 .scard-title{font-size:9px;font-weight:500;color:var(--t2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
 
@@ -372,7 +375,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .person-photo{width:96px;height:96px;border-radius:50%;overflow:hidden;background:var(--s3);border:1px solid var(--b2);flex-shrink:0;position:relative}
 
-.person-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;opacity:0}
+.person-photo img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
 
 .person-photo img.loaded{opacity:1}
 
@@ -386,7 +389,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .wsect{margin-bottom:20px}
 
-.whead{font-size:11px;font-weight:600;color:var(--t2);padding:6px 0;border-bottom:.5px solid var(--b1);margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.whead{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t1);padding:0 0 7px;border-bottom:.5px solid var(--b1);margin-bottom:10px;display:flex;align-items:center;gap:5px}
 
 .wcount{background:var(--s3);color:var(--t3);font-size:8px;padding:1px 6px;border-radius:7px}
 
@@ -501,11 +504,25 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .welcome-sub{font-size:11px;color:var(--t3);margin-bottom:20px;letter-spacing:.5px}
 .welcome-feat{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
 .wfeat{display:flex;gap:12px;align-items:flex-start}
-.wfeat-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.wfeat-ico{font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px;width:16px;height:16px;border-radius:50%;border:.5px solid var(--gold2);display:flex;align-items:center;justify-content:center}
 .wfeat-text{font-size:11px;color:var(--t2);line-height:1.55}
 .wfeat-text b{color:var(--t1);font-size:11.5px}
 .welcome-btn{width:100%;padding:14px;border-radius:var(--r);background:var(--gold);color:#0a0a0a;font-size:13px;font-weight:700;border:none;cursor:pointer;letter-spacing:.3px}
 .welcome-skip{width:100%;padding:8px;background:transparent;border:none;color:var(--t3);font-size:10px;cursor:pointer;margin-top:6px}
+.spot-block{position:fixed;inset:0;z-index:440;background:transparent;display:none}
+.spot-hole{position:fixed;z-index:441;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.78);pointer-events:none;border:2px solid var(--gold);display:none;transition:all .25s ease}
+.spot-callout{position:fixed;z-index:442;background:var(--s1);border:.5px solid var(--b2);border-radius:var(--r);padding:16px;width:min(320px, calc(100vw - 32px));box-shadow:0 8px 32px rgba(0,0,0,.6);display:none;transition:top .25s ease,left .25s ease}
+.tour-dots{display:flex;gap:5px;margin-bottom:14px}
+.tour-dot{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:all .15s}
+.tour-dot.on{background:var(--gold);width:14px;border-radius:3px}
+.tour-count{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.tour-title{font-size:16px;font-weight:700;color:var(--t1);margin-bottom:8px;font-family:'Playfair Display',serif}
+.tour-text{font-size:12px;color:var(--t2);line-height:1.55;margin-bottom:20px}
+.tour-nav{display:flex;gap:8px}
+.tour-back{padding:12px 16px;border-radius:var(--r);background:transparent;border:.5px solid var(--b2);color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;user-select:none}
+.tour-next{flex:1;padding:12px;border-radius:var(--r);background:var(--gold);color:#0a0a0a;font-size:13px;font-weight:700;border:none;cursor:pointer}
+.tour-skip{width:100%;padding:8px;background:transparent;border:none;color:var(--t3);font-size:10px;cursor:pointer;margin-top:8px}
+.tour-launch{margin:0 0 14px;padding:11px;border-radius:var(--rs);background:var(--gold2);border:.5px solid var(--gold);color:var(--gold);font-size:11px;font-weight:700;text-align:center;cursor:pointer;flex-shrink:0}
 .guide-overlay.open{display:flex}
 .guide-hdr{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--b2);flex-shrink:0;background:var(--s1)}
 .guide-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold)}
@@ -556,15 +573,11 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
   <div class="hbtns">
 
-    <div class="ibtn" onclick="openLegend()" title="Tag reference">ℹ️</div>
+    <div class="ibtn" id="guideBtn" onclick="openLegend()" title="Guide" style="width:auto;padding:0 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Guide</div>
 
-    <div class="ibtn" onclick="showTab('settings')">⚙️</div>
+    
 
-    <div class="ibtn" onclick="showTab('watchlist')">
-
-      🔖<div class="badge" id="wbadge" style="display:none">0</div>
-
-    </div>
+    
 
   </div>
 
@@ -576,7 +589,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
   <div class="ntab on" data-tab="discover" onclick="showTab('discover')">Discover</div>
 
-  <div class="ntab" data-tab="watchlist" onclick="showTab('watchlist')">My List</div>
+  <div class="ntab" data-tab="watchlist" onclick="showTab('watchlist')">My List<span class="badge" id="wbadge" style="display:none;position:static;margin-left:5px;width:14px;height:14px;font-size:7px">0</span></div>
 
   <div class="ntab" data-tab="settings" onclick="showTab('settings')">Platforms & Genres</div>
 
@@ -606,19 +619,19 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
     <div class="welcome-sub">CINEMA COMPANION · INDIA</div>
     <div class="welcome-feat">
       <div class="wfeat">
-        <div class="wfeat-ico">🎭</div>
+        <div class="wfeat-ico">1</div>
         <div class="wfeat-text"><b>Taste genres, not content tags</b> — Philosophy, World Cinema, Brilliant Screenplay, Cinematography. Built for how a cinephile thinks.</div>
       </div>
       <div class="wfeat">
-        <div class="wfeat-ico">✅</div>
+        <div class="wfeat-ico">2</div>
         <div class="wfeat-text"><b>India availability, verified</b> — every title cross-checked across 8 platforms. Stream or Rent/Buy, clearly labelled.</div>
       </div>
       <div class="wfeat">
-        <div class="wfeat-ico">🎬</div>
+        <div class="wfeat-ico">3</div>
         <div class="wfeat-text"><b>Masters of Cinema</b> — tap any director, writer, or cinematographer to explore their full India-available filmography.</div>
       </div>
       <div class="wfeat">
-        <div class="wfeat-ico">☁️</div>
+        <div class="wfeat-ico">4</div>
         <div class="wfeat-text"><b>Save your list</b> — go to My List and set a passphrase to sync your watchlist across all your devices.</div>
       </div>
     </div>
@@ -627,12 +640,27 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   </div>
 </div>
 
+<div class="spot-block" id="spotBlock"></div>
+<div class="spot-hole" id="spotHole"></div>
+<div class="spot-callout" id="spotCallout">
+  <div class="tour-dots" id="spotDots"></div>
+  <div class="tour-count" id="spotCount"></div>
+  <div class="tour-title" id="spotTitle"></div>
+  <div class="tour-text" id="spotText"></div>
+  <div class="tour-nav">
+    <div class="tour-back" id="spotBack" onclick="tourBack()">Back</div>
+    <button class="tour-next" id="spotNext" onclick="tourNext()">Next →</button>
+  </div>
+  <button class="tour-skip" onclick="closeTour()">Skip tour</button>
+</div>
+
 <div class="guide-overlay" id="legendOverlay">
   <div class="guide-hdr">
     <div class="guide-title">WatchPick &middot; User Guide</div>
     <div class="guide-close" onclick="closeLegend()">&#x2715;</div>
   </div>
   <div class="guide-body" id="guidebody">
+    <div class="tour-launch" onclick="closeLegend();openTour(TOUR_FULL)">Take the Full Tour — every section, step by step →</div>
     <div class="guide-toc">
       <div class="guide-toc-title">Jump to section</div>
       <div class="guide-toc-grid">
@@ -651,7 +679,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
     <div class="gsect" id="gs1">
       <div class="gh1">1 &middot; What is WatchPick?</div>
       <p class="gbody">WatchPick is a personal cinema discovery app for people who care about what they watch. It shows films streaming in India right now, filtered by your taste, with verified availability across 8 platforms.</p>
-      <p class="gbody">Built for world cinema, philosophy films, critically acclaimed titles, music documentaries, brilliant screenplays, and visually extraordinary cinema &mdash; all verified streaming in India via JustWatch data.</p>
+      <p class="gbody">Built for world cinema, philosophy films, critically acclaimed titles, music documentaries, brilliant screenplays, and visually extraordinary cinema &mdash; with everything double-checked against real, up-to-date streaming information for India.</p>
       <p class="gbody">Access: <a class="glink" href="https://watchpick-dun.vercel.app" target="_blank">watchpick-dun.vercel.app &rarr;</a></p>
     </div>
     <div class="gsect" id="gs2">
@@ -660,19 +688,23 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="gstep"><div class="gstep-n">1</div><div class="gstep-body"><div class="gstep-title">Open in Chrome</div><div class="gstep-desc">Go to <a class="glink" href="https://watchpick-dun.vercel.app" target="_blank">the WatchPick URL &rarr;</a> in Chrome on your phone.</div></div></div>
       <div class="gstep"><div class="gstep-n">2</div><div class="gstep-body"><div class="gstep-title">Add to Home Screen</div><div class="gstep-desc">Chrome menu (&vellip;) &rarr; Add to Home Screen &rarr; Add. WatchPick appears on your home screen and opens full-screen.</div></div></div>
       <div class="gstep"><div class="gstep-n">3</div><div class="gstep-body"><div class="gstep-title">Set up Cloud Sync</div><div class="gstep-desc">My List &rarr; Cloud Sync panel &rarr; enter a passphrase &rarr; tap Save &uarr;. Use same passphrase on any device to Load &darr; your list.</div></div></div>
-      <div class="gnote">Always open WatchPick from your home screen icon or bookmarked URL &mdash; never from a downloaded HTML file.</div>
+      <div class="gnote">Always open WatchPick from your home screen icon or saved bookmark &mdash; never from a copy of the page you've downloaded to your phone.</div>
     </div>
     <div class="gsect" id="gs3">
       <div class="gh1">3 &middot; The Three Tabs</div>
       <div class="gh2">Discover</div>
-      <div class="grow"><div class="gtag"><span style="font-size:12px">&#128269;</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:12px">&#128226;</span></div><div class="gdesc"><strong>New Arrivals</strong> &mdash; films added to Indian streaming in the last 60 days. Horizontal scroll at top.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">&#8635; Refresh</span></div><div class="gdesc">Fresh batch for your current filters.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Search</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography. Tap Voice to search by speaking instead of typing.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Films / Both / Series</span></div><div class="gdesc">Toggle above the search bar &mdash; narrow Discover to movies only, TV series only, or both together.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Visual Craft, Screenplay, Cinematography. Tap a cluster tag to switch, tap a person card to open their full India-available filmography.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New Arrivals</strong> &mdash; films added to Indian streaming in the last 60 days. Horizontal scroll at top, own Refresh button.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Refresh</span></div><div class="gdesc">Fresh batch for your current filters.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Load Page &darr;</span></div><div class="gdesc">Next page of results &mdash; genuinely new titles.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">W &#9733; &#10003; N</span></div><div class="gdesc">Every card has its own quick-action row &mdash; mark Want/Liked/Seen/Not Interested right from Discover, no need to open the detail page.</div></div>
       <div class="gh2">My List</div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">&#9729;&#65039; Sync</span></div><div class="gdesc">Save &uarr; pushes list to server. Load &darr; pulls it on any device.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">&#128229; Export</span></div><div class="gdesc">Downloads JSON backup &mdash; save to Google Drive.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">&#128194; Import</span></div><div class="gdesc">Restores from a JSON backup file.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Shows: Want to Watch</span></div><div class="gdesc">Only titles marked &#128278; Want appear here, with their own Sort (Recently Added, Top Rated, Newest, A&ndash;Z). Liked/Seen/Not Interested aren't listed anywhere &mdash; they just affect what Discover shows you (see Tag Reference).</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Sync</span></div><div class="gdesc">Save &uarr; backs your list up online. Load &darr; brings it down on any device.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Export</span></div><div class="gdesc">Downloads a backup file of your list &mdash; save it to Google Drive or anywhere safe.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Import</span></div><div class="gdesc">Restores your list from that backup file.</div></div>
       <div class="gh2">Platforms &amp; Genres</div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Platforms</span></div><div class="gdesc">Toggle streaming services on/off. Only enabled platforms appear in Discover.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Genres</span></div><div class="gdesc">Toggle genre categories. Select All / Clear All for quick resets.</div></div>
@@ -680,26 +712,27 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
     </div>
     <div class="gsect" id="gs4">
       <div class="gh1">4 &middot; The Filter Bar</div>
-      <p class="gbody">Horizontal scroll bar below the nav tabs &mdash; instant filters without going into Settings.</p>
-      <div class="grow"><div class="gtag"><span class="fpill on" style="position:static;font-size:9px;padding:3px 8px">All</span></div><div class="gdesc">Selects every enabled genre and refreshes the feed.</div></div>
-      <div class="grow"><div class="gtag"><span class="fpill" style="position:static;font-size:9px;padding:3px 8px">None</span></div><div class="gdesc">Clears all genres &mdash; pick just one or two to focus the feed.</div></div>
-      <div class="grow"><div class="gtag"><span class="fpill on" style="position:static;font-size:9px;padding:3px 8px">Genre pills</span></div><div class="gdesc">Tap to toggle on/off. Gold = active in current feed.</div></div>
-      <div class="grow"><div class="gtag"><span class="fpill on" style="position:static;font-size:9px;padding:3px 8px">Language</span></div><div class="gdesc">Filter current feed by original language instantly.</div></div>
-      <div class="grow"><div class="gtag"><span class="fpill on" style="position:static;font-size:9px;padding:3px 8px">Sort</span></div><div class="gdesc">Mix, Top Rated, Newest, Oldest, Newest + Rated, A&ndash;Z. Changing sort restarts from Page 1.</div></div>
-      <div class="grow"><div class="gtag"><span class="fpill on" style="position:static;font-size:9px;padding:3px 8px">Stream only</span></div><div class="gdesc">Stream only (subscription), Rent/Buy only, or All.</div></div>
+      <p class="gbody">Below the nav tabs, up to 3 rows &mdash; instant filters without going into Settings.</p>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Film Genres</span></div><div class="gdesc">All / None + a button for every genre you've turned on in Settings. Tap one to switch it on or off &mdash; gold means active. Shown whenever you're browsing Films or Both.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Series Genres</span></div><div class="gdesc">Its own All / None + a button per TV genre. Only appears when you're browsing Series or Both &mdash; these genres aren't in Settings, this is the only place to choose them.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Lang</span></div><div class="gdesc">Filter the current feed by original language instantly.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Sort</span></div><div class="gdesc">Mix, Top Rated, Newest, Oldest, Newest + Rated, A&ndash;Z. Changing sort restarts from Page 1.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Avail</span></div><div class="gdesc">All, Stream (subscription) only, or Rent/Buy only.</div></div>
       <div class="gnote">Newest + Rated: fetches by year descending, then sorts by rating within each year &mdash; best for recent acclaimed films.</div>
     </div>
     <div class="gsect" id="gs5">
       <div class="gh1">5 &middot; Title Detail Page</div>
       <p class="gbody">Tap any card to open the full detail view.</p>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">Pills row</span></div><div class="gdesc">&#10003; Available in India &middot; Year &middot; &#9733; Rating &middot; Vote count &middot; Runtime &middot; Language &middot; Age cert &middot; Genre tags.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">Actions</span></div><div class="gdesc">&#128278; Want &middot; &#9733; Liked &middot; &#10003; Seen &middot; &#128683; Not Interested. Tap again to remove. Seen and Not Interested permanently remove from Discover.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Info row</span></div><div class="gdesc">&#10003; Available in India &middot; Year &middot; &#9733; Rating &middot; Number of votes &middot; Runtime &middot; Language &middot; Age rating &middot; Genres.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Actions</span></div><div class="gdesc">Want to Watch &middot; &#9733; Liked &middot; &#10003; Seen &middot; Not Interested. Tap the same one again to undo. Seen and Not Interested remove the title from Discover (see Tag Reference for how to bring it back).</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Where to Watch</span></div><div class="gdesc">Every India platform with Stream or Rent/Buy tags. Tap to open that platform's search directly.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Letterboxd &rarr;</span></div><div class="gdesc">Opens <a class="glink" href="https://letterboxd.com" target="_blank">Letterboxd &rarr;</a> search for that exact film. Letterboxd is a dedicated film community of nearly 30 million users who rate on a 5-star scale (with half-stars). Its ratings run 0.3&ndash;0.5 stars colder than TMDB because the audience takes film seriously &mdash; making it the most trustworthy rating source for world cinema, philosophy films, and arthouse titles. A film rated 4.0&nbsp;on Letterboxd by 200,000 cinephiles is a stronger signal than an 8.2 on TMDB from a general audience. Tap to read reviews and see what dedicated film watchers think before you commit your evening.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">&#9654; Trailers</span></div><div class="gdesc">Tap thumbnail to play in-app. Only works on hosted URL.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:#F5C518">IMDb &rarr;</span></div><div class="gdesc">Opens the film's official IMDb page directly, when one is available. Useful for reviews from a wider audience, parental guidance, and fuller cast/crew credits.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Letterboxd &rarr;</span></div><div class="gdesc">Opens <a class="glink" href="https://letterboxd.com" target="_blank">Letterboxd &rarr;</a> search for that exact film. Letterboxd is a dedicated film community of nearly 30 million users who rate on a 5-star scale (with half-stars). Its ratings run 0.3&ndash;0.5 stars colder than the rating you see in WatchPick, because the audience takes film seriously &mdash; making it the most trustworthy rating source for world cinema, philosophy films, and arthouse titles. A film rated 4.0&nbsp;on Letterboxd by 200,000 film lovers is a stronger signal than an 8.2 in WatchPick's own rating from a general audience. Tap to read reviews and see what dedicated film watchers think before you commit your evening.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">&#9654; Trailers</span></div><div class="gdesc">Tap the thumbnail to play it right here in the app. Only works on the real WatchPick address.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Crew &rarr;</span></div><div class="gdesc">Tap Director, Writer, or Cinematographer name to open their India filmography.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Did You Know</span></div><div class="gdesc">Trivia section &mdash; appears when there's something to show. Surfaces special-thanks credits, notable crew roles (composer, executive producer, story credit), and recurring director&ndash;cinematographer collaborations, each linking to IMDb's trivia page for more.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Cast &rarr;</span></div><div class="gdesc">Tap any actor for their India-available filmography with platform badges.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">More Like This</span></div><div class="gdesc">TMDB recommendations filtered to India &mdash; tap to explore.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">More Like This</span></div><div class="gdesc">Similar films or shows, filtered to what's available in India &mdash; tap to explore.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">&larr; Back</span></div><div class="gdesc">Phone back gesture or &larr; returns to previous screen. &#10005; Close exits the detail overlay entirely.</div></div>
     </div>
     <div class="gsect" id="gs6">
@@ -718,56 +751,56 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span class="cavail av-rent" style="position:static">Rent/Buy</span></div><div class="gdesc">Paid rental or purchase only</div></div>
       <div class="grow"><div class="gtag"><span class="cavail av-none" style="position:static">Not in IN</span></div><div class="gdesc">Not currently streaming in India &mdash; shown in search only</div></div>
       <div class="gh2">Status icons</div>
-      <div class="grow"><div class="gtag"><span style="font-size:14px">&#128278;</span></div><div class="gdesc">Want to Watch &mdash; saved to My List</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:13px;font-weight:700;color:var(--blue)">W</span></div><div class="gdesc">Want to Watch &mdash; saved to My List</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:14px;color:var(--gold)">&#9733;</span></div><div class="gdesc">Liked It &mdash; gold border on card. Surfaces similar titles in More Like This.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:14px;color:#888">&#10003;</span></div><div class="gdesc">Already Seen &mdash; removed from Discover permanently. Undoable in My List.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:14px">&#128683;</span></div><div class="gdesc">Not Interested &mdash; excluded from Discover. Undoable in My List.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:14px;color:#888">&#10003;</span></div><div class="gdesc">Already Seen &mdash; removed from Discover. Not listed in My List (that tab only shows Want to Watch) &mdash; to undo, find it again via Search (unaffected by this) and tap &#10003; again on its card or detail page.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:13px;font-weight:700;color:#ff9090">N</span></div><div class="gdesc">Not Interested &mdash; excluded from Discover. Same as Seen: not listed in My List, undo by finding it via Search and tapping N again.</div></div>
       <div class="gh2">Other tags</div>
-      <div class="grow"><div class="gtag"><span class="crating" style="position:static">&#9733; 8.4</span></div><div class="gdesc"><a class="glink" href="https://www.themoviedb.org" target="_blank">TMDB &rarr;</a> community rating out of 10</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--t2)">12,430 votes</span></div><div class="gdesc">Higher count = more reliable rating</div></div>
-      <div class="grow"><div class="gtag"><span class="ctag">Drama</span></div><div class="gdesc">Genre tag from TMDB</div></div>
-      <div class="grow"><div class="gtag"><span class="ctag" style="text-transform:uppercase">KO</span></div><div class="gdesc">Original language code (non-English)</div></div>
-      <div class="grow"><div class="gtag"><span class="dpill cert" style="font-size:8px">U/A</span></div><div class="gdesc">Age certification &mdash; India CBFC where available</div></div>
+      <div class="grow"><div class="gtag"><span class="crating" style="position:static">&#9733; 8.4</span></div><div class="gdesc">Community rating out of 10, from the <a class="glink" href="https://www.themoviedb.org" target="_blank">movie database &rarr;</a> WatchPick pulls info from</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--t2)">12,430 votes</span></div><div class="gdesc">Number of people who rated it &mdash; the more votes, the more you can trust the rating</div></div>
+      <div class="grow"><div class="gtag"><span class="ctag">Drama</span></div><div class="gdesc">Genre label</div></div>
+      <div class="grow"><div class="gtag"><span class="ctag" style="text-transform:uppercase">KO</span></div><div class="gdesc">Shown as a short code when the film's original language isn't English &mdash; e.g. KO means Korean</div></div>
+      <div class="grow"><div class="gtag"><span class="dpill cert" style="font-size:8px">U/A</span></div><div class="gdesc">Age rating from India's official film certification board, when available</div></div>
     </div>
     <div class="gsect" id="gs7">
       <div class="gh1">7 &middot; Search</div>
       <p class="gbody">Type any title, director, actor, or crew member in the search bar on Discover.</p>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Film results</span></div><div class="gdesc">Cards with India availability, platform badges, Stream/Rent tags.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Gold card</span></div><div class="gdesc">Person identified by TMDB &mdash; tap to open their India filmography.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">Filmography</span></div><div class="gdesc">"Streaming in India" (full brightness) and "Other notable work" (dimmed). Back button returns to search.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Gold card</span></div><div class="gdesc">Shown when your search matches a person, not a title &mdash; tap to open their India filmography.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Filmography</span></div><div class="gdesc">"Streaming in India" (full brightness) and "Other notable work" (dimmed), each with its own Sort: Streaming First, Top Rated, Newest. Back button returns to search.</div></div>
       <div class="gnote">Search is not filtered by your genre or platform settings &mdash; shows all results with India availability checked.</div>
     </div>
     <div class="gsect" id="gs8">
       <div class="gh1">8 &middot; Cloud Sync</div>
-      <p class="gbody">Your list lives in browser storage AND on the server. The server copy survives everything.</p>
+      <p class="gbody">Your list is saved right on your phone, and backed up online too. The online copy survives everything &mdash; even clearing your phone's data or switching devices.</p>
       <div class="gstep"><div class="gstep-n">1</div><div class="gstep-body"><div class="gstep-title">Choose a passphrase</div><div class="gstep-desc">Memorable &mdash; e.g. your-name-films-2026. No email or sign-up needed.</div></div></div>
-      <div class="gstep"><div class="gstep-n">2</div><div class="gstep-body"><div class="gstep-title">Save &uarr; regularly</div><div class="gstep-desc">Tap Save &uarr; after any marking session. Pushes your full list to the server.</div></div></div>
+      <div class="gstep"><div class="gstep-n">2</div><div class="gstep-body"><div class="gstep-title">Save &uarr; regularly</div><div class="gstep-desc">Tap Save &uarr; after any marking session. Backs up your full list online.</div></div></div>
       <div class="gstep"><div class="gstep-n">3</div><div class="gstep-body"><div class="gstep-title">Load &darr; on new device</div><div class="gstep-desc">My List &rarr; enter passphrase &rarr; Load &darr;. Full list restored instantly.</div></div></div>
-      <div class="gnote">Passphrase is case-sensitive. No recovery if forgotten. Also use Export JSON as a Google Drive backup.</div>
+      <div class="gnote">Passphrase is case-sensitive (capital and lowercase letters count as different). No recovery if forgotten. You can also use Export in My List to save a backup file to Google Drive.</div>
     </div>
     <div class="gsect" id="gs9">
       <div class="gh1">9 &middot; Tips</div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Start narrow</span></div><div class="gdesc">Tap None then pick one or two genre pills for a focused feed.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Start narrow</span></div><div class="gdesc">Tap None then pick just one or two genres for a more focused feed.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Mark Seen</span></div><div class="gdesc">Tap &#10003; on anything you have already watched &mdash; it never appears again in Discover.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Use &#9733; Liked</span></div><div class="gdesc">More Like This on any Liked film surfaces similar India-available titles.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Tap the director</span></div><div class="gdesc">See every film of theirs available in India right now.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">New Arrivals</span></div><div class="gdesc">Top row refreshes on open &mdash; quick scroll shows what just landed.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Newest + Rated</span></div><div class="gdesc">Best sort for recent acclaimed films.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)"><a class="glink" href="https://letterboxd.com" target="_blank">Letterboxd &rarr;</a></span></div><div class="gdesc">For every film in WatchPick &mdash; especially world cinema, philosophy, and critically acclaimed titles &mdash; tap "View on Letterboxd" on the detail page. Letterboxd uses a 5-star scale rated by nearly 30 million dedicated film watchers. Its scores run colder than TMDB (a 3.8 on Letterboxd is genuinely good; a 4.2 is exceptional). Read the short reviews &mdash; they are written by people who watch 200+ films a year, not casual viewers. For the genres WatchPick covers, Letterboxd is the most honest measure of whether a film is worth your time.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)"><a class="glink" href="https://letterboxd.com" target="_blank">Letterboxd &rarr;</a></span></div><div class="gdesc">For every film in WatchPick &mdash; especially world cinema, philosophy, and critically acclaimed titles &mdash; tap "View on Letterboxd" on the detail page. Letterboxd uses a 5-star scale rated by nearly 30 million dedicated film watchers. Its scores run colder than the rating you see in WatchPick (a 3.8 on Letterboxd is genuinely good; a 4.2 is exceptional). Read the short reviews &mdash; they are written by people who watch 200+ films a year, not casual viewers. For the genres WatchPick covers, Letterboxd is the most honest measure of whether a film is worth your time.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Save often</span></div><div class="gdesc">Tap Save &uarr; after every marking session &mdash; your list is then safe on all devices.</div></div>
     </div>
     <div class="gsect" id="gs10">
       <div class="gh1">10 &middot; FAQ</div>
       <div class="gh2">My list disappeared</div>
-      <p class="gbody">You likely cleared browser cache or opened a downloaded file. Open the hosted URL &rarr; My List &rarr; enter passphrase &rarr; Load &darr;.</p>
+      <p class="gbody">You likely cleared your phone's storage for the browser, or opened a saved copy of the page instead of the real one. Open the real WatchPick address &rarr; My List &rarr; enter passphrase &rarr; Load &darr;.</p>
       <div class="gh2">A film I know is on Netflix is not showing</div>
-      <p class="gbody">Availability is from <a class="glink" href="https://www.justwatch.com/in" target="_blank">JustWatch &rarr;</a> via TMDB. Rights change frequently &mdash; data may lag by a day or two for very recent additions.</p>
+      <p class="gbody">We check streaming availability using <a class="glink" href="https://www.justwatch.com/in" target="_blank">a trusted tracking service &rarr;</a>. Streaming rights change often, so very recently added titles can take a day or two to show up correctly.</p>
       <div class="gh2">Trailers are not playing</div>
-      <p class="gbody">Trailers only work on the hosted URL &mdash; not a downloaded file. If "Video unavailable", the studio has disabled embedding; find it directly on <a class="glink" href="https://www.youtube.com" target="_blank">YouTube &rarr;</a>.</p>
+      <p class="gbody">Trailers only work on the real WatchPick address &mdash; not a downloaded copy of the page. If it says "Video unavailable", the studio has blocked it from playing here; find it directly on <a class="glink" href="https://www.youtube.com" target="_blank">YouTube &rarr;</a>.</p>
       <div class="gh2">Feed keeps showing same titles</div>
-      <p class="gbody">Tap Load Page N &darr; for new pages. If many titles are marked Seen or Not Interested they are filtered out &mdash; use &uarr; Refresh for a completely fresh batch.</p>
-      <div class="gh2">YouTube shows Rent/Buy under Stream only</div>
-      <p class="gbody">JustWatch India does not consistently report YouTube Premium streaming as "flatrate". This is a JustWatch data limitation, not a WatchPick bug. Some Stream titles do appear.</p>
+      <p class="gbody">Tap Load Page N &darr; for new pages. If many titles are marked Seen or Not Interested they are filtered out &mdash; use Refresh for a completely fresh batch.</p>
+      <div class="gh2">YouTube shows Rent/Buy when I think it should be Stream</div>
+      <p class="gbody">Our streaming-info source doesn't always correctly flag YouTube Premium titles as included with your subscription, so they can show as Rent/Buy even when they're actually free to stream on Premium. That's a limitation of that data source, not a WatchPick bug &mdash; some titles do show correctly as Stream.</p>
       <div style="font-size:9px;color:var(--t3);text-align:center;margin-top:20px;padding-bottom:8px">
         WatchPick &middot; Availability: <a class="glink" href="https://www.justwatch.com/in" target="_blank" style="font-size:9px">JustWatch &rarr;</a> via <a class="glink" href="https://www.themoviedb.org" target="_blank" style="font-size:9px">TMDB &rarr;</a>
       </div>
@@ -780,36 +813,35 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 <div id="tab-discover" class="scroll">
 
   <div class="sbox">
-    <span class="sico">🔍</span>
-    <input class="sinput" type="search" id="sinput" placeholder="Search titles, directors, actors…" oninput="onSearch(this.value)" autocomplete="off" style="padding-right:40px">
-    <button class="smic" id="micbtn" onclick="toggleVoice()" title="Voice search">🎤</button>
+    <input class="sinput" type="search" id="sinput" placeholder="Search titles, directors, actors…" oninput="onSearch(this.value)" autocomplete="off" style="padding-left:12px;padding-right:56px">
+    <button class="smic" id="micbtn" onclick="toggleVoice()" title="Voice search">Voice</button>
   </div>
   <div class="vtranscript" id="vtranscript"></div>
 
   <!-- MEDIA TYPE TOGGLE -->
-  <div style="display:flex;gap:6px;padding:0 0 10px;flex-shrink:0">
-    <button id="mt-movie" onclick="setMediaType('movie')" class="mtbtn">🎬 Films</button>
-    <button id="mt-both"  onclick="setMediaType('both')"  class="mtbtn active">🎬📺 Both</button>
-    <button id="mt-tv"    onclick="setMediaType('tv')"    class="mtbtn">📺 Series</button>
+  <div id="mediaToggleRow" style="display:flex;gap:6px;padding:0 0 10px;flex-shrink:0">
+    <button id="mt-movie" onclick="setMediaType('movie')" class="mtbtn">Films</button>
+    <button id="mt-both"  onclick="setMediaType('both')"  class="mtbtn active">Both</button>
+    <button id="mt-tv"    onclick="setMediaType('tv')"    class="mtbtn">Series</button>
   </div>
 
   <!-- MASTERS OF CINEMA -->
-  <div id="masters-sect" class="masters-sect" style="display:none">
+  <div id="masters-sect" class="masters-sect sect-block" style="display:none">
     <div class="secrow" style="margin-bottom:8px">
-      <div class="slabel">🎬 Masters of Cinema</div>
+      <div class="slabel">Masters of Cinema</div>
       <div style="font-size:9px;color:var(--t3)">tap to explore filmography</div>
     </div>
     <div class="masters-tags" id="masters-tags"></div>
     <div class="mscroll" id="masters-scroll"></div>
   </div>
 
-  <div id="newarrivals-sect" style="margin-bottom:16px;display:none">
+  <div id="newarrivals-sect" class="sect-block" style="display:none">
 
     <div class="secrow" style="margin-bottom:8px">
 
-      <div class="slabel">🆕 New on Streaming · India this month</div>
+      <div class="slabel">New on Streaming · India this month</div>
 
-      <div class="more" onclick="loadNewArrivals(true)">↻</div>
+      <div class="more" onclick="loadNewArrivals(true)">Refresh</div>
 
     </div>
 
@@ -820,6 +852,8 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
     </div>
 
   </div>
+
+  <div class="sect-block" id="curated-sect">
 
   <div class="secrow">
 
@@ -841,7 +875,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
       </select>
 
-      <div class="more" onclick="refreshDiscover()">↻ Refresh</div>
+      <div class="more" onclick="refreshDiscover()">Refresh</div>
 
     </div>
 
@@ -852,6 +886,8 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   <div class="pagerow" id="pagerow" style="display:none">
 
     <div class="pagebtn" onclick="loadMore()">Load Page <span id="nextpage">2</span> ↓</div>
+
+  </div>
 
   </div>
 
@@ -870,9 +906,9 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
   <!-- SYNC PANEL -->
 
-  <div id="syncpanel" style="background:var(--s2);border:.5px solid var(--b2);border-radius:var(--r);padding:12px;margin-bottom:12px">
+  <div id="syncpanel" style="background:var(--s2);border:.5px solid var(--b2);border-left:3px solid var(--gold);border-radius:var(--r);padding:12px 12px 12px 14px;margin-bottom:16px">
 
-    <div style="font-size:11px;font-weight:600;color:var(--t1);margin-bottom:8px">☁️ Cloud Sync</div>
+    <div style="font-size:11px;font-weight:600;color:var(--t1);margin-bottom:8px">Cloud Sync</div>
 
     <div style="font-size:10px;color:var(--t2);margin-bottom:8px">Enter a passphrase to sync your list across devices. Use the same phrase on any device to access your list.</div>
 
@@ -890,9 +926,9 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
     <div style="margin-top:10px;padding-top:10px;border-top:.5px solid var(--b1);display:flex;gap:6px">
 
-      <button onclick="exportBackup()" style="flex:1;padding:7px;border-radius:var(--rs);border:.5px solid var(--b2);background:transparent;color:var(--t2);font-size:10px;font-weight:500;cursor:pointer">📥 Export JSON</button>
+      <button onclick="exportBackup()" style="flex:1;padding:7px;border-radius:var(--rs);border:.5px solid var(--b2);background:transparent;color:var(--t2);font-size:10px;font-weight:500;cursor:pointer">Export JSON</button>
 
-      <button onclick="triggerImport()" style="flex:1;padding:7px;border-radius:var(--rs);border:.5px solid var(--b2);background:transparent;color:var(--t2);font-size:10px;font-weight:500;cursor:pointer">📂 Import JSON</button>
+      <button onclick="triggerImport()" style="flex:1;padding:7px;border-radius:var(--rs);border:.5px solid var(--b2);background:transparent;color:var(--t2);font-size:10px;font-weight:500;cursor:pointer">Import JSON</button>
 
     </div>
 
@@ -904,373 +940,22 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 </div>
 
-
-
-<div id="tab-guide" class="scroll" style="display:none">
-
-  <div style="padding:4px 0 20px">
-
-
-
-    <!-- HEADER -->
-
-    <div style="text-align:center;padding:20px 0 16px;border-bottom:.5px solid var(--b1);margin-bottom:20px">
-
-      <div style="font-family:'Playfair Display',serif;font-size:24px;color:var(--gold);letter-spacing:-.3px">WatchPick</div>
-
-      <div style="font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-top:2px">User Guide · Cinema Companion · India</div>
-
-    </div>
-
-
-
-    <!-- TOC -->
-
-    <div style="background:var(--s2);border:.5px solid var(--b2);border-radius:var(--r);padding:14px;margin-bottom:20px">
-
-      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:10px">Contents</div>
-
-      <div style="display:flex;flex-direction:column;gap:6px">
-
-        <a href="#g1" style="color:var(--gold);font-size:12px;text-decoration:none">1 · What is WatchPick?</a>
-
-        <a href="#g2" style="color:var(--gold);font-size:12px;text-decoration:none">2 · Getting Started</a>
-
-        <a href="#g3" style="color:var(--gold);font-size:12px;text-decoration:none">3 · The Three Tabs</a>
-
-        <a href="#g4" style="color:var(--gold);font-size:12px;text-decoration:none">4 · The Filter Bar</a>
-
-        <a href="#g5" style="color:var(--gold);font-size:12px;text-decoration:none">5 · Title Detail Page</a>
-
-        <a href="#g6" style="color:var(--gold);font-size:12px;text-decoration:none">6 · Tag Reference</a>
-
-        <a href="#g7" style="color:var(--gold);font-size:12px;text-decoration:none">7 · Search</a>
-
-        <a href="#g8" style="color:var(--gold);font-size:12px;text-decoration:none">8 · Cloud Sync</a>
-
-        <a href="#g9" style="color:var(--gold);font-size:12px;text-decoration:none">9 · Tips</a>
-
-        <a href="#g10" style="color:var(--gold);font-size:12px;text-decoration:none">10 · FAQ</a>
-
-      </div>
-
-    </div>
-
-
-
-    <!-- SECTIONS -->
-
-    <div id="g1" class="gsect">
-
-      <div class="gtitle">1 · What is WatchPick?</div>
-
-      <p class="gbody">WatchPick is a personal cinema discovery app for people who care about what they watch — not just what is popular. It shows films streaming in India right now, filtered by your taste, with verified availability across Netflix, Prime Video, JioHotstar, MUBI, YouTube, Apple TV+, SonyLIV, and ZEE5.</p>
-
-      <p class="gbody">It is built for world cinema, philosophy films, critically acclaimed titles, music documentaries, brilliant screenplays, and visually extraordinary cinema — not mass-market browsing.</p>
-
-    </div>
-
-
-
-    <div id="g2" class="gsect">
-
-      <div class="gtitle">2 · Getting Started</div>
-
-      <div class="gstep"><span class="gnum">1</span><div><div class="gstep-title">Open WatchPick</div><div class="gstep-body">Go to <a href="https://watchpick-dun.vercel.app" target="_blank" class="glink">watchpick-dun.vercel.app</a> in Chrome.</div></div></div>
-
-      <div class="gstep"><span class="gnum">2</span><div><div class="gstep-title">Add to Home Screen (phone)</div><div class="gstep-body">Chrome menu (⋮) → Add to Home Screen → Add. Opens full-screen like a native app.</div></div></div>
-
-      <div class="gstep"><span class="gnum">3</span><div><div class="gstep-title">Set up Cloud Sync</div><div class="gstep-body">My List tab → Cloud Sync panel → enter a passphrase → tap Save ↑. Same passphrase on any device to Load ↓ your list.</div></div></div>
-
-      <div class="gnote">⚠ Always open from your home screen icon or the bookmarked URL — never from a downloaded HTML file, or your watchlist will not persist.</div>
-
-    </div>
-
-
-
-    <div id="g3" class="gsect">
-
-      <div class="gtitle">3 · The Three Tabs</div>
-
-      <div class="gsubtitle">Discover</div>
-
-      <p class="gbody">The main feed — films verified streaming in India, curated to your active genres and platforms.</p>
-
-      <div class="gbullet"><span class="gico">🔍</span><div><span class="glabel">Search bar</span> — Search by title, director, or actor. Person results show a gold card — tap to see their filmography streaming in India.</div></div>
-
-      <div class="gbullet"><span class="gico">🆕</span><div><span class="glabel">New Arrivals row</span> — Films added to Indian streaming in the last 60 days — horizontal scroll at the top.</div></div>
-
-      <div class="gbullet"><span class="gico">↻</span><div><span class="glabel">Refresh</span> — Fetches a fresh batch for your current filters.</div></div>
-
-      <div class="gbullet"><span class="gico">📄</span><div><span class="glabel">Load Page N ↓</span> — Fetches the next page of results — genuinely new titles each time.</div></div>
-
-
-
-      <div class="gsubtitle">My List</div>
-
-      <p class="gbody">Your personal watchlist — Want to Watch, Liked, Already Seen, and Not Interested.</p>
-
-      <div class="gbullet"><span class="gico">☁️</span><div><span class="glabel">Cloud Sync</span> — Save ↑ pushes to server. Load ↓ pulls on any device.</div></div>
-
-      <div class="gbullet"><span class="gico">📥</span><div><span class="glabel">Export JSON</span> — Downloads a backup file. Upload to Google Drive for safekeeping.</div></div>
-
-      <div class="gbullet"><span class="gico">📂</span><div><span class="glabel">Import JSON</span> — Restores from a backup file.</div></div>
-
-
-
-      <div class="gsubtitle">Platforms & Genres</div>
-
-      <p class="gbody">Your preference settings — controls what appears in Discover.</p>
-
-      <div class="gbullet"><span class="gico">⚙️</span><div><span class="glabel">Platforms</span> — Toggle any streaming service on or off.</div></div>
-
-      <div class="gbullet"><span class="gico">🎬</span><div><span class="glabel">Genres</span> — Toggle categories. Select All / Clear All for quick resets.</div></div>
-
-      <div class="gbullet"><span class="gico">➕</span><div><span class="glabel">Add custom title</span> — Pin any specific film to your Discover feed.</div></div>
-
-    </div>
-
-
-
-    <div id="g4" class="gsect">
-
-      <div class="gtitle">4 · The Filter Bar</div>
-
-      <p class="gbody">The horizontal scroll bar below the nav tabs — instant filters without going into Settings.</p>
-
-      <div class="gbullet"><span class="gico">🔘</span><div><span class="glabel">All / None</span> — Master genre toggle. All selects every enabled genre. None clears all so you can pick just one.</div></div>
-
-      <div class="gbullet"><span class="gico">🎭</span><div><span class="glabel">Genre pills</span> — Tap to include/exclude. Gold = active.</div></div>
-
-      <div class="gbullet"><span class="gico">🌍</span><div><span class="glabel">Language filter</span> — All Languages, English, Hindi, Korean, Japanese, French, Spanish, Italian, German.</div></div>
-
-      <div class="gbullet"><span class="gico">↕️</span><div><span class="glabel">Sort</span> — Mix · Top Rated · Newest · Oldest · Newest + Rated · A–Z. Sort applies server-side — each new page continues in the same order.</div></div>
-
-      <div class="gbullet"><span class="gico">📡</span><div><span class="glabel">Availability</span> — Stream only (subscription-included) · Rent/Buy only · All.</div></div>
-
-    </div>
-
-
-
-    <div id="g5" class="gsect">
-
-      <div class="gtitle">5 · Title Detail Page</div>
-
-      <p class="gbody">Tap any card to open the full detail view.</p>
-
-      <div class="gbullet"><span class="gico">🖼</span><div><span class="glabel">Pills row</span> — ✓ Available in India · Year · ★ Rating · Vote count · Runtime · Language · Age cert · Genre tags.</div></div>
-
-      <div class="gbullet"><span class="gico">🔖</span><div><span class="glabel">Action buttons</span> — Want to Watch · ★ Liked It · ✓ Already Seen · 🚫 Not Interested. Tap again to remove.</div></div>
-
-      <div class="gbullet"><span class="gico">📺</span><div><span class="glabel">Where to Watch</span> — Every platform carrying the title in India with Stream or Rent/Buy tag. Tap to search on that platform.</div></div>
-
-      <div class="gbullet"><span class="gico">🍿</span><div><span class="glabel">View on Letterboxd →</span> — Opens <a href="https://letterboxd.com" target="_blank" class="glink">letterboxd.com</a> search for the film — cinephile community ratings alongside TMDB score.</div></div>
-
-      <div class="gbullet"><span class="gico">▶️</span><div><span class="glabel">Trailers</span> — Tap thumbnail to play in-app. Scroll for multiple trailers.</div></div>
-
-      <div class="gbullet"><span class="gico">👥</span><div><span class="glabel">Cast & Crew</span> — Tap any name to open their filmography page showing India-available titles.</div></div>
-
-      <div class="gbullet"><span class="gico">🎞</span><div><span class="glabel">More Like This</span> — TMDB recommendations filtered to India availability with platform badges.</div></div>
-
-    </div>
-
-
-
-    <div id="g6" class="gsect">
-
-      <div class="gtitle">6 · Tag Reference</div>
-
-      <div class="gsubtitle">Platform Tags</div>
-
-      <div class="gtag-row"><span class="cplt plt-netflix" style="position:static">Netflix</span><span class="gtag-desc">Streaming on Netflix India</span></div>
-
-      <div class="gtag-row"><span class="cplt plt-prime" style="position:static">Prime Video</span><span class="gtag-desc">Streaming on Amazon Prime Video India</span></div>
-
-      <div class="gtag-row"><span class="cplt plt-hotstar" style="position:static">JioHotstar</span><span class="gtag-desc">Streaming on JioHotstar</span></div>
-
-      <div class="gtag-row"><span class="cplt plt-mubi" style="position:static">Mubi</span><span class="gtag-desc">Streaming on MUBI India</span></div>
-
-      <div class="gtag-row"><span class="cplt plt-youtube" style="position:static">YouTube</span><span class="gtag-desc">Available on YouTube India (rent/buy or free with YouTube Premium)</span></div>
-
-      <div class="gtag-row"><span class="cplt plt-apple" style="position:static">Apple TV+</span><span class="gtag-desc">Streaming or rent/buy on Apple TV+</span></div>
-
-      <div class="gtag-row"><span class="cplt plt-sonyliv" style="position:static">SonyLIV</span><span class="gtag-desc">Streaming on SonyLIV India</span></div>
-
-      <div class="gtag-row"><span class="cplt plt-zee5" style="position:static">ZEE5</span><span class="gtag-desc">Streaming on ZEE5 India</span></div>
-
-
-
-      <div class="gsubtitle">Availability Tags</div>
-
-      <div class="gtag-row"><span class="cavail av-stream" style="position:static">Stream</span><span class="gtag-desc">Included with your subscription — no extra cost</span></div>
-
-      <div class="gtag-row"><span class="cavail av-rent" style="position:static">Rent/Buy</span><span class="gtag-desc">Paid rental or purchase only</span></div>
-
-      <div class="gtag-row"><span class="cavail av-none" style="position:static">Not in IN</span><span class="gtag-desc">Not streaming in India — shown in search results only</span></div>
-
-
-
-      <div class="gsubtitle">Status Icons</div>
-
-      <div class="gtag-row"><span style="font-size:14px">🔖</span><span class="gtag-desc"><strong>Want to Watch</strong> — Saved to your watchlist</span></div>
-
-      <div class="gtag-row"><span style="font-size:14px;color:var(--gold)">★</span><span class="gtag-desc"><strong>Liked It</strong> — Gold border on card. Used to surface more like this.</span></div>
-
-      <div class="gtag-row"><span style="font-size:14px;color:#888">✓</span><span class="gtag-desc"><strong>Already Seen</strong> — Card dims and is permanently excluded from Discover</span></div>
-
-      <div class="gtag-row"><span style="font-size:14px">🚫</span><span class="gtag-desc"><strong>Not Interested</strong> — Excluded from Discover. Undo from My List.</span></div>
-
-
-
-      <div class="gsubtitle">Other Tags</div>
-
-      <div class="gtag-row"><span class="crating" style="position:static">★ 8.4</span><span class="gtag-desc">TMDB community rating out of 10</span></div>
-
-      <div class="gtag-row"><span style="font-size:9px;color:var(--t2)">45,230 votes</span><span class="gtag-desc">Number of ratings — higher = more reliable score</span></div>
-
-      <div class="gtag-row"><span class="ctag">Drama</span><span class="gtag-desc">TMDB genre classification</span></div>
-
-      <div class="gtag-row"><span class="ctag" style="text-transform:uppercase">KO</span><span class="gtag-desc">Original language code (non-English titles)</span></div>
-
-    </div>
-
-
-
-    <div id="g7" class="gsect">
-
-      <div class="gtitle">7 · Search</div>
-
-      <p class="gbody">Type any title, director, actor, or crew member in the search bar on Discover.</p>
-
-      <div class="gbullet"><span class="gico">🎬</span><div><span class="glabel">Film search</span> — Matching films shown as cards with India availability, platform badges, and Stream/Rent tags.</div></div>
-
-      <div class="gbullet"><span class="gico">👤</span><div><span class="glabel">Person search</span> — A gold card appears above film results when TMDB identifies a person. Tap to open their filmography with India availability.</div></div>
-
-      <div class="gbullet"><span class="gico">🎞</span><div><span class="glabel">Filmography page</span> — "Streaming in India" at full brightness. "Other notable work" at 50% opacity.</div></div>
-
-      <div class="gnote">ℹ Search shows all results regardless of your genre or platform settings. India availability is still checked and displayed on each result.</div>
-
-    </div>
-
-
-
-    <div id="g8" class="gsect">
-
-      <div class="gtitle">8 · Cloud Sync</div>
-
-      <p class="gbody">Your watchlist lives in browser storage AND on the WatchPick server. The server copy survives device switches, cache clears, and fresh sessions.</p>
-
-      <div class="gstep"><span class="gnum">1</span><div><div class="gstep-title">Choose a passphrase</div><div class="gstep-body">Something memorable — e.g. your-name-films-2026. No email or sign-up required.</div></div></div>
-
-      <div class="gstep"><span class="gnum">2</span><div><div class="gstep-title">Save ↑ regularly</div><div class="gstep-body">Tap Save ↑ after any marking session. Takes 2 seconds.</div></div></div>
-
-      <div class="gstep"><span class="gnum">3</span><div><div class="gstep-title">Load ↓ on a new device</div><div class="gstep-body">My List → enter passphrase → Load ↓. Your full list appears instantly.</div></div></div>
-
-      <div class="gnote">⚠ Passphrase is case-sensitive. Keep it safe — there is no recovery if forgotten. Use Export JSON as an additional backup to Google Drive.</div>
-
-    </div>
-
-
-
-    <div id="g9" class="gsect">
-
-      <div class="gtitle">9 · Tips</div>
-
-      <div class="gbullet"><span class="gico">🎯</span><div><span class="glabel">Start narrow</span> — Tap None in the filter bar, then select just one or two genre pills. The feed becomes highly focused.</div></div>
-
-      <div class="gbullet"><span class="gico">✓</span><div><span class="glabel">Mark as you go</span> — Tap Seen on anything you have already watched. It is permanently removed from Discover.</div></div>
-
-      <div class="gbullet"><span class="gico">★</span><div><span class="glabel">Use Liked strategically</span> — More Like This on any liked film surfaces similar titles streaming in India.</div></div>
-
-      <div class="gbullet"><span class="gico">🎬</span><div><span class="glabel">Tap the director</span> — Found a film you love? Tap the director to see every film of theirs available in India.</div></div>
-
-      <div class="gbullet"><span class="gico">🆕</span><div><span class="glabel">New Arrivals daily habit</span> — A quick scroll of the top row tells you what just landed on Indian streaming.</div></div>
-
-      <div class="gbullet"><span class="gico">↕️</span><div><span class="glabel">Newest + Rated sort</span> — Best recent films by year then rating — the most useful sort for finding acclaimed new titles.</div></div>
-
-      <div class="gbullet"><span class="gico">🍿</span><div><span class="glabel">Letterboxd link</span> — For arthouse and world cinema, the <a href="https://letterboxd.com" target="_blank" class="glink">Letterboxd</a> score from cinephiles is often more meaningful than the TMDB score from a general audience.</div></div>
-
-    </div>
-
-
-
-    <div id="g10" class="gsect">
-
-      <div class="gtitle">10 · FAQ</div>
-
-      <div class="gfaq">
-
-        <div class="gfaq-q">My list disappeared.</div>
-
-        <div class="gfaq-a">You likely opened a downloaded file or cleared browser cache. Open the <a href="https://watchpick-dun.vercel.app" target="_blank" class="glink">hosted URL</a>, go to My List, enter your passphrase, and tap Load ↓.</div>
-
-      </div>
-
-      <div class="gfaq">
-
-        <div class="gfaq-q">A film I know is on Netflix is not showing.</div>
-
-        <div class="gfaq-a">India availability is sourced from <a href="https://www.justwatch.com/in" target="_blank" class="glink">JustWatch</a> via TMDB and is updated regularly but not in real time. Rights change frequently — recently added titles may have a short lag.</div>
-
-      </div>
-
-      <div class="gfaq">
-
-        <div class="gfaq-q">Trailers are not playing.</div>
-
-        <div class="gfaq-a">Trailers only play from the hosted URL (not a downloaded file). Some studios disable embedding — if a trailer shows "Video unavailable", it will still open on <a href="https://youtube.com" target="_blank" class="glink">YouTube</a> directly.</div>
-
-      </div>
-
-      <div class="gfaq">
-
-        <div class="gfaq-q">The feed keeps showing the same titles.</div>
-
-        <div class="gfaq-a">Tap Load Page N ↓ for genuinely new titles. If you have marked many titles as Seen they are filtered out — use ↻ Refresh for a completely fresh batch.</div>
-
-      </div>
-
-      <div class="gfaq">
-
-        <div class="gfaq-q">YouTube shows Rent/Buy even on Stream only.</div>
-
-        <div class="gfaq-a">JustWatch India does not consistently report YouTube Premium's streaming catalogue as flatrate. Most YouTube content in India appears as rental/purchase data — this is a JustWatch data limitation, not a WatchPick bug.</div>
-
-      </div>
-
-    </div>
-
-
-
-    <!-- FOOTER -->
-
-    <div style="text-align:center;padding:20px 0;border-top:.5px solid var(--b1);margin-top:8px">
-
-      <div style="font-size:9px;color:var(--t3)">WatchPick · Cinema Companion · India</div>
-
-      <div style="font-size:9px;color:var(--t3);margin-top:3px">Availability data: <a href="https://www.justwatch.com/in" target="_blank" class="glink">JustWatch</a> via <a href="https://www.themoviedb.org" target="_blank" class="glink">TMDB</a></div>
-
-    </div>
-
-
-
-  </div>
-
-</div>
-
-
-
 <div id="tab-settings" class="scroll" style="display:none">
 
+  <div class="sect-block">
   <div class="slabel" style="margin-bottom:8px">Platforms</div>
 
   <div id="ptogs"></div>
+  </div>
 
-  <div class="slabel" style="margin-top:16px;margin-bottom:8px">Genres</div>
+  <div class="sect-block">
+  <div class="slabel" style="margin-bottom:8px">Genres</div>
 
   <div id="gtogs"></div>
+  </div>
 
-  <div class="slabel" style="margin-top:16px;margin-bottom:8px">Add custom title</div>
+  <div class="sect-block">
+  <div class="slabel" style="margin-bottom:8px">Add custom title</div>
 
   <div class="addrow">
 
@@ -1281,6 +966,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   </div>
 
   <div id="custlist"></div>
+  </div>
 
 </div>
 
@@ -1291,6 +977,11 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 // ════════════ CONFIG ════════════
 
 const TMDB='2dca580c2a14b55200e784d157207b4d';
+
+function initials(name){
+  if(!name) return '';
+  return name.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+}
 
 function img(path,size){
 
@@ -1306,7 +997,7 @@ function imgTag(path,size,cls){
 
   return `<img src="${img(path,size)}" alt="" loading="lazy" class="${cls||''}"
 
-    onload="this.classList.add('loaded')" onerror="this.remove()">`;
+    onload="this.classList.add('loaded')" onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://image.tmdb.org/t/p/${size}${path}'}else{this.remove()}">`;
 
 }
 
@@ -1362,53 +1053,53 @@ const GENRES={
 
   // Original 8 — using TMDB IDs or keyword overrides
 
-  philosophy:    {label:'🧠 Philosophy',          tmdbId:null,  kwKey:'philosophy',    voteMin:50},
+  philosophy:    {label:'Philosophy',          tmdbId:null,  kwKey:'philosophy',    voteMin:50},
 
-  worldcinema:   {label:'🌍 World Cinema',         tmdbId:null,  worldCinema:true,      voteMin:200},
+  worldcinema:   {label:'World Cinema',         tmdbId:null,  worldCinema:true,      voteMin:200},
 
-  critically:    {label:'🏆 Critically Acclaimed', tmdbId:null,  voteMin:2500,          noGenre:true},
+  critically:    {label:'Critically Acclaimed', tmdbId:null,  voteMin:2500,          noGenre:true},
 
-  rock:          {label:'🎸 Rock & Music',          tmdbId:10402, voteMin:80},
+  rock:          {label:'Rock & Music',          tmdbId:10402, voteMin:80},
 
-  superhero:     {label:'🦸 Superhero',            tmdbId:null,  kwKey:'superhero',     voteMin:500},
+  superhero:     {label:'Superhero',            tmdbId:null,  kwKey:'superhero',     voteMin:500},
 
-  scifi:         {label:'🚀 Sci-Fi',               tmdbId:878,   voteMin:500},
+  scifi:         {label:'Sci-Fi',               tmdbId:878,   voteMin:500},
 
-  screenplay:    {label:'✍️ Brilliant Screenplay', tmdbId:'18|9648|53', voteMin:1500},
+  screenplay:    {label:'Brilliant Screenplay', tmdbId:'18|9648|53', voteMin:1500},
 
-  documentary:   {label:'📽️ Documentary',          tmdbId:99,    voteMin:80},
+  documentary:   {label:'Documentary',          tmdbId:99,    voteMin:80},
 
-  cinematography:{label:'🎥 Cinematography',       tmdbId:null,  kwKey:'cinematography',voteMin:200},
+  cinematography:{label:'Cinematography',       tmdbId:null,  kwKey:'cinematography',voteMin:200},
 
   // 13 new TMDB genres
 
-  action:        {label:'💥 Action',               tmdbId:28,    voteMin:500},
+  action:        {label:'Action',               tmdbId:28,    voteMin:500},
 
-  adventure:     {label:'🗺️ Adventure',            tmdbId:12,    voteMin:300},
+  adventure:     {label:'Adventure',            tmdbId:12,    voteMin:300},
 
-  animation:     {label:'🎨 Animation',            tmdbId:16,    voteMin:200},
+  animation:     {label:'Animation',            tmdbId:16,    voteMin:200},
 
-  comedy:        {label:'😄 Comedy',               tmdbId:35,    voteMin:500},
+  comedy:        {label:'Comedy',               tmdbId:35,    voteMin:500},
 
-  crime:         {label:'🔍 Crime',                tmdbId:80,    voteMin:500},
+  crime:         {label:'Crime',                tmdbId:80,    voteMin:500},
 
-  family:        {label:'👨‍👩‍👧 Family',              tmdbId:10751, voteMin:200},
+  family:        {label:'Family',              tmdbId:10751, voteMin:200},
 
-  fantasy:       {label:'🧙 Fantasy',              tmdbId:14,    voteMin:300},
+  fantasy:       {label:'Fantasy',              tmdbId:14,    voteMin:300},
 
-  history:       {label:'📜 History',              tmdbId:36,    voteMin:200},
+  history:       {label:'History',              tmdbId:36,    voteMin:200},
 
-  horror:        {label:'👻 Horror',               tmdbId:27,    voteMin:300},
+  horror:        {label:'Horror',               tmdbId:27,    voteMin:300},
 
-  mystery:       {label:'🕵️ Mystery',              tmdbId:9648,  voteMin:300},
+  mystery:       {label:'Mystery',              tmdbId:9648,  voteMin:300},
 
-  romance:       {label:'❤️ Romance',              tmdbId:10749, voteMin:300},
+  romance:       {label:'Romance',              tmdbId:10749, voteMin:300},
 
-  thriller:      {label:'😰 Thriller',             tmdbId:53,    voteMin:500},
+  thriller:      {label:'Thriller',             tmdbId:53,    voteMin:500},
 
-  war:           {label:'⚔️ War',                  tmdbId:10752, voteMin:200},
+  war:           {label:'War',                  tmdbId:10752, voteMin:200},
 
-  western:       {label:'🤠 Western',              tmdbId:37,    voteMin:100},
+  western:       {label:'Western',              tmdbId:37,    voteMin:100},
 
 };
 
@@ -1430,7 +1121,6 @@ const MASTERS=[
   {id:12453,  name:"Wong Kar-wai",            role:"Director",         tag:"World Cinema",   note:"In the Mood for Love · 2046 · Chungking Express"},
   {id:10099,  name:"Park Chan-wook",          role:"Director",         tag:"World Cinema",   note:"Oldboy · The Handmaiden · Decision to Leave"},
   {id:21684,  name:"Bong Joon-ho",            role:"Director/Writer",  tag:"World Cinema",   note:"Parasite · Memories of Murder · Mother"},
-  {id:12160,  name:"Satyajit Ray",            role:"Director",         tag:"World Cinema",   note:"Pather Panchali · Charulata · The Chess Players"},
   {id:309,    name:"Pedro Almodóvar",         role:"Director",         tag:"World Cinema",   note:"All About My Mother · Talk to Her · Pain and Glory"},
   {id:68813,  name:"Céline Sciamma",          role:"Director/Writer",  tag:"World Cinema",   note:"Portrait of a Lady on Fire · Petite Maman · Tomboy"},
   {id:6011,   name:"Michael Haneke",          role:"Director",         tag:"World Cinema",   note:"Amour · The White Ribbon · Caché"},
@@ -1450,7 +1140,7 @@ const MASTERS=[
   {id:13520,  name:"Aaron Sorkin",            role:"Writer",           tag:"Screenplay",     note:"The Social Network · A Few Good Men · Moneyball"},
   {id:4762,   name:"Paul Thomas Anderson",    role:"Director/Writer",  tag:"Screenplay",     note:"There Will Be Blood · Magnolia · Phantom Thread"},
   {id:1023483,name:"Phoebe Waller-Bridge",   role:"Writer",           tag:"Screenplay",     note:"Fleabag · Killing Eve · No Time to Die"},
-  {id:1408,   name:"Hayao Miyazaki",          role:"Director/Writer",  tag:"Screenplay",     note:"Spirited Away · Princess Mononoke · My Neighbour Totoro"},
+  {id:608,    name:"Hayao Miyazaki",          role:"Director/Writer",  tag:"Screenplay",     note:"Spirited Away · Princess Mononoke · My Neighbour Totoro"},
   {id:1223,   name:"Joel Coen",              role:"Director/Writer",  tag:"Screenplay",     note:"No Country for Old Men · Fargo · The Big Lebowski"},
   {id:2303,   name:"Wim Wenders",            role:"Director/Writer",  tag:"Screenplay",     note:"Paris, Texas · Wings of Desire · Perfect Days"},
 
@@ -1464,24 +1154,34 @@ const MASTERS=[
   {id:67113,  name:"Greig Fraser",            role:"Cinematographer",  tag:"Cinematography", note:"Dune · The Batman · Zero Dark Thirty · Lion"},
   {id:3097,   name:"Gordon Willis",           role:"Cinematographer",  tag:"Cinematography", note:"The Godfather · All the President's Men · Manhattan"},
   {id:8217,   name:"Conrad Hall",             role:"Cinematographer",  tag:"Cinematography", note:"Road to Perdition · American Beauty · In Cold Blood"},
+
+  // ── Indian Cinema ──
+  {id:12160,  name:"Satyajit Ray",             role:"Director",         tag:"Indian Cinema",  note:"Pather Panchali · Charulata · The Chess Players"},
+  {id:543652, name:"Ritwik Ghatak",            role:"Director",         tag:"Indian Cinema",  note:"The Cloud-Capped Star · A River Called Titas · E-Flat"},
+  {id:1086288,name:"Mrinal Sen",               role:"Director",         tag:"Indian Cinema",  note:"Bhuvan Shome · Calcutta 71 · Khandhar"},
+  {id:125354, name:"Guru Dutt",                role:"Director",         tag:"Indian Cinema",  note:"Pyaasa · Kaagaz Ke Phool · Sahib Bibi Aur Ghulam"},
+  {id:606175, name:"Bimal Roy",                role:"Director",         tag:"Indian Cinema",  note:"Devdas · Do Bigha Zamin · Sujata"},
+  {id:935843, name:"Adoor Gopalakrishnan",     role:"Director",         tag:"Indian Cinema",  note:"Elippathayam · Mathilukal · Vidheyan"},
+  {id:114636, name:"Shyam Benegal",            role:"Director",         tag:"Indian Cinema",  note:"Ankur · Nishant · Manthan"},
+  {id:78747,  name:"Mani Ratnam",              role:"Director/Writer",  tag:"Indian Cinema",  note:"Dil Se · Roja · Ponniyin Selvan"},
 ];
 
-const MASTER_TAGS=["Contemplative","World Cinema","Visual Craft","Screenplay","Cinematography"];
+const MASTER_TAGS=["Contemplative","World Cinema","Indian Cinema","Visual Craft","Screenplay","Cinematography"];
 // TV-specific genres (TMDB TV genre IDs differ from movie genre IDs)
 const TV_GENRES={
-  drama:       {label:'🎭 Drama',              tmdbId:18,    voteMin:100},
-  crime_tv:    {label:'🔍 Crime',              tmdbId:80,    voteMin:100},
-  comedy_tv:   {label:'😄 Comedy',            tmdbId:35,    voteMin:100},
-  scifi_tv:    {label:'🚀 Sci-Fi & Fantasy',  tmdbId:'10765', voteMin:100},
-  action_tv:   {label:'💥 Action & Adventure',tmdbId:'10759', voteMin:100},
-  thriller_tv: {label:'😰 Thriller',          tmdbId:9648,  voteMin:50},
-  documentary_tv:{label:'📽️ Documentary',     tmdbId:99,    voteMin:50},
-  family_tv:   {label:'👨‍👩‍👧 Family',          tmdbId:10751, voteMin:50},
-  reality:     {label:'🎬 Reality',           tmdbId:10764, voteMin:50},
-  animation_tv:{label:'🎨 Animation',         tmdbId:16,    voteMin:50},
+  drama:       {label:'Drama',              tmdbId:18,    voteMin:100},
+  crime_tv:    {label:'Crime',              tmdbId:80,    voteMin:100},
+  comedy_tv:   {label:'Comedy',            tmdbId:35,    voteMin:100},
+  scifi_tv:    {label:'Sci-Fi & Fantasy',  tmdbId:'10765', voteMin:100},
+  action_tv:   {label:'Action & Adventure',tmdbId:'10759', voteMin:100},
+  thriller_tv: {label:'Thriller',          tmdbId:9648,  voteMin:50},
+  documentary_tv:{label:'Documentary',     tmdbId:99,    voteMin:50},
+  family_tv:   {label:'Family',          tmdbId:10751, voteMin:50},
+  reality:     {label:'Reality',           tmdbId:10764, voteMin:50},
+  animation_tv:{label:'Animation',         tmdbId:16,    voteMin:50},
   // Special TV genres matching existing film special genres
-  critically_tv:{label:'🏆 Critically Acclaimed',tmdbId:null,noGenre:true,voteMin:500},
-  indian_tv:   {label:'🇮🇳 Indian Originals',  tmdbId:null,  indianOnly:true, voteMin:20},
+  critically_tv:{label:'Critically Acclaimed',tmdbId:null,noGenre:true,voteMin:500},
+  indian_tv:   {label:'Indian Originals',  tmdbId:null,  indianOnly:true, voteMin:20},
 };
 
 
@@ -1612,11 +1312,9 @@ function personCardHTML(p){
 
     padding:12px;cursor:pointer;margin-bottom:4px;user-select:none">
 
-    <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;
+    <div class="castthumb" style="width:56px;height:56px;margin:0;flex-shrink:0">
 
-      background:var(--s3);flex-shrink:0;position:relative;border:.5px solid var(--b2)">
-
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px">👤</div>
+      <div class="castfb" style="font-size:16px">${initials(p.name)}</div>
 
       ${imgTag(p.profile_path,'w185','')}
 
@@ -1772,6 +1470,14 @@ const TMDB_SORT={
 
 // ════════════ MASTERS OF CINEMA ════════════
 let mastersActiveTag='Contemplative';
+const masterProfileCache={}; // TMDB person id -> profile_path string, or null once confirmed missing
+
+function masterCardImg(m){
+  const p=masterProfileCache[m.id];
+  if(!p) return '';
+  return `<img src="${img(p,'w185')}" loading="lazy" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"
+    onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://image.tmdb.org/t/p/w185${p}'}else{this.remove()}">`;
+}
 
 function renderMasters(){
   const sect=$('masters-sect');
@@ -1785,21 +1491,31 @@ function renderMasters(){
     `<div class="mtag ${t===mastersActiveTag?'on':''}" onclick="setMasterTag('${t}')">${t}</div>`
   ).join('');
 
-  // Render person cards for active tag
+  // Render person cards for active tag (fallback icon shows until a real photo is fetched)
   const filtered=MASTERS.filter(m=>m.tag===mastersActiveTag);
   scroll.innerHTML=filtered.map(m=>{
-    const img=m.profile?
-      `<img src="https://wsrv.nl/?url=https://image.tmdb.org/t/p/w185${m.profile}&w=180&h=180&fit=cover&output=webp" loading="lazy" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'">`:'';
     return `<div class="mcard" data-master-id="${m.id}">
       <div class="mphoto">
-        <div class="mphoto-fb">👤</div>
-        ${img}
+        <div class="mphoto-fb">${initials(m.name)}</div>
+        ${masterCardImg(m)}
       </div>
       <div class="mname">${m.name}</div>
       <div class="mrole">${m.role}</div>
       <div class="mnote">${m.note}</div>
     </div>`;
   }).join('');
+
+  // Fetch real profile photos for this tag (cached after first fetch) and patch them in
+  const thisTag=mastersActiveTag;
+  filtered.forEach(async m=>{
+    if(masterProfileCache[m.id]!==undefined) return; // already fetched this session
+    const p=await tmdbPerson(m.id).catch(()=>({}));
+    masterProfileCache[m.id]=p.profile_path||null;
+    if(!p.profile_path) return;
+    if(mastersActiveTag!==thisTag) return; // user switched tags before this landed
+    const photoEl=scroll.querySelector(`[data-master-id="${m.id}"] .mphoto`);
+    if(photoEl && !photoEl.querySelector('img')) photoEl.insertAdjacentHTML('beforeend',masterCardImg(m));
+  });
 }
 
 function setMasterTag(tag){
@@ -1896,7 +1612,7 @@ async function loadNewArrivals(forceRefresh=false){
 
       <div class="scard-pw">
 
-        <div class="scard-fb">🎬</div>${imgTag(s.poster_path,'w342','')}
+        <div class="scard-fb">${s.type==='tv'?'Series':'Film'}</div>${imgTag(s.poster_path,'w342','')}
 
         ${pc?`<div class="cplt plt-${plt}" style="top:4px;left:4px;font-size:6px;padding:2px 4px">${pc.label}</div>`:''}
 
@@ -2334,7 +2050,7 @@ async function loadMore(){
 
   }
 
-  toast('Feed exhausted for these filters — try ↻ Refresh or broaden genres');
+  toast('Feed exhausted for these filters — try Refresh or broaden genres');
 
 }
 
@@ -2342,7 +2058,7 @@ async function loadMore(){
 
 async function refreshDiscover(){
 
-  toast('↻ Refreshing feed…');
+  toast('Refreshing feed…');
 
   S.prov={};
 
@@ -2459,13 +2175,121 @@ function showWelcome(){
 function dismissWelcome(skip){
   $('welcomeOverlay').classList.remove('open');
   localStorage.setItem('wp_welcomed','1');
-  // If not skipping — nudge sync setup after a short delay
   if(!skip){
+    // Short tour of the truly non-obvious stuff, right after the welcome card closes
+    setTimeout(()=>openTour(TOUR_QUICK),400);
+    // Nudge sync setup a bit later, once the tour has had a chance to finish
     setTimeout(()=>{
       const token=localStorage.getItem('wp_synctoken');
-      if(!token) toast('💡 Tip: Set a passphrase in My List → Cloud Sync to keep your list safe across devices');
-    },3000);
+      if(!token) toast('Tip: Set a passphrase in My List → Cloud Sync to keep your list safe across devices');
+    },9000);
   }
+}
+
+// ════════════ GUIDED TOUR (live spotlight) ════════════
+// tab: which nav tab must be active for this step's target to exist ('discover'|'watchlist'|'settings'|null=leave as-is)
+// sel: CSS selector of the real element to highlight
+const TOUR_QUICK=[
+  {tab:'discover', sel:'#fbar-row3', t:'The Filter Bar has more rows than you think', b:'This row — Language · Sort · Availability — sits below the genre buttons. For Series there’s a third row of TV-only genres too.'},
+  {tab:'discover', sel:'#cgrid .cbtns', t:'Every card has quick actions built in', b:'Want / ★ Liked / ✓ Seen / Not Interested sit right on each poster in Discover — no need to open a title first.'},
+  {tab:'discover', sel:'#cgrid .cbtns', t:'Seen and Not Interested aren’t lost — just hidden', b:'Those two never show up in My List. To bring one back, search for the title again and tap the same action once more to undo it.'},
+  {tab:'discover', sel:'#micbtn', t:'Try Voice search', b:'Tap Voice next to the search box and just say a title, actor, or director instead of typing.'},
+  {tab:null, sel:'#guideBtn', t:'Come back to this anytime', b:'Tap Guide whenever you want — it has a full, section-by-section tour too.'}
+];
+const TOUR_FULL=[
+  {tab:null, sel:'.logo', t:'What is WatchPick', b:'A personal cinema discovery app for India — films and shows filtered by real taste categories, with availability verified across 8 streaming platforms.'},
+  {tab:'discover', sel:'#sinput', t:'Search & Voice', b:'Type a title, director, or actor. A gold card means your search matched a person — tap it for their full India filmography. Tap Voice to search by speaking instead.'},
+  {tab:'discover', sel:'#mediaToggleRow', t:'Films / Both / Series', b:'This toggle narrows Discover to movies only, TV only, or both together.'},
+  {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Tap a tag to switch groups, tap a name to open their full filmography.'},
+  {tab:'discover', sel:'#newarrivals-sect', t:'New Arrivals', b:'Films added to Indian streaming in the last 60 days, in their own scrolling row with their own Refresh.'},
+  {tab:'discover', sel:'#curated-sect', t:'Curated feed & the Filter Bar', b:'Your main feed below has its own Sort dropdown. The Filter Bar under the nav tabs adds Genres, Language, Sort and Availability filters without leaving Discover.'},
+  {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Want, ★ Liked, ✓ Seen, and Not Interested — right on the poster. Seen and Not Interested quietly remove a title from Discover; tap the same action again (find it via Search) to undo.'},
+  {tab:'watchlist', sel:'#wcontent', t:'My List', b:'Shows only what you’ve marked Want to Watch, with its own sort. Liked / Seen / Not Interested aren’t listed here — they just shape what Discover shows you.'},
+  {tab:'watchlist', sel:'#syncpanel', t:'Cloud Sync', b:'Set a passphrase here to back your list up online — use the same phrase on any device to load it. Export/Import also saves a backup file you can keep yourself.'},
+  {tab:'settings', sel:'#ptogs', t:'Platforms & Genres', b:'Turn streaming services on or off, choose which genres appear in your feed, or pin a specific custom title so it always shows up.'},
+  {tab:'discover', sel:'#cgrid .card', t:'The Title Detail Page', b:'Tap any card for the full page — where to watch, trailers, IMDb and Letterboxd links, cast and crew (tap any name for their filmography), and a Did You Know trivia section when there’s something notable.'},
+  {tab:null, sel:'#guideBtn', t:'That’s everything', b:'You can reopen this tour anytime from the Guide button in the header.'}
+];
+
+let tourSteps=[], tourIdx=0, tourReposition=null;
+function tourWait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+function openTour(steps){
+  tourSteps=steps; tourIdx=0;
+  $('spotBlock').style.display='block';
+  $('spotHole').style.display='block';
+  $('spotCallout').style.display='block';
+  goToTourStep(0);
+}
+
+async function goToTourStep(i){
+  tourIdx=i;
+  const s=tourSteps[i];
+  const curTab=document.querySelector('.ntab.on')?.dataset.tab;
+  if(s.tab && curTab!==s.tab){ showTab(s.tab); await tourWait(200); }
+
+  let el=null, tries=0;
+  while(!el && tries<10){
+    el=document.querySelector(s.sel);
+    if(!el){ await tourWait(150); tries++; }
+  }
+  if(!el){
+    // couldn't find this step's target (e.g. empty grid) — skip it gracefully
+    if(i<tourSteps.length-1) return goToTourStep(i+1);
+    return closeTour();
+  }
+
+  el.scrollIntoView({block:'center',behavior:'instant'});
+  await tourWait(80);
+  positionSpotlight(el);
+  renderTourText(s,i);
+
+  if(tourReposition) window.removeEventListener('resize',tourReposition);
+  tourReposition=()=>positionSpotlight(el);
+  window.addEventListener('resize',tourReposition);
+}
+
+function positionSpotlight(el){
+  const r=el.getBoundingClientRect();
+  const pad=6;
+  const hole=$('spotHole');
+  hole.style.left=(r.left-pad)+'px';
+  hole.style.top=(r.top-pad)+'px';
+  hole.style.width=(r.width+pad*2)+'px';
+  hole.style.height=(r.height+pad*2)+'px';
+
+  const callout=$('spotCallout');
+  callout.style.top='-9999px'; callout.style.left='0px'; // measure off-screen first
+  const cw=callout.offsetWidth, ch=callout.offsetHeight;
+  const spaceBelow=window.innerHeight-r.bottom;
+  const top=spaceBelow>ch+24 ? r.bottom+pad+12 : Math.max(12,r.top-pad-12-ch);
+  let left=r.left+r.width/2-cw/2;
+  left=Math.min(Math.max(12,left),window.innerWidth-cw-12);
+  callout.style.top=top+'px';
+  callout.style.left=left+'px';
+}
+
+function renderTourText(s,i){
+  $('spotCount').textContent=`${i+1} / ${tourSteps.length}`;
+  $('spotTitle').textContent=s.t;
+  $('spotText').textContent=s.b;
+  $('spotDots').innerHTML=tourSteps.map((_,idx)=>`<div class="tour-dot ${idx===i?'on':''}"></div>`).join('');
+  $('spotBack').style.visibility=i===0?'hidden':'visible';
+  $('spotNext').textContent=i===tourSteps.length-1?'Done':'Next →';
+}
+
+function tourNext(){
+  if(tourIdx>=tourSteps.length-1){ closeTour(); return; }
+  goToTourStep(tourIdx+1);
+}
+function tourBack(){
+  if(tourIdx>0) goToTourStep(tourIdx-1);
+}
+function closeTour(){
+  $('spotBlock').style.display='none';
+  $('spotHole').style.display='none';
+  $('spotCallout').style.display='none';
+  if(tourReposition){ window.removeEventListener('resize',tourReposition); tourReposition=null; }
 }
 
 // ════════════ VOICE SEARCH ════════════
@@ -2491,7 +2315,7 @@ function toggleVoice(){
   voiceRecog.onstart=()=>{
     voiceActive=true;
     if(mic) mic.classList.add('listening');
-    if(transcript) transcript.textContent='🎤 Listening…';
+    if(transcript) transcript.textContent='Listening…';
   };
 
   voiceRecog.onresult=(e)=>{
@@ -2632,7 +2456,7 @@ function renderGrid(items){
 
   if(!vis.length){
 
-    el.innerHTML=personHTML+`<div class="empty"><div style="font-size:28px;margin-bottom:8px">🎬</div><div class="et">${personHTML?'Tap the card above for their filmography':S.activeG.size||S.activeTVG?.size?'No India-streamable titles match your filters':'Select at least one genre to start discovering'}</div><div style="font-size:10px;color:var(--t3)">${personHTML?'':S.activeG.size||S.activeTVG?.size?'Try different genres, platforms or language — or tap ↻ Refresh':''}</div></div>`;
+    el.innerHTML=personHTML+`<div class="empty"><div class="et">${personHTML?'Tap the card above for their filmography':S.activeG.size||S.activeTVG?.size?'No India-streamable titles match your filters':'Select at least one genre to start discovering'}</div><div style="font-size:10px;color:var(--t3)">${personHTML?'':S.activeG.size||S.activeTVG?.size?'Try different genres, platforms or language — or tap Refresh':''}</div></div>`;
 
     return;
 
@@ -2676,9 +2500,9 @@ function cardHTML(item){
 
     :st==='seen'?`<div class="cstat" style="background:rgba(100,100,100,.35);color:#888">✓</div>`
 
-    :st==='hidden'?`<div class="cstat" style="background:rgba(224,85,85,.3);color:#ff9090">🚫</div>`
+    :st==='hidden'?`<div class="cstat" style="background:rgba(224,85,85,.3);color:#ff9090">N</div>`
 
-    :st==='want'?`<div class="cstat" style="background:rgba(110,170,212,.3);color:var(--blue)">🔖</div>`:'';
+    :st==='want'?`<div class="cstat" style="background:rgba(110,170,212,.3);color:var(--blue)">W</div>`:'';
 
   const gtags=(item.genre_ids||[]).map(g=>GENRE_NAMES[g]).filter(Boolean).slice(0,1)
 
@@ -2688,7 +2512,7 @@ function cardHTML(item){
 
     <div class="pw">
 
-      <div class="pfb"><span>🎬</span><span>${item.type}</span></div>
+      <div class="pfb">${item.type==='tv'?'Series':'Film'}</div>
 
       ${imgTag(item.poster_path,'w342','')}
 
@@ -2714,13 +2538,13 @@ function cardHTML(item){
 
     <div class="cbtns">
 
-      <div class="cbtn ${st==='want'?'want':''}" onclick="event.stopPropagation();setStatus(${item.id},'want')">🔖</div>
+      <div class="cbtn ${st==='want'?'want':''}" onclick="event.stopPropagation();setStatus(${item.id},'want')">W</div>
 
       <div class="cbtn ${st==='liked'?'liked':''}" onclick="event.stopPropagation();setStatus(${item.id},'liked')">★</div>
 
       <div class="cbtn ${st==='seen'?'seen':''}" onclick="event.stopPropagation();setStatus(${item.id},'seen')">✓</div>
 
-      <div class="cbtn ${st==='hidden'?'hidden':''}" onclick="event.stopPropagation();setStatus(${item.id},'hidden')">🚫</div>
+      <div class="cbtn ${st==='hidden'?'hidden':''}" onclick="event.stopPropagation();setStatus(${item.id},'hidden')">N</div>
 
     </div>
 
@@ -2990,7 +2814,7 @@ function detailHTML(item,det,st,sims){
   thanksCrew.forEach(c=>{
     triviaItems.push(
       `<div class="trivia-item">
-        <span class="trivia-ico">🎬</span>
+        <span class="trivia-ico">•</span>
         <span class="trivia-text"><b>${c.name}</b> is acknowledged in the credits${c.job==='Special Thanks'?' with a special thanks':''}.
         ${det.imdb_id?`<a href="https://www.imdb.com/title/${det.imdb_id}/trivia/" target="_blank" class="trivia-link">Find out why on IMDB trivia →</a>`:''}
         </span>
@@ -3005,7 +2829,7 @@ function detailHTML(item,det,st,sims){
                 `<b>${c.name}</b> — ${c.job}`;
     triviaItems.push(
       `<div class="trivia-item">
-        <span class="trivia-ico">💡</span>
+        <span class="trivia-ico">•</span>
         <span class="trivia-text">${label}.
         ${det.imdb_id?`<a href="https://www.imdb.com/title/${det.imdb_id}/trivia/" target="_blank" class="trivia-link">More on IMDB →</a>`:''}
         </span>
@@ -3016,7 +2840,7 @@ function detailHTML(item,det,st,sims){
   if(collaborationNote){
     triviaItems.push(
       `<div class="trivia-item">
-        <span class="trivia-ico">🤝</span>
+        <span class="trivia-ico">•</span>
         <span class="trivia-text">${collaborationNote}
         ${directorName?`<span onclick="openPerson(${directors[0].id})" style="color:var(--gold);cursor:pointer">See ${directorName}'s filmography →</span>`:''}
         </span>
@@ -3059,7 +2883,7 @@ function detailHTML(item,det,st,sims){
 
   <div class="dhero">
 
-    ${backdrop?imgTag(backdrop,'w780',''):`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--t3)">🎬</div>`}
+    ${backdrop?imgTag(backdrop,'w780',''):`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--t3)"></div>`}
 
     <div class="dhero-grd"></div>
 
@@ -3103,13 +2927,13 @@ function detailHTML(item,det,st,sims){
 
     <div class="dactions">
 
-      <div class="dact ${st==='want'?'on':''}" id="dact-want" onclick="setStatus(${item.id},'want');refreshDacts(${item.id})"><span class="ai">🔖</span>Want to Watch</div>
+      <div class="dact ${st==='want'?'on':''}" id="dact-want" onclick="setStatus(${item.id},'want');refreshDacts(${item.id})">Want to Watch</div>
 
       <div class="dact ${st==='liked'?'on':''}" id="dact-liked" onclick="setStatus(${item.id},'liked');refreshDacts(${item.id})"><span class="ai">★</span>Liked It</div>
 
       <div class="dact ${st==='seen'?'on-seen':''}" id="dact-seen" onclick="setStatus(${item.id},'seen');refreshDacts(${item.id})"><span class="ai">✓</span>Already Seen</div>
 
-      <div class="dact ${st==='hidden'?'on-hidden':''}" id="dact-hidden" onclick="setStatus(${item.id},'hidden');refreshDacts(${item.id})"><span class="ai">🚫</span>Not Interested</div>
+      <div class="dact ${st==='hidden'?'on-hidden':''}" id="dact-hidden" onclick="setStatus(${item.id},'hidden');refreshDacts(${item.id})">Not Interested</div>
 
     </div>
 
@@ -3148,7 +2972,7 @@ function detailHTML(item,det,st,sims){
 
         <div class="castcard" onclick="openPerson(${c.id})">
 
-          <div class="castthumb"><div class="castfb">👤</div>${imgTag(c.profile_path,'w185','')}</div>
+          <div class="castthumb"><div class="castfb">${initials(c.name)}</div>${imgTag(c.profile_path,'w185','')}</div>
 
           <div class="castname">${c.name}</div>
 
@@ -3172,7 +2996,7 @@ function detailHTML(item,det,st,sims){
 
           <div class="scard-pw">
 
-            <div class="scard-fb">🎬</div>${imgTag(s.poster_path,'w342','')}
+            <div class="scard-fb">${s.type==='tv'?'Series':'Film'}</div>${imgTag(s.poster_path,'w342','')}
 
             ${pc?`<div class="cplt plt-${plt}" style="top:4px;left:4px;font-size:6px;padding:2px 4px">${pc.label}</div>`:''}
 
@@ -3321,7 +3145,7 @@ async function renderPersonView(personId){
 
       <div class="person-hero">
 
-        <div class="person-photo"><div class="castfb" style="font-size:34px">👤</div>${imgTag(p.profile_path,'w185','')}</div>
+        <div class="person-photo"><div class="castfb" style="font-size:26px">${initials(p.name)}</div>${imgTag(p.profile_path,'w185','')}</div>
 
         <div>
 
@@ -3418,7 +3242,7 @@ function setStatus(id,status){
 
 }
 
-function stMsg(s){return s==='liked'?'★ Marked as liked':s==='seen'?'✓ Seen — won\'t suggest again':s==='hidden'?'🚫 Not interested — won\'t suggest again':'🔖 Added to watchlist';}
+function stMsg(s){return s==='liked'?'★ Marked as liked':s==='seen'?'✓ Seen — won\'t suggest again':s==='hidden'?'Not interested — won\'t suggest again':'Added to watchlist';}
 
 function removeWL(id){S.watchlist=S.watchlist.filter(w=>w.id!==id);persist();updateBadge();renderWatchlist();toast('Removed');}
 
@@ -3432,7 +3256,7 @@ function renderWatchlist(){
 
   if(!S.watchlist.length){
 
-    el.innerHTML=`<div class="empty"><div style="font-size:28px;margin-bottom:8px">🔖</div><div class="et">Your list is empty</div><div style="font-size:10px;color:var(--t3)">Mark titles from the Discover tab</div></div>`;
+    el.innerHTML=`<div class="empty"><div class="et">Your list is empty</div><div style="font-size:10px;color:var(--t3)">Mark titles from the Discover tab</div></div>`;
 
     return;
 
@@ -3461,19 +3285,19 @@ function renderWatchlist(){
   const wantItems=sorted;
 
   if(!wantItems.length){
-    el.innerHTML=`<div class="empty"><div style="font-size:28px;margin-bottom:8px">🔖</div><div class="et">Nothing in your watch queue</div><div style="font-size:10px;color:var(--t3)">Mark titles Want to Watch from the Discover tab</div></div>`;
+    el.innerHTML=`<div class="empty"><div class="et">Nothing in your watch queue</div><div style="font-size:10px;color:var(--t3)">Mark titles Want to Watch from the Discover tab</div></div>`;
     return;
   }
 
   el.innerHTML=`<div class="wsect">
-      <div class="whead">🔖 Want to Watch<span class="wcount">${wantItems.length}</span></div>
+      <div class="whead">Want to Watch<span class="wcount">${wantItems.length}</span></div>
       ${sortBar}
       <div class="grid">${wantItems.map(item=>{
         addToPool(item);
         const plt=item.platforms?.[0];const pc=plt?PLAT[plt]:null;
         return`<div class="card" onclick="openDetail(${item.id},'${item.type||'movie'}')">
           <div class="pw">
-            <div class="pfb"><span>🎬</span></div>
+            <div class="pfb">${item.type==='tv'?'Series':'Film'}</div>
             ${imgTag(item.poster_path,'w342','')}
             <div class="pgrd"></div>
             ${pc?`<div class="cplt plt-${plt}">${pc.label}</div>`:''}
@@ -3849,7 +3673,7 @@ function importBackup(e){
 
 function showTab(t){
 
-  ['discover','watchlist','settings','guide'].forEach(x=>{
+  ['discover','watchlist','settings'].forEach(x=>{
 
     $(`tab-${x}`).style.display=x===t?'block':'none';
 
