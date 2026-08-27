@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "com.examinedscreen.watchpick",
-        "sha256_cert_fingerprints": ["2B:B7:71:1E:77:88:14:17:6C:35:61:CC:50:D7:5F:A4:44:3B:E9:29:CA:82:52:87:8B:F4:AE:39:CE:AD:E8:BC"]
+        "sha256_cert_fingerprints": ["EC:09:4D:65:1D:C6:F4:04:12:29:77:91:7E:25:89:20:63:74:46:C3:33:91:DF:17:48:D0:4A:C1:BE:03:F6:09"]
       }
     }]
