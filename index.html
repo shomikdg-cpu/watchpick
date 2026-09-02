@@ -1355,6 +1355,8 @@ let S={
 
   searchPersons:[],
 
+  searchPool:[],
+
   newArrivalsLoaded:false,
 
   mediaType:'both',  // 'movie' | 'tv' | 'both'
@@ -1419,11 +1421,48 @@ async function personId(name){
 
 async function tmdbSearch(q){
 
-  const d=await tmdb(`/search/multi?query=${enc(q)}&language=en-US&include_adult=false&page=1`);
+  // /search/multi returns a SINGLE page (~20 slots) shared across movies+tv+people, ranked by
+  // global popularity, not India relevance. For a common word (e.g. "baby") that one shared
+  // page fills up with more globally-popular same-named titles, and a movie well-known in
+  // India but not worldwide can be crowded out of the raw candidate list entirely — not just
+  // ranked lower within it, genuinely never fetched at all. Query movies and TV directly
+  // instead, through their own dedicated (type-only, no crowding-out-by-people-or-tv) result
+  // sets, two pages each — a much bigger net — then dedupe. /search/multi is kept around only
+  // for its person-card matches, which aren't part of this problem.
+  const [multiD,movieD1,movieD2,tvD1,tvD2]=await Promise.all([
+    tmdb(`/search/multi?query=${enc(q)}&language=en-US&include_adult=false&page=1`),
+    tmdb(`/search/movie?query=${enc(q)}&language=en-US&include_adult=false&page=1`),
+    tmdb(`/search/movie?query=${enc(q)}&language=en-US&include_adult=false&page=2`),
+    tmdb(`/search/tv?query=${enc(q)}&language=en-US&include_adult=false&page=1`),
+    tmdb(`/search/tv?query=${enc(q)}&language=en-US&include_adult=false&page=2`)
+  ]);
 
-  const all=d.results||[];
+  const persons=(multiD.results||[]).filter(x=>x.media_type==='person'&&x.known_for_department);
 
-  return {persons:all.filter(x=>x.media_type==='person'&&x.known_for_department), titles:all.filter(x=>x.media_type!=='person'&&(x.title||x.name))};
+  const movies=(movieD1.results||[]).concat(movieD2.results||[]).map(x=>({...x,media_type:'movie'}));
+
+  const tv=(tvD1.results||[]).concat(tvD2.results||[]).map(x=>({...x,media_type:'tv'}));
+
+  const seen=new Set();
+
+  const titles=movies.concat(tv).filter(x=>{
+    if(!(x.title||x.name)) return false;
+    const key=x.media_type+':'+x.id;
+    if(seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+
+  // Surface anything that's an exact title match first (stable sort keeps everything else
+  // in TMDB's original relevance order), so typing the exact name of a title reliably finds
+  // it — availability is layered on top of this afterwards, once onSearch() knows it.
+  const qNorm=q.trim().toLowerCase();
+  titles.sort((a,b)=>{
+    const aExact=(a.title||a.name||'').trim().toLowerCase()===qNorm?1:0;
+    const bExact=(b.title||b.name||'').trim().toLowerCase()===qNorm?1:0;
+    return bExact-aExact;
+  });
+
+  return {persons,titles};
 
 }
 
@@ -2256,11 +2295,32 @@ function onSearch(q){
 
     const {persons,titles}=await tmdbSearch(q);
 
-    const items=titles.slice(0,12).map(x=>mapItem(x));
+    // Enrich a bigger pool than we'll actually display: we don't know India availability
+    // (or, further down, each item's movie/tv type split) until after enrich() runs, and
+    // we want enough of both to (a) rank confirmed-available exact matches first and
+    // (b) let the Films/Both/Series toggle re-filter locally afterwards without a refetch.
+    const pool=titles.slice(0,24).map(x=>mapItem(x));
 
-    await Promise.all(items.map(enrich));
+    await Promise.all(pool.map(enrich));
 
-    S.results=items;
+    // Exact-title matches first (as tmdbSearch already ordered them), then — among ties —
+    // prefer a confirmed India release over one that isn't, so a genuine exact match that's
+    // actually watchable here always outranks a same-named title you can't stream in India.
+    const qNorm=q.trim().toLowerCase();
+
+    pool.sort((a,b)=>{
+
+      const aExact=a.title.trim().toLowerCase()===qNorm?1:0, bExact=b.title.trim().toLowerCase()===qNorm?1:0;
+
+      if(aExact!==bExact) return bExact-aExact;
+
+      const aIN=a.inIndia?1:0, bIN=b.inIndia?1:0;
+
+      return bIN-aIN;
+
+    });
+
+    S.searchPool=pool;
 
     S.searchPersons=persons.slice(0,2);
 
@@ -2268,9 +2328,27 @@ function onSearch(q){
 
     $('rlabel').textContent=`Results for "${q}"`;
 
-    renderGrid(S.results);
+    applySearchMediaFilter();
 
   },400);
+
+}
+
+// Re-filters the already-fetched, already-enriched search pool by the current Films/Both/
+// Series selection and re-renders — no network round-trip, so switching media type mid-search
+// no longer drops out of search mode (it used to fall through to loadDiscover(true), which
+// unconditionally resets S.searchMode to false and replaces the results with the generic feed).
+function applySearchMediaFilter(){
+
+  const pool=S.searchPool||[];
+
+  const wantType=S.mediaType==='tv'?'tv':S.mediaType==='movie'?'movie':null;
+
+  const filtered=wantType?pool.filter(i=>i.type===wantType):pool;
+
+  S.results=filtered.slice(0,12);
+
+  renderGrid(S.results);
 
 }
 
@@ -2285,6 +2363,10 @@ function setMediaType(t){
   });
   // Show/hide TV genre section in filter bar
   renderFbar();
+  // Films/Both/Series is a real content filter, so it SHOULD still apply during a search —
+  // re-filter the already-fetched search pool instead of falling through to loadDiscover(true),
+  // which unconditionally exits search mode and replaces results with the generic feed.
+  if(S.searchMode){ applySearchMediaFilter(); return; }
   loadDiscover(true);
 }
 
@@ -2292,18 +2374,22 @@ function togTVGenre(k){
   if(S.activeTVG.has(k)) S.activeTVG.delete(k);
   else S.activeTVG.add(k);
   renderFbar();
+  // Genre filters don't apply to search results (see Guide) — just don't disturb search mode.
+  if(S.searchMode) return;
   if(S.mediaType!=='movie') loadDiscover(true);
 }
 
 function tvGenreAllOn(){
   S.activeTVG=new Set(Object.keys(TV_GENRES));
   renderFbar();
+  if(S.searchMode) return;
   if(S.mediaType!=='movie') loadDiscover(true);
 }
 
 function tvGenreAllOff(){
   S.activeTVG=new Set();
   renderFbar();
+  if(S.searchMode) return;
   if(S.mediaType!=='movie') loadDiscover(true);
   else renderGrid([]);
 }
@@ -2648,6 +2734,7 @@ function resetFilters(){
 function togAvail(v){
   S.avail=v;
   renderFbar();
+  if(S.searchMode) return; // availability doesn't filter search results (see Guide)
   loadDiscover(true);
 }
 
@@ -2661,12 +2748,14 @@ function togSortPill(s){
 function togActiveG(k){
   S.activeG.has(k)?S.activeG.delete(k):S.activeG.add(k);
   renderFbar();
+  if(S.searchMode) return; // genres don't filter search results (see Guide)
   loadDiscover(true);
 }
 
 function togLang(lang){
   S.activeLang=lang;
   renderFbar();
+  if(S.searchMode) return; // language doesn't filter search results (see Guide)
   loadDiscover(true);
 }
 
@@ -3659,9 +3748,9 @@ async function addCustom(){
 
   const r=await tmdbSearch(q);
 
-  if(r[0]){
+  if(r.titles[0]){
 
-    const item=mapItem(r[0]);
+    const item=mapItem(r.titles[0]);
 
     await enrich(item);
 
