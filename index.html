@@ -240,6 +240,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .cmeta{font-size:9px;color:var(--t2);display:flex;gap:4px;flex-wrap:wrap}
 
 .ctag{font-size:8px;color:var(--t2);background:var(--s3);padding:1px 4px;border-radius:var(--rt)}
+.ctypetag{font-size:8px;font-weight:700;color:var(--t1);background:var(--s3);border:.5px solid var(--b2);padding:1px 5px;border-radius:var(--rt);text-transform:uppercase;letter-spacing:.4px}
 
 .cbtns{display:flex;gap:2px;padding:4px 7px 7px}
 
@@ -805,9 +806,9 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="gh1">3 &middot; The Three Tabs</div>
       <div class="gh2">Discover</div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Search</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography. Tap the mic icon to search by speaking instead of typing.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Films / Both / Series</span></div><div class="gdesc">Toggle above the search bar &mdash; narrow Discover to movies only, TV series only, or both together.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Films / Both / Series</span></div><div class="gdesc">Toggle above the search bar &mdash; narrow Discover to movies only, TV series only, or both together. In Both, every card in Your Curation carries a small "Film" or "Series" tag next to its year so a mixed feed stays easy to scan &mdash; the tag drops away in Films-only or Series-only mode since it'd just repeat what the toggle already tells you.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Open by default with the theme tags showing &mdash; tap the "Masters of Cinema" header to collapse or reopen the whole section. Tap a theme to reveal its portraits ("Click on any Theme to reveal Masters"), then tap any thumbnail to open that person's full India-available filmography ("Click on any thumbnail to open Filmography"). Once portraits are showing, tap "Collapse" to hide them again without closing the whole section.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New Arrivals</strong> &mdash; films added to Indian streaming in the last 60 days. Horizontal scroll at top, own Refresh button.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New on Streaming</strong> &mdash; films added to Indian streaming in the last 60 days. Collapsed by default, right below Masters of Cinema &mdash; tap the header to open it, which loads the row and reveals its own Refresh button. If you want recency inside your main feed instead, use the Newest or Newest + Rated sort in Your Curation below.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Refresh</span></div><div class="gdesc">Fresh batch for your current filters.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Load Page &darr;</span></div><div class="gdesc">Next page of results &mdash; genuinely new titles.</div></div>
       <div class="grow"><div class="gtag"><span style="display:inline-flex;gap:6px;align-items:center">
@@ -903,7 +904,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Mark Seen</span></div><div class="gdesc">Tap &#10003; on anything you have already watched &mdash; it never appears again in Discover.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Use &#9733; Liked</span></div><div class="gdesc">More Like This on any Liked film surfaces similar India-available titles.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Tap the director</span></div><div class="gdesc">See every film of theirs available in India right now.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">New Arrivals</span></div><div class="gdesc">Top row refreshes on open &mdash; quick scroll shows what just landed.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">New on Streaming</span></div><div class="gdesc">Collapsed by default &mdash; tap it open the first time to load what just landed, then use its own Refresh for the latest.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Newest + Rated</span></div><div class="gdesc">Best sort for recent acclaimed films.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)"><a class="glink" href="https://letterboxd.com" target="_blank">Letterboxd &rarr;</a></span></div><div class="gdesc">For every film in WatchPick &mdash; especially world cinema, philosophy, and critically acclaimed titles &mdash; tap "View on Letterboxd" on the detail page. Letterboxd uses a 5-star scale rated by nearly 30 million dedicated film watchers. Its scores run colder than the rating you see in WatchPick (a 3.8 on Letterboxd is genuinely good; a 4.2 is exceptional). Read the short reviews &mdash; they are written by people who watch 200+ films a year, not casual viewers. For the genres WatchPick covers, Letterboxd is the most honest measure of whether a film is worth your time.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Save often</span></div><div class="gdesc">Tap Save &uarr; after every marking session &mdash; your list is then safe on all devices.</div></div>
@@ -969,16 +970,23 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   <div id="newarrivals-sect" class="sect-block" style="display:none">
 
     <div class="secrow" style="margin-bottom:8px">
-
-      <div class="slabel">New on Streaming · India this month</div>
-
-      <div class="more" onclick="loadNewArrivals(true)">Refresh</div>
-
+      <div class="masters-toggle" id="newArrivalsToggle" onclick="toggleNewArrivalsSection()" tabindex="0" role="button" aria-expanded="false">
+        <div class="slabel">New on Streaming · India this month</div>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
     </div>
 
-    <div class="sim-scroll" id="newarrivals-scroll">
+    <div class="masters-body" id="newarrivals-body">
 
-      <div class="loading" style="grid-column:unset;padding:10px 0"><div class="spin"></div></div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+        <div class="more" onclick="loadNewArrivals(true)">Refresh</div>
+      </div>
+
+      <div class="sim-scroll" id="newarrivals-scroll">
+
+        <div class="loading" style="grid-column:unset;padding:10px 0"><div class="spin"></div></div>
+
+      </div>
 
     </div>
 
@@ -988,7 +996,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
   <div class="secrow">
 
-    <div class="slabel" id="rlabel">Curated · India</div>
+    <div class="slabel" id="rlabel">Your Curation</div>
 
     <div style="display:flex;gap:8px;align-items:center">
 
@@ -1832,6 +1840,23 @@ document.addEventListener('click',e=>{
 
 
 
+// Collapsed by default: this is a secondary recency signal, not the app's core discovery
+// job — anyone who wants "what's new" can already get it from Sort → Newest inside their own
+// Curation. renderNewArrivalsShell() reveals just the (cheap, no-fetch) toggle header on load;
+// the actual data only fetches the first time someone taps it open, via toggleNewArrivalsSection().
+let newArrivalsSectionOpen=false;
+function renderNewArrivalsShell(){
+  const sect=$('newarrivals-sect');
+  if(sect) sect.style.display='block';
+}
+function toggleNewArrivalsSection(){
+  newArrivalsSectionOpen=!newArrivalsSectionOpen;
+  $('newarrivals-body').classList.toggle('open',newArrivalsSectionOpen);
+  $('newArrivalsToggle').classList.toggle('open',newArrivalsSectionOpen);
+  $('newArrivalsToggle').setAttribute('aria-expanded',String(newArrivalsSectionOpen));
+  if(newArrivalsSectionOpen&&!S.newArrivalsLoaded) loadNewArrivals();
+}
+
 async function loadNewArrivals(forceRefresh=false){
 
   const sect=$('newarrivals-sect');
@@ -1842,8 +1867,6 @@ async function loadNewArrivals(forceRefresh=false){
 
   // Skip if already loaded unless explicitly refreshing
   if(S.newArrivalsLoaded&&!forceRefresh) return;
-
-  sect.style.display='block';
 
   scroll.innerHTML=`<div style="padding:10px 0"><div class="spin"></div></div>`;
 
@@ -2255,7 +2278,7 @@ async function loadDiscover(reset=true){
   if(!active.length&&S.mediaType!=='tv'){setLoading(false);renderGrid([]);return;}
   if(reset)setLoading(true);
   const modeLabel=S.mediaType==='tv'?'Series':S.mediaType==='movie'?'Films':'Films & Series';
-  $('rlabel').textContent=reset?`Curated · India · ${modeLabel}`:`Curated · India · Page ${S.page}…`;
+  $('rlabel').textContent=reset?`Your Curation · ${modeLabel}`:`Your Curation · Page ${S.page}…`;
   const seen=seenIds();
   const existingIds=new Set(S.results.map(r=>r.id));
   const dedup=v=>!seen.has(v.id)&&!existingIds.has(v.id);
@@ -2338,7 +2361,7 @@ async function loadDiscover(reset=true){
   }
 
   if(reset)setLoading(false);
-  $('rlabel').textContent=`${active.length} genre${active.length>1?'s':''} · ${modeLabel} · India · Page${S.page>1?' 1–':' '}${S.page}`;
+  $('rlabel').textContent=`Your Curation · ${modeLabel}`;
   $('pagerow').style.display='flex';
   $('nextpage').textContent=S.page+1;
   renderGrid(S.results);
@@ -2387,9 +2410,14 @@ async function refreshDiscover(){
 
   S.prov={};
 
-  S.newArrivalsLoaded=false;
-
-  loadNewArrivals(true);
+  // Only refresh New Arrivals if it's actually been opened at least once — it's collapsed by
+  // default now, so most Refresh taps have nothing loaded there to refresh. This also means the
+  // addToPool() race this section can trigger against loadDiscover() (see the liveIds check
+  // below) only comes up for people who've actually looked at New Arrivals, not on every Refresh.
+  if(S.newArrivalsLoaded){
+    S.newArrivalsLoaded=false;
+    loadNewArrivals(true);
+  }
 
   await loadDiscover(true);
 
@@ -2647,10 +2675,10 @@ const TOUR_QUICK=[
 const TOUR_FULL=[
   {tab:null, sel:'.logo', t:'What is WatchPick', b:'A personal cinema discovery app for India — films and shows filtered by real taste categories, with availability verified across 8 streaming platforms.'},
   {tab:'discover', sel:'#sinput', t:'Search & Voice', b:'Type a title, director, or actor. A gold card means your search matched a person — tap it for their full India filmography. Tap the mic icon to search by speaking instead.'},
-  {tab:'discover', sel:'#mediaToggleRow', t:'Films / Both / Series', b:'This toggle narrows Discover to movies only, TV only, or both together.'},
+  {tab:'discover', sel:'#mediaToggleRow', t:'Films / Both / Series', b:'This toggle narrows Discover to movies only, TV only, or both together. In Both mode, a small Film/Series tag appears on every card in Your Curation so the mixed feed is easy to scan at a glance.'},
   {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Open by default — tap the header to collapse or reopen the whole section. Tap any theme to reveal its portraits, tap a thumbnail to open that person\'s full filmography, and tap Collapse to hide the portraits again.'},
-  {tab:'discover', sel:'#newarrivals-sect', t:'New Arrivals', b:'Films added to Indian streaming in the last 60 days, in their own scrolling row with their own Refresh.'},
-  {tab:'discover', sel:'#curated-sect', t:'Curated feed & Filters', b:'Your main feed below has its own Sort dropdown. The Filters button next to Search adds Genres, Language, Sort and Availability filters without leaving Discover.'},
+  {tab:'discover', sel:'#newarrivals-sect', t:'New on Streaming', b:'Films added to Indian streaming in the last 60 days. Collapsed by default so it doesn\'t stand between Masters of Cinema and Your Curation — tap the header to open it, which loads the row and reveals its own Refresh.'},
+  {tab:'discover', sel:'#curated-sect', t:'Your Curation', b:'The feed built for you — Sort dropdown and Refresh sit right above it. The Filters button next to Search adds Genres, Language, Sort and Availability filters without leaving Discover.'},
   {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Bookmark (Want), star (Liked), check (Seen), and eye-slash (Not Interested) — right on the poster. Hover an icon on desktop, or long-press on a phone, to see what it means. Seen and Not Interested quietly remove a title from Discover; tap the same action again (find it via Search) to undo.'},
   {tab:'watchlist', sel:'#wcontent', t:'My List', b:'Shows only what you’ve marked Want to Watch, with its own sort. Liked / Seen / Not Interested aren’t listed here — they just shape what Discover shows you.'},
   {tab:'watchlist', sel:'#syncpanel', t:'Cloud Sync', b:'Set a passphrase here to back your list up online — use the same phrase on any device to load it. Export/Import also saves a backup file you can keep yourself.'},
@@ -3047,6 +3075,13 @@ function cardHTML(item){
 
     .map(n=>`<span class="ctag">${n}</span>`).join('');
 
+  // Film vs Series only needs calling out when the feed can actually contain both — in
+  // Films-only or Series-only mode it's already obvious from context, so the badge would just
+  // be noise. The poster-corner "Film"/"Series" text (.pfb, below) doesn't count as that signal:
+  // it's a fallback that sits behind the poster image and disappears the instant a real poster
+  // loads, so it was never actually visible in practice.
+  const typeBadge=S.mediaType==='both'?`<span class="ctypetag">${item.type==='tv'?'Series':'Film'}</span>`:'';
+
   return`<div class="card${st==='seen'?' seen':''}${st==='liked'?' liked':''}" onclick="openDetail(${item.id},'${item.type||'movie'}')">
 
     <div class="pw">
@@ -3071,7 +3106,7 @@ function cardHTML(item){
 
       <div class="ctitle">${item.title}</div>
 
-      <div class="cmeta"><span>${item.year||'–'}</span>${item.lang&&item.lang!=='en'?`<span style="text-transform:uppercase">${item.lang}</span>`:''}${gtags}</div>
+      <div class="cmeta">${typeBadge}<span>${item.year||'–'}</span>${item.lang&&item.lang!=='en'?`<span style="text-transform:uppercase">${item.lang}</span>`:''}${gtags}</div>
 
     </div>
 
@@ -4228,7 +4263,7 @@ function showTab(t){
 
   if(t==='settings')renderSettings();
 
-  if(t==='discover'){renderGrid(S.results);if(!S.newArrivalsLoaded)loadNewArrivals();renderMasters();}
+  if(t==='discover'){renderGrid(S.results);renderNewArrivalsShell();renderMasters();}
 
 }
 
@@ -4330,7 +4365,7 @@ function hydrate(){
 
   renderMasters();
 
-  loadNewArrivals();
+  renderNewArrivalsShell();
 
   await loadDiscover(true);
 
