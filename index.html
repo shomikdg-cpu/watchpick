@@ -798,7 +798,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
     <div class="gsect" id="gs3">
       <div class="gh1">3 &middot; The Three Tabs</div>
       <div class="gh2">Discover</div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Search</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography. Tap Voice to search by speaking instead of typing.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Search</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography. Tap the mic icon to search by speaking instead of typing.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Films / Both / Series</span></div><div class="gdesc">Toggle above the search bar &mdash; narrow Discover to movies only, TV series only, or both together.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Visual Craft, Screenplay, Cinematography. Tap "Browse by theme" to reveal the cluster tags (collapsed by default to keep the feed uncluttered), then tap a person card to open their full India-available filmography.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New Arrivals</strong> &mdash; films added to Indian streaming in the last 60 days. Horizontal scroll at top, own Refresh button.</div></div>
@@ -928,7 +928,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   <div class="sf-row">
     <div class="sbox">
       <input class="sinput" type="search" id="sinput" placeholder="Search titles, directors, actors…" oninput="onSearch(this.value)" autocomplete="off" style="padding-left:12px;padding-right:56px">
-      <button class="smic" id="micbtn" onclick="toggleVoice()" title="Voice search">Voice</button>
+      <button class="smic" id="micbtn" onclick="toggleVoice()" title="Voice search" aria-label="Voice search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
     </div>
     <div class="filt-btn" onclick="openFilterSheet()" tabindex="0" role="button">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="7" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
@@ -2503,7 +2503,7 @@ const TOUR_QUICK=[
 ];
 const TOUR_FULL=[
   {tab:null, sel:'.logo', t:'What is WatchPick', b:'A personal cinema discovery app for India — films and shows filtered by real taste categories, with availability verified across 8 streaming platforms.'},
-  {tab:'discover', sel:'#sinput', t:'Search & Voice', b:'Type a title, director, or actor. A gold card means your search matched a person — tap it for their full India filmography. Tap Voice to search by speaking instead.'},
+  {tab:'discover', sel:'#sinput', t:'Search & Voice', b:'Type a title, director, or actor. A gold card means your search matched a person — tap it for their full India filmography. Tap the mic icon to search by speaking instead.'},
   {tab:'discover', sel:'#mediaToggleRow', t:'Films / Both / Series', b:'This toggle narrows Discover to movies only, TV only, or both together.'},
   {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Tap "Browse by theme" to reveal the group tags, tap one to switch groups, tap a name to open their full filmography.'},
   {tab:'discover', sel:'#newarrivals-sect', t:'New Arrivals', b:'Films added to Indian streaming in the last 60 days, in their own scrolling row with their own Refresh.'},
