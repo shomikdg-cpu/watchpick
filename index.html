@@ -1349,6 +1349,8 @@ let S={
 
   page:1,
 
+  visibleCount:40,  // how many (sorted, filtered) Discover results are shown at once — grows by 40 per "Load Page" tap
+
   sort:'default',
 
   searchMode:false,
@@ -2136,7 +2138,7 @@ async function fetchAndEnrichTV(path, seen){
 
 async function loadDiscover(reset=true){
   S.searchMode=false;
-  if(reset){S.page=1;S.results=[...S.custom];}
+  if(reset){S.page=1;S.results=[...S.custom];S.visibleCount=40;}
   const active=[...S.activeG];
   if(!active.length&&S.mediaType!=='tv'){setLoading(false);renderGrid([]);return;}
   if(reset)setLoading(true);
@@ -2200,6 +2202,14 @@ async function loadDiscover(reset=true){
       const yd=(+b.year||0)-(+a.year||0);
       return yd!==0?yd:(b.rating||0)-(a.rating||0);
     });
+  } else if(S.sort==='year_desc'){
+    S.results.sort((a,b)=>(+b.year||0)-(+a.year||0));
+  } else if(S.sort==='year_asc'){
+    S.results.sort((a,b)=>(+a.year||0)-(+b.year||0));
+  } else if(S.sort==='rating'){
+    S.results.sort((a,b)=>(b.rating||0)-(a.rating||0));
+  } else if(S.sort==='title'){
+    S.results.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
   } else if(S.sort==='default'){
     const existing=S.results.slice(0,S.results.length-newItems.length);
     S.results=[...existing,...shuffle(newItems)];
@@ -2217,6 +2227,17 @@ async function loadDiscover(reset=true){
 
 
 async function loadMore(){
+
+  S.visibleCount+=40;
+
+  // Each Discover fetch already pulls a few hundred candidates across categories, so most
+  // "Load Page" taps just reveal 40 more of what's already sorted & fetched — no network call.
+  const seen=seenIds();
+  const already=S.results.filter(passesLang).filter(i=>!seen.has(i.id)).filter(i=>i.platforms.some(p=>S.activeP.has(p)));
+  if(already.length>=S.visibleCount){
+    renderGrid(S.results);
+    return;
+  }
 
   const before=S.results.length;
 
@@ -2803,7 +2824,18 @@ function renderGrid(items){
 
   }
 
-  el.innerHTML=personHTML+vis.map(cardHTML).join('');
+  // Discover shows 40 results at a time (in whatever sort order is active) instead of
+  // dumping every fetched candidate on screen at once; "Load Page" reveals 40 more.
+  const shown=S.searchMode?vis:vis.slice(0,S.visibleCount);
+
+  el.innerHTML=personHTML+shown.map(cardHTML).join('');
+
+  if(!S.searchMode){
+    const pagerow=$('pagerow');
+    if(pagerow&&pagerow.style.display!=='none'){
+      $('nextpage').textContent=Math.floor(S.visibleCount/40)+1;
+    }
+  }
 
 }
 
