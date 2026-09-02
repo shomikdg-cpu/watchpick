@@ -160,10 +160,16 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .filter-sheet-body .fbar-row1,.filter-sheet-body .fbar-row2{flex-wrap:wrap;overflow-x:visible}
 .filter-sheet-cta{padding:12px 16px 18px;border-top:.5px solid var(--b1);flex-shrink:0}
 .filter-sheet-cta-btn{background:var(--gold);color:#0a0a0a;border-radius:var(--rs);height:40px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;user-select:none}
-.browse-theme-link{display:flex;align-items:center;gap:3px;font-size:9px;color:var(--gold);cursor:pointer;user-select:none;flex-shrink:0}
-.browse-theme-link svg{transition:transform .15s}
-.browse-theme-link.open svg{transform:rotate(180deg)}
-.masters-tags.collapsed{display:none}
+.masters-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;user-select:none}
+.masters-toggle svg{transition:transform .15s;color:var(--gold);flex-shrink:0}
+.masters-toggle.open svg{transform:rotate(180deg)}
+.masters-body{display:none}
+.masters-body.open{display:block}
+.masters-hint{font-size:10px;color:var(--t3);font-style:italic;padding:0 0 10px}
+.masters-hint.masters-collapse-link{font-style:normal;font-weight:700;color:var(--gold);cursor:pointer;user-select:none;display:flex;align-items:center;gap:4px}
+.masters-hint.masters-collapse-link svg{transition:transform .15s}
+@media (hover:hover) and (pointer:fine){.masters-hint.masters-collapse-link:hover{opacity:.75}}
+.masters-subhint{font-size:10px;color:var(--t3);font-style:italic;padding:0 0 8px}
 .imdb-badge{display:inline-flex;align-items:center;gap:3px;background:#F5C518;color:#000;border-radius:var(--rt);padding:2px 6px;font-size:9px;font-weight:700;text-decoration:none;flex-shrink:0}
 .masters-sect{margin-bottom:16px}
 .sect-block{margin-bottom:20px}
@@ -628,7 +634,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .pageinfo{font-size:9px;color:var(--t3)}
 
 /* ════════════ UX AUDIT: focus-visible (keyboard) + hover (mouse/trackpad only) for fixed chrome ════════════ */
-.ntab:focus-visible,.filt-btn:focus-visible,.ibtn:focus-visible,.filter-sheet-reset:focus-visible,.filter-sheet-cta-btn:focus-visible,.browse-theme-link:focus-visible,.mtbtn:focus-visible,.fpill:focus-visible,.mtag:focus-visible,.pagebtn:focus-visible,.tog:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.ntab:focus-visible,.filt-btn:focus-visible,.ibtn:focus-visible,.filter-sheet-reset:focus-visible,.filter-sheet-cta-btn:focus-visible,.masters-toggle:focus-visible,.mtbtn:focus-visible,.fpill:focus-visible,.mtag:focus-visible,.pagebtn:focus-visible,.tog:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 @media (hover:hover) and (pointer:fine){
   .ntab:not(.on):hover{background:var(--s3);color:var(--t1)}
@@ -636,7 +642,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   .ibtn:hover{border-color:var(--gold);color:var(--t1)}
   .filter-sheet-reset:hover{opacity:.7}
   .filter-sheet-cta-btn:hover{filter:brightness(1.08)}
-  .browse-theme-link:hover{opacity:.75}
+  .masters-toggle:hover{opacity:.75}
   .mtbtn:not(.active):hover{border-color:var(--gold);color:var(--t1)}
   .fpill:not(.on):hover{border-color:var(--gold);color:var(--t1)}
   .mtag:not(.on):hover{border-color:var(--gold);color:var(--t1)}
@@ -800,7 +806,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="gh2">Discover</div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Search</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography. Tap the mic icon to search by speaking instead of typing.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Films / Both / Series</span></div><div class="gdesc">Toggle above the search bar &mdash; narrow Discover to movies only, TV series only, or both together.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Visual Craft, Screenplay, Cinematography. Tap "Browse by theme" to reveal the cluster tags (collapsed by default to keep the feed uncluttered), then tap a person card to open their full India-available filmography.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Open by default with the theme tags showing &mdash; tap the "Masters of Cinema" header to collapse or reopen the whole section. Tap a theme to reveal its portraits ("Click on any Theme to reveal Masters"), then tap any thumbnail to open that person's full India-available filmography ("Click on any thumbnail to open Filmography"). Once portraits are showing, tap "Collapse" to hide them again without closing the whole section.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New Arrivals</strong> &mdash; films added to Indian streaming in the last 60 days. Horizontal scroll at top, own Refresh button.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Refresh</span></div><div class="gdesc">Fresh batch for your current filters.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Load Page &darr;</span></div><div class="gdesc">Next page of results &mdash; genuinely new titles.</div></div>
@@ -825,7 +831,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="gh1">4 &middot; The Filter Bar</div>
       <p class="gbody">Tap Filters next to the search box to open Genres, Language, Sort and Availability &mdash; instant filters without going into Settings.</p>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Film Genres</span></div><div class="gdesc">All / None + a button for every genre you've turned on in Settings. Tap one to switch it on or off &mdash; gold means active. Shown whenever you're browsing Films or Both.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Series Genres</span></div><div class="gdesc">Its own All / None + a button per TV genre. Only appears when you're browsing Series or Both &mdash; these genres aren't in Settings, this is the only place to choose them.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Series Genres</span></div><div class="gdesc">Its own All / None + a button per TV genre. Only appears when you're browsing Series or Both &mdash; these genres aren't in Settings, this is the only place to choose them. Genres that mean the same thing on both sides (Action, Comedy, Crime, Sci-Fi, and a few others) stay in sync automatically when you tap a Film Genre, so Series doesn't keep showing everything while Films is narrowed down. Genres unique to Film (Philosophy, World Cinema, Superhero and the like) don't have a Series match &mdash; adjust Series Genres here separately for those.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Lang</span></div><div class="gdesc">Filter the current feed by original language instantly.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Sort</span></div><div class="gdesc">Mix, Top Rated, Newest, Oldest, Newest + Rated, A&ndash;Z. Changing sort restarts from Page 1.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Avail</span></div><div class="gdesc">All, Stream (subscription) only, or Rent/Buy only.</div></div>
@@ -947,13 +953,17 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   <!-- MASTERS OF CINEMA -->
   <div id="masters-sect" class="masters-sect sect-block" style="display:none">
     <div class="secrow" style="margin-bottom:8px">
-      <div class="slabel">Masters of Cinema</div>
-      <div class="browse-theme-link" id="browseThemeLink" onclick="toggleMastersTags()" tabindex="0" role="button">Browse by theme
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="masters-toggle open" id="mastersToggle" onclick="toggleMastersSection()" tabindex="0" role="button" aria-expanded="true">
+        <div class="slabel">Masters of Cinema</div>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
     </div>
-    <div class="masters-tags collapsed" id="masters-tags"></div>
-    <div class="mscroll" id="masters-scroll"></div>
+    <div class="masters-body open" id="masters-body">
+      <div class="masters-tags" id="masters-tags"></div>
+      <div class="masters-hint" id="masters-hint">Click on any Theme to reveal Masters</div>
+      <div class="masters-subhint" id="masters-subhint" style="display:none">Click on any thumbnail to open Filmography</div>
+      <div class="mscroll" id="masters-scroll" style="display:none"></div>
+    </div>
   </div>
 
   <div id="newarrivals-sect" class="sect-block" style="display:none">
@@ -1313,6 +1323,18 @@ const TV_GENRES={
   indian_tv:   {label:'Indian Originals',  tmdbId:null,  indianOnly:true, voteMin:20},
 };
 
+// Film Genres → matching Series Genres, for the genres that mean the same thing on both
+// sides. Keeps the two rows in sync so narrowing Film Genres (e.g. to just Action) doesn't
+// leave Series Genres defaulted to "everything" and flooding the combined feed with
+// unrelated TV shows. Genres with no honest TV equivalent (Philosophy, World Cinema, Rock,
+// Superhero, Screenplay, Cinematography, Adventure, Fantasy, History, Horror, Romance, War,
+// Western) are intentionally left out — Series Genres stays independently adjustable for those.
+const FILM_TO_TV_GENRE={
+  action:'action_tv', animation:'animation_tv', comedy:'comedy_tv', crime:'crime_tv',
+  documentary:'documentary_tv', family:'family_tv', mystery:'thriller_tv',
+  thriller:'thriller_tv', scifi:'scifi_tv', critically:'critically_tv'
+};
+
 
 
 const LANGS=[['all','All Languages'],['en','English'],['hi','Hindi'],['fr','French'],['ko','Korean'],['ja','Japanese'],['es','Spanish'],['it','Italian'],['de','German']];
@@ -1421,25 +1443,53 @@ async function personId(name){
 
 }
 
+// Strips spacing/punctuation before comparing, so "Shahrukh Khan" recognizes "Shah Rukh Khan"
+// as the same name, "SpiderMan" recognizes "Spider-Man", etc. — a query and the catalog's
+// exact title/name should still count as an exact match when they only differ by spacing or
+// punctuation, not just when they're byte-for-byte identical.
+const normMatch=s=>(s||'').trim().toLowerCase().replace(/[\s\-.,'’]/g,'');
+
 async function tmdbSearch(q){
 
   // /search/multi returns a SINGLE page (~20 slots) shared across movies+tv+people, ranked by
   // global popularity, not India relevance. For a common word (e.g. "baby") that one shared
   // page fills up with more globally-popular same-named titles, and a movie well-known in
   // India but not worldwide can be crowded out of the raw candidate list entirely — not just
-  // ranked lower within it, genuinely never fetched at all. Query movies and TV directly
-  // instead, through their own dedicated (type-only, no crowding-out-by-people-or-tv) result
-  // sets, two pages each — a much bigger net — then dedupe. /search/multi is kept around only
-  // for its person-card matches, which aren't part of this problem.
-  const [multiD,movieD1,movieD2,tvD1,tvD2]=await Promise.all([
+  // ranked lower within it, genuinely never fetched at all. Query movies, TV and people
+  // directly instead, through their own dedicated (type-only, no crowding-out-by-other-types)
+  // result sets, two pages each — a much bigger net — then dedupe. The same crowding problem
+  // hit person searches too (e.g. "Shahrukh Khan" wasn't turning up at all, even though the
+  // correctly-spelled "Shah Rukh Khan" did) — a less exact spelling of a name ranks lower in
+  // TMDB's own relevance scoring, so it could miss the single shared multi-search page
+  // entirely. /search/multi is kept around too since it's occasionally the only endpoint that
+  // surfaces a given match, but it's no longer the sole source for any of the three types.
+  const [multiD,movieD1,movieD2,tvD1,tvD2,personD1,personD2]=await Promise.all([
     tmdb(`/search/multi?query=${enc(q)}&language=en-US&include_adult=false&page=1`),
     tmdb(`/search/movie?query=${enc(q)}&language=en-US&include_adult=false&page=1`),
     tmdb(`/search/movie?query=${enc(q)}&language=en-US&include_adult=false&page=2`),
     tmdb(`/search/tv?query=${enc(q)}&language=en-US&include_adult=false&page=1`),
-    tmdb(`/search/tv?query=${enc(q)}&language=en-US&include_adult=false&page=2`)
+    tmdb(`/search/tv?query=${enc(q)}&language=en-US&include_adult=false&page=2`),
+    tmdb(`/search/person?query=${enc(q)}&language=en-US&include_adult=false&page=1`),
+    tmdb(`/search/person?query=${enc(q)}&language=en-US&include_adult=false&page=2`)
   ]);
 
-  const persons=(multiD.results||[]).filter(x=>x.media_type==='person'&&x.known_for_department);
+  const rawPersons=(multiD.results||[]).filter(x=>x.media_type==='person')
+    .concat(personD1.results||[],personD2.results||[]);
+  const seenPersons=new Set();
+  const persons=rawPersons.filter(x=>{
+    if(!x.known_for_department) return false;
+    if(seenPersons.has(x.id)) return false;
+    seenPersons.add(x.id); return true;
+  });
+  // Same exact-name-first treatment as titles below, so a correctly-typed full name
+  // reliably lands as the first person card even if TMDB's own relevance ranking wouldn't
+  // have put them first.
+  const qNormPerson=normMatch(q);
+  persons.sort((a,b)=>{
+    const aExact=normMatch(a.name)===qNormPerson?1:0;
+    const bExact=normMatch(b.name)===qNormPerson?1:0;
+    return bExact-aExact;
+  });
 
   const movies=(movieD1.results||[]).concat(movieD2.results||[]).map(x=>({...x,media_type:'movie'}));
 
@@ -1457,10 +1507,10 @@ async function tmdbSearch(q){
   // Surface anything that's an exact title match first (stable sort keeps everything else
   // in TMDB's original relevance order), so typing the exact name of a title reliably finds
   // it — availability is layered on top of this afterwards, once onSearch() knows it.
-  const qNorm=q.trim().toLowerCase();
+  const qNorm=normMatch(q);
   titles.sort((a,b)=>{
-    const aExact=(a.title||a.name||'').trim().toLowerCase()===qNorm?1:0;
-    const bExact=(b.title||b.name||'').trim().toLowerCase()===qNorm?1:0;
+    const aExact=normMatch(a.title||a.name)===qNorm?1:0;
+    const bExact=normMatch(b.title||b.name)===qNorm?1:0;
     return bExact-aExact;
   });
 
@@ -1506,13 +1556,28 @@ function personCardHTML(p){
 
 }
 
-async function tmdbDetail(id,type){
+async function tmdbDetail(id,type,itemLang){
 
   const t=type==='tv'?'tv':'movie';
 
   const extra=t==='tv'?'content_ratings':'release_dates';
 
-  return tmdb(`/${t}/${id}?append_to_response=credits,videos,${extra}&language=en-US`);
+  // TMDB's appended `videos` sub-resource is filtered to match the request's `language` by
+  // default, which silently drops trailers uploaded in another language — e.g. "Haunted: Latin
+  // America" (original_language 'es') showed no trailer in-app despite one existing on Netflix,
+  // because its trailer is tagged Spanish and the request only asked for English. TMDB's
+  // include_video_language param widens just that sub-resource without touching the `language`
+  // used for titles/overviews/credits elsewhere in the response — 'null' also catches videos
+  // TMDB has no language tag for at all. We include every language the app itself supports
+  // (see LANGS) plus this specific item's own original_language when it's already known, so a
+  // foreign-original title's trailer is covered even when it falls outside that list.
+  const videoLangs=[...new Set([
+    'en','null',
+    ...LANGS.map(([code])=>code).filter(c=>c!=='all'),
+    ...(itemLang?[itemLang]:[])
+  ])].join(',');
+
+  return tmdb(`/${t}/${id}?append_to_response=credits,videos,${extra}&language=en-US&include_video_language=${videoLangs}`);
 
 }
 
@@ -1649,17 +1714,25 @@ function masterCardImg(m){
     onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://image.tmdb.org/t/p/w185${p}'}else{this.remove()}">`;
 }
 
-let mastersTagsOpen=false;
-function toggleMastersTags(){
-  mastersTagsOpen=!mastersTagsOpen;
-  $('masters-tags').classList.toggle('collapsed',!mastersTagsOpen);
-  $('browseThemeLink').classList.toggle('open',mastersTagsOpen);
+// Whole section collapsed by default (screen real estate, especially on phones) — tapping
+// the "Masters of Cinema" header reveals the theme tags. Person cards stay hidden behind a
+// "Click on any Theme to reveal Masters" hint until a theme is actually tapped, so opening
+// the section doesn't itself dump a full row of portraits on screen.
+let mastersSectionOpen=true; // expanded by default — tags + hint show immediately, matching the markup's initial "open" state
+let mastersRevealed=false;
+function toggleMastersSection(){
+  mastersSectionOpen=!mastersSectionOpen;
+  $('masters-body').classList.toggle('open',mastersSectionOpen);
+  $('mastersToggle').classList.toggle('open',mastersSectionOpen);
+  $('mastersToggle').setAttribute('aria-expanded',String(mastersSectionOpen));
 }
 
 function renderMasters(){
   const sect=$('masters-sect');
   const tagsEl=$('masters-tags');
   const scroll=$('masters-scroll');
+  const hint=$('masters-hint');
+  const subhint=$('masters-subhint');
   if(!sect||!tagsEl||!scroll) return;
   // Keep it hidden while searching. S.searchMode itself only flips true after the 400ms
   // debounce in onSearch(), so also check the live input value — it's synchronous and
@@ -1673,7 +1746,34 @@ function renderMasters(){
   tagsEl.innerHTML=MASTER_TAGS.map(t=>
     `<div class="mtag ${t===mastersActiveTag?'on':''}" onclick="setMasterTag('${t}')">${t}</div>`
   ).join('');
-  tagsEl.classList.toggle('collapsed',!mastersTagsOpen);
+
+  // The hint slot doubles as a Collapse control once a theme's been revealed: same position,
+  // so there's one obvious place to look whether you're opening or closing the thumbnails —
+  // tapping it just flips mastersRevealed back off, restoring the section to how it looked
+  // before any theme was chosen (tags + hint, no thumbnails), without touching the outer
+  // masters-body/masters-toggle collapse.
+  if(hint){
+    hint.style.display='block';
+    if(mastersRevealed){
+      hint.innerHTML='<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Collapse';
+      hint.classList.add('masters-collapse-link');
+      hint.onclick=toggleMastersReveal;
+      hint.setAttribute('role','button');
+      hint.setAttribute('tabindex','0');
+    } else {
+      hint.textContent='Click on any Theme to reveal Masters';
+      hint.classList.remove('masters-collapse-link');
+      hint.onclick=null;
+      hint.removeAttribute('role');
+      hint.removeAttribute('tabindex');
+    }
+  }
+  // Once thumbnails are showing, a second, non-interactive hint line tells you what tapping one
+  // does — separate from the (interactive) Collapse link above it, so the two never fight for
+  // the same slot.
+  if(subhint) subhint.style.display=mastersRevealed?'block':'none';
+  scroll.style.display=mastersRevealed?'flex':'none';
+  if(!mastersRevealed) return; // don't bother rendering cards until a theme's been tapped
 
   // Render person cards for active tag (fallback icon shows until a real photo is fetched)
   const filtered=MASTERS.filter(m=>m.tag===mastersActiveTag);
@@ -1704,6 +1804,15 @@ function renderMasters(){
 
 function setMasterTag(tag){
   mastersActiveTag=tag;
+  mastersRevealed=true;
+  renderMasters();
+}
+
+// Collapses the thumbnail reveal back to just the theme tags + hint (the "Collapse" link
+// rendered in the hint slot once a theme's been tapped) — independent of the outer
+// masters-body/masters-toggle section collapse, which stays open.
+function toggleMastersReveal(){
+  mastersRevealed=false;
   renderMasters();
 }
 
@@ -2233,7 +2342,7 @@ async function loadMore(){
   // Each Discover fetch already pulls a few hundred candidates across categories, so most
   // "Load Page" taps just reveal 40 more of what's already sorted & fetched — no network call.
   const seen=seenIds();
-  const already=S.results.filter(passesLang).filter(i=>!seen.has(i.id)).filter(i=>i.platforms.some(p=>S.activeP.has(p)));
+  const already=S.results.filter(passesLang).filter(i=>!seen.has(i.id)).filter(i=>i.platforms.some(p=>S.activeP.has(p))).filter(passesDiscoverFilters);
   if(already.length>=S.visibleCount){
     renderGrid(S.results);
     return;
@@ -2327,11 +2436,11 @@ function onSearch(q){
     // Exact-title matches first (as tmdbSearch already ordered them), then — among ties —
     // prefer a confirmed India release over one that isn't, so a genuine exact match that's
     // actually watchable here always outranks a same-named title you can't stream in India.
-    const qNorm=q.trim().toLowerCase();
+    const qNorm=normMatch(q);
 
     pool.sort((a,b)=>{
 
-      const aExact=a.title.trim().toLowerCase()===qNorm?1:0, bExact=b.title.trim().toLowerCase()===qNorm?1:0;
+      const aExact=normMatch(a.title)===qNorm?1:0, bExact=normMatch(b.title)===qNorm?1:0;
 
       if(aExact!==bExact) return bExact-aExact;
 
@@ -2482,12 +2591,12 @@ document.addEventListener('touchend',e=>{
 // ════════════ KEYBOARD SUPPORT FOR FIXED CHROME (div-as-button elements) ════════════
 // Native <button>/<input>/<select>/<a href> are already tabbable and fire click on Enter/Space.
 // These hand-authored chrome controls (nav tabs, header icons, Filters entry, filter-sheet
-// actions, Masters "Browse by theme") got tabindex="0" + role="button" in markup — this makes
+// actions, Masters of Cinema header) got tabindex="0" + role="button" in markup — this makes
 // Enter/Space activate them like a real button. Deliberately scoped to fixed chrome only, not
 // every dynamically-rendered pill/card (disproportionate effort vs. benefit there).
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' '&&e.key!=='Spacebar') return;
-  const el=e.target.closest('.ntab,.filt-btn,.ibtn,.filter-sheet-reset,.filter-sheet-cta-btn,.browse-theme-link');
+  const el=e.target.closest('.ntab,.filt-btn,.ibtn,.filter-sheet-reset,.filter-sheet-cta-btn,.masters-toggle,.masters-collapse-link');
   if(!el) return;
   e.preventDefault();
   el.click();
@@ -2526,7 +2635,7 @@ const TOUR_FULL=[
   {tab:null, sel:'.logo', t:'What is WatchPick', b:'A personal cinema discovery app for India — films and shows filtered by real taste categories, with availability verified across 8 streaming platforms.'},
   {tab:'discover', sel:'#sinput', t:'Search & Voice', b:'Type a title, director, or actor. A gold card means your search matched a person — tap it for their full India filmography. Tap the mic icon to search by speaking instead.'},
   {tab:'discover', sel:'#mediaToggleRow', t:'Films / Both / Series', b:'This toggle narrows Discover to movies only, TV only, or both together.'},
-  {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Tap "Browse by theme" to reveal the group tags, tap one to switch groups, tap a name to open their full filmography.'},
+  {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Open by default — tap the header to collapse or reopen the whole section. Tap any theme to reveal its portraits, tap a thumbnail to open that person\'s full filmography, and tap Collapse to hide the portraits again.'},
   {tab:'discover', sel:'#newarrivals-sect', t:'New Arrivals', b:'Films added to Indian streaming in the last 60 days, in their own scrolling row with their own Refresh.'},
   {tab:'discover', sel:'#curated-sect', t:'Curated feed & Filters', b:'Your main feed below has its own Sort dropdown. The Filters button next to Search adds Genres, Language, Sort and Availability filters without leaving Discover.'},
   {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Bookmark (Want), star (Liked), check (Seen), and eye-slash (Not Interested) — right on the poster. Hover an icon on desktop, or long-press on a phone, to see what it means. Seen and Not Interested quietly remove a title from Discover; tap the same action again (find it via Search) to undo.'},
@@ -2767,7 +2876,13 @@ function togSortPill(s){
 }
 
 function togActiveG(k){
-  S.activeG.has(k)?S.activeG.delete(k):S.activeG.add(k);
+  const nowOn=!S.activeG.has(k);
+  nowOn?S.activeG.add(k):S.activeG.delete(k);
+  // Keep the matching Series genre in sync (see FILM_TO_TV_GENRE) so Series Genres doesn't
+  // stay stuck on "everything" while Film Genres gets narrowed — the "Refresh spoils my
+  // filters" bug.
+  const tvKey=FILM_TO_TV_GENRE[k];
+  if(tvKey){ nowOn?S.activeTVG.add(tvKey):S.activeTVG.delete(tvKey); }
   renderFbar();
   if(S.searchMode) return; // genres don't filter search results (see Guide)
   loadDiscover(true);
@@ -2781,6 +2896,31 @@ function togLang(lang){
 }
 
 function passesLang(item){return S.activeLang==='all'||item.lang===S.activeLang;}
+
+// S.results doubles as a general "known items" cache, not just the Discover feed's candidate
+// pool — New Arrivals cards, a detail page's recommendations/similar titles, a person's
+// filmography credits, and My List cards all register into it too (via addToPool), so
+// openDetail() can find their metadata without refetching. None of those sources respect the
+// CURRENTLY active Discover genre / Films·Both·Series selection, so without re-checking here
+// they can leak straight into the Discover grid — most visibly via Refresh, which fires
+// loadNewArrivals() concurrently with loadDiscover() and lets New Arrivals' (ungenred, movies-
+// only) items land in S.results mid-fetch, so the feed appears to ignore the filters you just
+// set. Re-derives the same disabled-genre-id sets loadDiscover's own fetchAndEnrich/
+// fetchAndEnrichTV already use at fetch time — legitimately-fetched items already pass this
+// check trivially, so this only ever additionally excludes items that arrived some other way.
+function passesDiscoverFilters(item){
+  if(S.mediaType==='movie'&&item.type==='tv') return false;
+  if(S.mediaType==='tv'&&item.type==='movie') return false;
+  const table=item.type==='tv'?TV_GENRES:GENRES;
+  const active=item.type==='tv'?S.activeTVG:S.activeG;
+  const disabledIds=new Set(
+    Object.entries(table)
+      .filter(([k,v])=>!active.has(k)&&v.tmdbId&&!String(v.tmdbId).includes('|'))
+      .map(([,v])=>Number(v.tmdbId))
+  );
+  if(!disabledIds.size) return true;
+  return !(item.genre_ids||[]).some(id=>disabledIds.has(id));
+}
 
 
 
@@ -2811,6 +2951,8 @@ function renderGrid(items){
     vis=vis.filter(i=>!seen.has(i.id));
 
     vis=vis.filter(i=>i.platforms.some(p=>S.activeP.has(p)));
+
+    vis=vis.filter(passesDiscoverFilters);
 
   }
 
@@ -3011,7 +3153,7 @@ async function renderDetailView(id, forceType){
 
   overlay.scrollTop=0;
 
-  const [det]=await Promise.all([tmdbDetail(id,item.type),enrich(item)]);
+  const [det]=await Promise.all([tmdbDetail(id,item.type,item.lang),enrich(item)]);
 
   // Enrich "More Like This" with real India availability before rendering
   // Use /recommendations (collaborative filtering) not /similar (loose genre match)
@@ -3328,7 +3470,7 @@ function detailHTML(item,det,st,sims){
 
           <div class="trailer-label">${v.type}${v.official?' · Official':''}</div>
 
-        </div>`).join('')}</div></div>`:''}
+        </div>`).join('')}</div></div>`:`<div class="dsect"><div class="dsectl">Trailer</div><div style="font-size:11px;color:var(--t2)">No trailer listed on TMDB for this title — <a class="glink" href="https://www.youtube.com/results?search_query=${enc(title+' trailer')}" target="_blank">search YouTube directly &rarr;</a></div></div>`}
 
     ${overview?`<div class="dsect"><div class="dsectl">Synopsis</div>
 
@@ -3746,6 +3888,8 @@ function discoverAllOn(){
 
   Object.keys(GENRES).filter(k=>S.genres[k]).forEach(k=>S.activeG.add(k));
 
+  S.activeTVG=new Set(Object.keys(TV_GENRES)); // keep Series Genres in sync with Film Genres
+
   renderFbar();loadDiscover(true);
 
 }
@@ -3753,6 +3897,8 @@ function discoverAllOn(){
 function discoverAllOff(){
 
   S.activeG.clear();
+
+  S.activeTVG=new Set(); // keep Series Genres in sync with Film Genres
 
   renderFbar();renderGrid([]);
 
