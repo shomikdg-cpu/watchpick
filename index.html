@@ -12,12 +12,15 @@
 
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#0a0a0a" id="themeColorMeta">
 <link rel="manifest" href="/manifest.json">
 
 <title>WatchPick</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<!-- Apply any saved theme before first paint, so light-theme users never see a flash of dark -->
+<script>(function(){try{if(localStorage.getItem('wp_theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();</script>
 
 <style>
 
@@ -33,9 +36,38 @@
 
   --red:#e05555;--green:#58b885;--blue:#6aaad4;
 
-  --r:10px;--rs:7px;
+  --r:10px;--rs:7px;--rt:4px;--pill:999px;--rsheet:18px;
 
 }
+/* Type scale (intentional sizes only — do not add near-duplicates like 8.5px/9.5px/11.5px):
+   7 · 8 · 9 · 10 · 11 · 12 · 13 · 14 · 16 · 18 · 20px, used for micro-labels up through headings. */
+
+/* ── LIGHT THEME — Dark stays the default; this only applies when explicitly chosen ── */
+:root[data-theme="light"]{
+  --bg:#f7f5f1;--s1:#ffffff;--s2:#eeece7;--s3:#e4e1da;--s4:#d8d4cb;
+  --b1:rgba(0,0,0,.07);--b2:rgba(0,0,0,.13);
+  --t1:#1a1a1a;--t2:#5c5c5c;--t3:#9a9a9a;
+  --gold:#7d5a0a;--gold2:rgba(125,90,10,.12);
+  --red:#c23f3f;--green:#2e8b57;--blue:#2f7fb0;
+}
+/* Hardcoded accent colors below were tuned for a near-black backdrop (posters, dark cards).
+   Where they also render on the app's own surface (not on top of poster art) they need
+   re-tuning for a light surface too, or they'd wash out or vanish. */
+:root[data-theme="light"] .av-stream{background:rgba(46,139,87,.16);color:#1e6b45}
+:root[data-theme="light"] .av-none{background:rgba(194,63,63,.14);color:#a83232}
+:root[data-theme="light"] .dpill.in-yes{background:rgba(46,139,87,.14);color:#1e6b45}
+:root[data-theme="light"] .dpill.in-no{background:rgba(194,63,63,.14);color:#a83232}
+:root[data-theme="light"] .dact.on-hidden{background:rgba(194,63,63,.1);border-color:rgba(194,63,63,.4);color:#a83232}
+:root[data-theme="light"] .cbtn.hidden{background:rgba(194,63,63,.08);border-color:rgba(194,63,63,.35);color:#a83232}
+:root[data-theme="light"] .plt-netflix{background:rgba(229,9,20,.14);color:#c21807}
+:root[data-theme="light"] .plt-prime{background:rgba(0,120,200,.16);color:#0a6ea8}
+:root[data-theme="light"] .plt-hotstar{background:rgba(40,90,180,.16);color:#26418f}
+:root[data-theme="light"] .plt-mubi{background:rgba(120,50,180,.16);color:#6b2fa0}
+:root[data-theme="light"] .plt-youtube{background:rgba(220,0,0,.14);color:#b30000}
+:root[data-theme="light"] .plt-apple{background:rgba(0,0,0,.08);color:#333}
+:root[data-theme="light"] .plt-sonyliv{background:rgba(200,110,0,.16);color:#a35a00}
+:root[data-theme="light"] .plt-zee5{background:rgba(50,140,50,.16);color:#2c7a2c}
+:root[data-theme="light"] .plt-none{background:rgba(120,120,120,.15);color:#666}
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 
@@ -51,27 +83,33 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .hbtns{display:flex;gap:5px}
 
-.ibtn{background:var(--s2);border:.5px solid var(--b2);border-radius:7px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:14px;transition:all .15s;position:relative;user-select:none;flex-shrink:0}
+.ibtn{background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:14px;transition:all .15s;position:relative;user-select:none;flex-shrink:0}
+
+.ibtn:active{opacity:.7}
 
 .ibtn:active{background:var(--s3)}
 
 .badge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#0a0a0a;font-size:8px;font-weight:700;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 
-.nav{display:flex;gap:3px;padding:7px 12px;border-bottom:1px solid var(--b2);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.nav{display:flex;align-items:center;gap:3px;padding:7px 12px;border-bottom:1px solid var(--b2);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
 
 .nav::-webkit-scrollbar{display:none}
 
-.ntab{padding:5px 13px;border-radius:16px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;border:.5px solid transparent;transition:all .15s;color:var(--t2);user-select:none}
+.ntab{padding:5px 13px;border-radius:var(--pill);font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;border:.5px solid transparent;transition:all .15s;color:var(--t2);user-select:none}
 
-.ntab.on{background:var(--gold);color:#0a0a0a;border-color:var(--gold)}
+.ntab.on{background:var(--gold2);color:var(--gold);border-color:var(--gold)}
+
+.ntab:active{opacity:.7}
 
 .fbar{display:flex;gap:5px;padding:8px 12px;border-bottom:.5px solid var(--b1);overflow-x:auto;scrollbar-width:none;flex-shrink:0;align-items:center}
 
 .fbar::-webkit-scrollbar{display:none}
 
-.fpill{padding:4px 10px;border-radius:14px;font-size:10px;font-weight:500;white-space:nowrap;cursor:pointer;border:.5px solid var(--b2);color:var(--t3);background:transparent;transition:all .15s;user-select:none;flex-shrink:0}
+.fpill{padding:4px 10px;border-radius:var(--pill);font-size:10px;font-weight:500;white-space:nowrap;cursor:pointer;border:.5px solid var(--b2);color:var(--t3);background:transparent;transition:all .15s;user-select:none;flex-shrink:0}
 
 .fpill.on{background:var(--gold2);border-color:var(--gold);color:var(--gold)}
+
+.fpill:active{opacity:.7}
 
 .fsep{width:.5px;height:16px;background:var(--b2);flex-shrink:0;margin:0 2px}
 
@@ -103,14 +141,38 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .fbar-row3{display:flex;align-items:center;gap:5px;padding:0 12px 8px;overflow-x:auto;scrollbar-width:none;border-top:.5px solid var(--b1);padding-top:6px}
 .fbar-row3::-webkit-scrollbar{display:none}
 .fbar-label{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--t3);white-space:nowrap;flex-shrink:0;padding-right:2px}
-.imdb-badge{display:inline-flex;align-items:center;gap:3px;background:#F5C518;color:#000;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:700;text-decoration:none;flex-shrink:0}
+.fbar-row3a,.fbar-row3b,.fbar-row3c{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.sf-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.sf-row .sbox{flex:1;margin-bottom:0}
+.filt-btn{flex-shrink:0;display:flex;align-items:center;gap:5px;background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);height:38px;padding:0 13px;color:var(--t2);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;user-select:none}
+.filt-btn:active{opacity:.7}
+.filter-scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:250}
+.filter-scrim.open{display:block}
+.filter-sheet{display:none;position:fixed;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;background:var(--s1);border-top-left-radius:var(--rsheet);border-top-right-radius:var(--rsheet);border-top:.5px solid var(--b2);max-height:78vh;flex-direction:column;box-shadow:0 -8px 32px rgba(0,0,0,.5);z-index:251}
+.filter-sheet.open{display:flex}
+.filter-sheet-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:.5px solid var(--b1);flex-shrink:0}
+.filter-sheet-title{font-size:13px;font-weight:700}
+.filter-sheet-reset{font-size:9px;color:var(--gold);cursor:pointer;user-select:none}
+.filter-sheet-body{overflow-y:auto;padding:16px}
+.filter-sheet-body .sechead{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3)}
+.filter-sheet-body .subhead{margin:16px 0 8px;padding-top:16px;border-top:.5px solid var(--b1)}
+.filter-sheet-body .fbar-wrap{border-bottom:none}
+.filter-sheet-body .fbar-row1,.filter-sheet-body .fbar-row2{flex-wrap:wrap;overflow-x:visible}
+.filter-sheet-cta{padding:12px 16px 18px;border-top:.5px solid var(--b1);flex-shrink:0}
+.filter-sheet-cta-btn{background:var(--gold);color:#0a0a0a;border-radius:var(--rs);height:40px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;user-select:none}
+.browse-theme-link{display:flex;align-items:center;gap:3px;font-size:9px;color:var(--gold);cursor:pointer;user-select:none;flex-shrink:0}
+.browse-theme-link svg{transition:transform .15s}
+.browse-theme-link.open svg{transform:rotate(180deg)}
+.masters-tags.collapsed{display:none}
+.imdb-badge{display:inline-flex;align-items:center;gap:3px;background:#F5C518;color:#000;border-radius:var(--rt);padding:2px 6px;font-size:9px;font-weight:700;text-decoration:none;flex-shrink:0}
 .masters-sect{margin-bottom:16px}
 .sect-block{margin-bottom:20px}
 .sect-block+.sect-block{padding-top:16px;border-top:.5px solid var(--b1)}
 .masters-tags{display:flex;gap:6px;padding:0 0 8px;overflow-x:auto;scrollbar-width:none}
 .masters-tags::-webkit-scrollbar{display:none}
-.mtag{padding:4px 12px;border-radius:12px;font-size:9px;font-weight:600;white-space:nowrap;cursor:pointer;border:.5px solid var(--b2);color:var(--t3);background:transparent;transition:all .15s;flex-shrink:0;user-select:none}
+.mtag{padding:4px 12px;border-radius:var(--pill);font-size:9px;font-weight:600;white-space:nowrap;cursor:pointer;border:.5px solid var(--b2);color:var(--t3);background:transparent;transition:all .15s;flex-shrink:0;user-select:none}
 .mtag.on{background:var(--gold2);border-color:var(--gold);color:var(--gold)}
+.mtag:active{opacity:.7}
 .mscroll{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
 .mscroll::-webkit-scrollbar{display:none}
 .mcard{flex-shrink:0;width:90px;cursor:pointer;user-select:none}
@@ -119,9 +181,9 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .mcard:hover .mphoto,.mcard:active .mphoto{border-color:var(--gold)}
 .mphoto-fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;letter-spacing:.5px;color:var(--t2)}
 .mphoto img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-.mname{font-size:9.5px;font-weight:600;color:var(--t1);text-align:center;line-height:1.3;margin-bottom:2px}
+.mname{font-size:9px;font-weight:600;color:var(--t1);text-align:center;line-height:1.3;margin-bottom:2px}
 .mrole{font-size:9px;color:var(--gold);text-align:center;margin-bottom:2px}
-.mnote{font-size:8.5px;color:var(--t3);text-align:center;line-height:1.3}
+.mnote{font-size:8px;color:var(--t3);text-align:center;line-height:1.3}
 
 .secrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;padding-bottom:7px;border-bottom:.5px solid var(--b1)}
 
@@ -151,13 +213,13 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .pgrd{position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(transparent,rgba(0,0,0,.85));pointer-events:none}
 
-.cplt{position:absolute;top:5px;left:5px;padding:2px 5px;border-radius:3px;font-size:7px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;line-height:1.3;z-index:2}
+.cplt{position:absolute;top:5px;left:5px;padding:2px 5px;border-radius:var(--rt);font-size:7px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;line-height:1.3;z-index:2}
 
 .cstat{position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;z-index:2}
 
 .crating{position:absolute;bottom:5px;left:5px;font-size:8px;color:var(--gold);font-weight:600;line-height:1;z-index:2}
 
-.cavail{position:absolute;bottom:5px;right:5px;font-size:6px;font-weight:700;padding:2px 4px;border-radius:3px;text-transform:uppercase;letter-spacing:.3px;z-index:2}
+.cavail{position:absolute;bottom:5px;right:5px;font-size:6px;font-weight:700;padding:2px 4px;border-radius:var(--rt);text-transform:uppercase;letter-spacing:.3px;z-index:2}
 
 .av-stream{background:rgba(88,184,133,.3);color:#7dd6a8}
 
@@ -171,11 +233,15 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .cmeta{font-size:9px;color:var(--t2);display:flex;gap:4px;flex-wrap:wrap}
 
-.ctag{font-size:8px;color:var(--t2);background:var(--s3);padding:1px 4px;border-radius:3px}
+.ctag{font-size:8px;color:var(--t2);background:var(--s3);padding:1px 4px;border-radius:var(--rt)}
 
 .cbtns{display:flex;gap:2px;padding:4px 7px 7px}
 
-.cbtn{flex:1;padding:4px 1px;border-radius:4px;font-size:7px;font-weight:600;cursor:pointer;border:.5px solid var(--b2);background:transparent;color:var(--t3);transition:all .15s;text-align:center;user-select:none;line-height:1.4}
+.cbtn{flex:1;padding:8px 1px;border-radius:var(--rt);font-size:7px;font-weight:600;cursor:pointer;border:.5px solid var(--b2);background:transparent;color:var(--t3);transition:all .15s;text-align:center;user-select:none;line-height:1.4;-webkit-touch-callout:none;display:flex;align-items:center;justify-content:center}
+
+.cbtn:active{opacity:.7}
+
+.cbtn svg{pointer-events:none}
 
 .cbtn:active{opacity:.7}
 
@@ -204,6 +270,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .plt-none{background:rgba(120,120,120,.2);color:#999}
 .mtbtn{flex:1;padding:8px 4px;border-radius:var(--rs);border:.5px solid var(--b2);background:var(--s2);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s}
 .mtbtn.active{background:var(--gold2);border-color:rgba(232,201,122,.5);color:var(--gold);font-weight:600}
+.mtbtn:active{opacity:.7}
 
 .overlay{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;overflow-y:auto;-webkit-overflow-scrolling:touch}
 
@@ -225,7 +292,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .dclose:active{opacity:.7}
 
-.dback{position:absolute;top:12px;right:12px;width:auto;padding:0 11px;height:30px;border-radius:15px;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:var(--t1);border:.5px solid var(--b2);z-index:10;user-select:none;gap:4px}
+.dback{position:absolute;top:12px;right:12px;width:auto;padding:0 11px;height:30px;border-radius:var(--pill);background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:var(--t1);border:.5px solid var(--b2);z-index:10;user-select:none;gap:4px}
 
 .dmeta{padding:14px 16px 0;flex:1;background:var(--bg)}
 
@@ -235,7 +302,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .dpills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:13px;align-items:center}
 
-.dpill{padding:3px 8px;border-radius:4px;font-size:9px;font-weight:600;letter-spacing:.3px}
+.dpill{padding:3px 8px;border-radius:var(--rt);font-size:9px;font-weight:600;letter-spacing:.3px}
 
 .dpill.year{background:var(--s3);color:var(--t2)}
 
@@ -267,7 +334,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .cbtn.hidden{background:rgba(224,85,85,.1);border-color:rgba(224,85,85,.35);color:#ff9090}
 
-.sortsel{background:var(--s2);border:.5px solid var(--b2);border-radius:6px;color:var(--t2);font-family:'Inter',sans-serif;font-size:10px;padding:4px 6px;outline:none;-webkit-appearance:none}
+.sortsel{background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);color:var(--t2);font-family:'Inter',sans-serif;font-size:10px;padding:4px 6px;outline:none;-webkit-appearance:none}
 
 .dsect{margin-bottom:20px}
 .dsect+.dsect{padding-top:16px;border-top:.5px solid var(--b1)}
@@ -295,7 +362,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .plink-arr{color:var(--t3);font-size:13px}
 
-.avtag{font-size:7px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0}
+.avtag{font-size:7px;font-weight:700;padding:2px 6px;border-radius:var(--rt);text-transform:uppercase;letter-spacing:.4px;flex-shrink:0}
 
 .dsynopsis{font-size:12px;line-height:1.75;color:var(--t2);margin-bottom:16px}
 
@@ -341,7 +408,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .trailer-scroll::-webkit-scrollbar{display:none}
 
-.trailer-card{flex-shrink:0;width:240px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:var(--s2);position:relative;cursor:pointer;border:.5px solid var(--b2)}
+.trailer-card{flex-shrink:0;width:240px;aspect-ratio:16/9;border-radius:var(--rs);overflow:hidden;background:var(--s2);position:relative;cursor:pointer;border:.5px solid var(--b2)}
 
 .trailer-card img{width:100%;height:100%;object-fit:cover;display:block}
 
@@ -349,9 +416,9 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .trailer-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;padding-left:3px}
 
-.trailer-label{position:absolute;bottom:6px;left:8px;font-size:8px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2px 7px;border-radius:4px;letter-spacing:.3px}
+.trailer-label{position:absolute;bottom:6px;left:8px;font-size:8px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2px 7px;border-radius:var(--rt);letter-spacing:.3px}
 
-.trailer-frame{flex-shrink:0;width:240px;aspect-ratio:16/9;border-radius:8px;border:.5px solid var(--b2);background:#000}
+.trailer-frame{flex-shrink:0;width:240px;aspect-ratio:16/9;border-radius:var(--rs);border:.5px solid var(--b2);background:#000}
 
 .sim-scroll::-webkit-scrollbar{display:none}
 
@@ -359,7 +426,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .scard:active{opacity:.7}
 
-.scard-pw{width:88px;height:132px;border-radius:6px;overflow:hidden;background:var(--s2);position:relative;margin-bottom:5px}
+.scard-pw{width:88px;height:132px;border-radius:var(--rs);overflow:hidden;background:var(--s2);position:relative;margin-bottom:5px}
 
 .scard-pw img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
 
@@ -400,6 +467,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .tog{width:36px;height:20px;border-radius:10px;background:var(--s4);position:relative;cursor:pointer;transition:background .18s;border:none;flex-shrink:0}
 
 .tog.on{background:var(--gold)}
+.tog:active .tk{transform:scale(.92)}
 
 .tk{width:14px;height:14px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .16s}
 
@@ -413,7 +481,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .brow button.pri{background:var(--gold2);border-color:rgba(232,201,122,.4);color:var(--gold)}
 
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(44px);background:var(--s3);border:.5px solid var(--b2);border-radius:16px;padding:7px 14px;font-size:10px;font-weight:500;color:var(--t1);z-index:400;transition:transform .18s;white-space:nowrap;pointer-events:none}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(44px);background:var(--s3);border:.5px solid var(--b2);border-radius:var(--pill);padding:7px 14px;font-size:10px;font-weight:500;color:var(--t1);z-index:400;transition:transform .18s;white-space:nowrap;pointer-events:none}
 
 .toast.show{transform:translateX(-50%) translateY(0)}
 
@@ -481,7 +549,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .legend-overlay.open{display:flex}
 
-.legend{background:var(--s1);border-top:.5px solid var(--b2);border-radius:18px 18px 0 0;width:100%;max-height:80vh;overflow-y:auto;padding:18px;animation:fadeup .2s ease}
+.legend{background:var(--s1);border-top:.5px solid var(--b2);border-radius:var(--rsheet) var(--rsheet) 0 0;width:100%;max-height:80vh;overflow-y:auto;padding:18px;animation:fadeup .2s ease}
 
 .lhandle{width:32px;height:3px;border-radius:2px;background:var(--s4);margin:0 auto 16px}
 
@@ -499,18 +567,18 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .guide-overlay{position:fixed;inset:0;z-index:300;background:var(--bg);display:none;flex-direction:column}
 .welcome-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.85);display:none;align-items:flex-end;justify-content:center}
 .welcome-overlay.open{display:flex}
-.welcome-card{background:var(--s1);border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:28px 20px 36px;animation:fadeup .3s ease}
+.welcome-card{background:var(--s1);border-radius:var(--rsheet) var(--rsheet) 0 0;width:100%;max-width:480px;padding:28px 20px 36px;animation:fadeup .3s ease}
 .welcome-logo{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold);margin-bottom:4px}
 .welcome-sub{font-size:11px;color:var(--t3);margin-bottom:20px;letter-spacing:.5px}
 .welcome-feat{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
 .wfeat{display:flex;gap:12px;align-items:flex-start}
 .wfeat-ico{font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px;width:16px;height:16px;border-radius:50%;border:.5px solid var(--gold2);display:flex;align-items:center;justify-content:center}
 .wfeat-text{font-size:11px;color:var(--t2);line-height:1.55}
-.wfeat-text b{color:var(--t1);font-size:11.5px}
+.wfeat-text b{color:var(--t1);font-size:11px}
 .welcome-btn{width:100%;padding:14px;border-radius:var(--r);background:var(--gold);color:#0a0a0a;font-size:13px;font-weight:700;border:none;cursor:pointer;letter-spacing:.3px}
 .welcome-skip{width:100%;padding:8px;background:transparent;border:none;color:var(--t3);font-size:10px;cursor:pointer;margin-top:6px}
 .spot-block{position:fixed;inset:0;z-index:440;background:transparent;display:none}
-.spot-hole{position:fixed;z-index:441;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.78);pointer-events:none;border:2px solid var(--gold);display:none;transition:all .25s ease}
+.spot-hole{position:fixed;z-index:441;border-radius:var(--r);box-shadow:0 0 0 9999px rgba(0,0,0,.78);pointer-events:none;border:2px solid var(--gold);display:none;transition:all .25s ease}
 .spot-callout{position:fixed;z-index:442;background:var(--s1);border:.5px solid var(--b2);border-radius:var(--r);padding:16px;width:min(320px, calc(100vw - 32px));box-shadow:0 8px 32px rgba(0,0,0,.6);display:none;transition:top .25s ease,left .25s ease}
 .tour-dots{display:flex;gap:5px;margin-bottom:14px}
 .tour-dot{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:all .15s}
@@ -531,7 +599,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .guide-toc{background:var(--s2);border-bottom:.5px solid var(--b1);padding:14px 16px}
 .guide-toc-title{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:10px}
 .guide-toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.toc-item{padding:7px 10px;background:var(--s1);border:.5px solid var(--b2);border-radius:6px;font-size:10px;color:var(--gold);cursor:pointer;user-select:none;text-decoration:none;display:block}
+.toc-item{padding:7px 10px;background:var(--s1);border:.5px solid var(--b2);border-radius:var(--rs);font-size:10px;color:var(--gold);cursor:pointer;user-select:none;text-decoration:none;display:block}
 .toc-item:active{opacity:.7}
 .gsect{padding:18px 16px;border-bottom:.5px solid var(--b1)}
 .gsect:last-child{border:none}
@@ -544,7 +612,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .gdesc{font-size:11px;color:var(--t2);line-height:1.55;flex:1}
 .glink{color:var(--gold);text-decoration:none;font-weight:500}
 .glink:active{opacity:.7}
-.gnote{background:var(--s2);border:.5px solid var(--b2);border-radius:6px;padding:9px 12px;font-size:11px;color:var(--t3);line-height:1.6;margin:8px 0;border-left:2px solid var(--gold)}
+.gnote{background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);padding:9px 12px;font-size:11px;color:var(--t3);line-height:1.6;margin:8px 0;border-left:2px solid var(--gold)}
 .gstep{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
 .gstep-n{width:22px;height:22px;border-radius:50%;background:var(--gold);color:#0a0a0a;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 .gstep-body{flex:1}
@@ -553,11 +621,28 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .pagerow{display:flex;gap:6px;align-items:center;justify-content:center;padding:14px 0 6px}
 
-.pagebtn{padding:8px 18px;border-radius:18px;background:var(--gold2);border:.5px solid rgba(232,201,122,.4);color:var(--gold);font-size:11px;font-weight:600;cursor:pointer;user-select:none}
+.pagebtn{padding:8px 18px;border-radius:var(--pill);background:var(--gold2);border:.5px solid rgba(232,201,122,.4);color:var(--gold);font-size:11px;font-weight:600;cursor:pointer;user-select:none}
 
 .pagebtn:active{opacity:.7}
 
 .pageinfo{font-size:9px;color:var(--t3)}
+
+/* ════════════ UX AUDIT: focus-visible (keyboard) + hover (mouse/trackpad only) for fixed chrome ════════════ */
+.ntab:focus-visible,.filt-btn:focus-visible,.ibtn:focus-visible,.filter-sheet-reset:focus-visible,.filter-sheet-cta-btn:focus-visible,.browse-theme-link:focus-visible,.mtbtn:focus-visible,.fpill:focus-visible,.mtag:focus-visible,.pagebtn:focus-visible,.tog:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+@media (hover:hover) and (pointer:fine){
+  .ntab:not(.on):hover{background:var(--s3);color:var(--t1)}
+  .filt-btn:hover{border-color:var(--gold);color:var(--t1)}
+  .ibtn:hover{border-color:var(--gold);color:var(--t1)}
+  .filter-sheet-reset:hover{opacity:.7}
+  .filter-sheet-cta-btn:hover{filter:brightness(1.08)}
+  .browse-theme-link:hover{opacity:.75}
+  .mtbtn:not(.active):hover{border-color:var(--gold);color:var(--t1)}
+  .fpill:not(.on):hover{border-color:var(--gold);color:var(--t1)}
+  .mtag:not(.on):hover{border-color:var(--gold);color:var(--t1)}
+  .pagebtn:hover{filter:brightness(1.1)}
+  .cbtn:hover{border-color:var(--gold)}
+}
 
 </style>
 
@@ -569,11 +654,13 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 <div class="hdr">
 
-  <div class="logo">WatchPick<small>cinema companion · india</small></div>
+  <div class="logo">WatchPick<small>Your Personalised Cinema Discovery Companion</small></div>
 
   <div class="hbtns">
 
-    <div class="ibtn" id="guideBtn" onclick="openLegend()" title="Guide" style="width:auto;padding:0 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Guide</div>
+    <div class="ibtn" id="themeToggleBtn" onclick="toggleTheme()" title="Switch to Light" tabindex="0" role="button"></div>
+
+    <div class="ibtn" id="guideBtn" onclick="openLegend()" title="Guide" tabindex="0" role="button" style="width:auto;padding:0 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Guide</div>
 
     
 
@@ -587,21 +674,13 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 <div class="nav">
 
-  <div class="ntab on" data-tab="discover" onclick="showTab('discover')">Discover</div>
+  <div class="ntab on" data-tab="discover" onclick="showTab('discover')" tabindex="0" role="button">Discover</div>
 
-  <div class="ntab" data-tab="watchlist" onclick="showTab('watchlist')">My List<span class="badge" id="wbadge" style="display:none;position:static;margin-left:5px;width:14px;height:14px;font-size:7px">0</span></div>
+  <div class="ntab" data-tab="watchlist" onclick="showTab('watchlist')" tabindex="0" role="button">My List<span class="badge" id="wbadge" style="display:none;position:static;vertical-align:middle;margin-left:5px;width:14px;height:14px;font-size:7px">0</span></div>
 
-  <div class="ntab" data-tab="settings" onclick="showTab('settings')">Platforms & Genres</div>
-
-
-</div>
+  <div class="ntab" data-tab="settings" onclick="showTab('settings')" tabindex="0" role="button">Platforms & Genres</div>
 
 
-
-<div class="fbar-wrap">
-  <div class="fbar-row1" id="fbar-row1"></div>
-  <div class="fbar-row2" id="fbar-row2"></div>
-  <div class="fbar-row3" id="fbar-row3"></div>
 </div>
 
 
@@ -616,7 +695,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 <div class="welcome-overlay" id="welcomeOverlay">
   <div class="welcome-card">
     <div class="welcome-logo">WatchPick</div>
-    <div class="welcome-sub">CINEMA COMPANION · INDIA</div>
+    <div class="welcome-sub">Your Personalised Cinema Discovery Companion</div>
     <div class="welcome-feat">
       <div class="wfeat">
         <div class="wfeat-ico">1</div>
@@ -635,8 +714,34 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
         <div class="wfeat-text"><b>Save your list</b> — go to My List and set a passphrase to sync your watchlist across all your devices.</div>
       </div>
     </div>
-    <button class="welcome-btn" onclick="dismissWelcome(false)">Start Discovering →</button>
-    <button class="welcome-skip" onclick="dismissWelcome(true)">Already know WatchPick — skip</button>
+    <button class="welcome-btn" onclick="dismissWelcome(false)">Take the Full Tour →</button>
+    <button class="welcome-skip" onclick="dismissWelcome(true)">Skip tour — let me explore</button>
+    <div style="font-size:9px;color:var(--t3);text-align:center;margin-top:10px;letter-spacing:.2px">You can always take the full tour later from the Guide button.</div>
+  </div>
+</div>
+
+<!-- FILTERS SHEET -->
+<div class="filter-scrim" id="filterScrim" onclick="closeFilterSheet()"></div>
+<div class="filter-sheet" id="filterSheet">
+  <div class="filter-sheet-hdr">
+    <div class="filter-sheet-title">Filters</div>
+    <div class="filter-sheet-reset" onclick="resetFilters()" tabindex="0" role="button">Reset</div>
+  </div>
+  <div class="filter-sheet-body" id="filterSheetBody">
+    <div class="sechead">Genres</div>
+    <div class="fbar-wrap">
+      <div class="fbar-row1" id="fbar-row1"></div>
+      <div class="fbar-row2" id="fbar-row2"></div>
+    </div>
+    <div class="sechead subhead">Language</div>
+    <div class="fbar-row3a" id="fbar-row3a"></div>
+    <div class="sechead subhead">Sort</div>
+    <div class="fbar-row3b" id="fbar-row3b"></div>
+    <div class="sechead subhead">Availability</div>
+    <div class="fbar-row3c" id="fbar-row3c"></div>
+  </div>
+  <div class="filter-sheet-cta">
+    <div class="filter-sheet-cta-btn" onclick="closeFilterSheet()" tabindex="0" role="button">Show Results</div>
   </div>
 </div>
 
@@ -695,29 +800,37 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="gh2">Discover</div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Search</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography. Tap Voice to search by speaking instead of typing.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Films / Both / Series</span></div><div class="gdesc">Toggle above the search bar &mdash; narrow Discover to movies only, TV series only, or both together.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Visual Craft, Screenplay, Cinematography. Tap a cluster tag to switch, tap a person card to open their full India-available filmography.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Visual Craft, Screenplay, Cinematography. Tap "Browse by theme" to reveal the cluster tags (collapsed by default to keep the feed uncluttered), then tap a person card to open their full India-available filmography.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New Arrivals</strong> &mdash; films added to Indian streaming in the last 60 days. Horizontal scroll at top, own Refresh button.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Refresh</span></div><div class="gdesc">Fresh batch for your current filters.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Load Page &darr;</span></div><div class="gdesc">Next page of results &mdash; genuinely new titles.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">W &#9733; &#10003; N</span></div><div class="gdesc">Every card has its own quick-action row &mdash; mark Want/Liked/Seen/Not Interested right from Discover, no need to open the detail page.</div></div>
+      <div class="grow"><div class="gtag"><span style="display:inline-flex;gap:6px;align-items:center">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--blue)" stroke="none"><path d="M6 3a1 1 0 0 0-1 1v16a1 1 0 0 0 1.55.83L12 17.1l5.45 3.73A1 1 0 0 0 19 20V4a1 1 0 0 0-1-1z"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--gold)" stroke="none"><path d="M12 2.5l2.97 6.53 7.03.86-5.2 5 1.38 7.1L12 18.6l-6.18 3.4 1.38-7.1-5.2-5 7.03-.86z"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--t2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff9090" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.55M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      </span></div><div class="gdesc">Every card has its own quick-action row &mdash; bookmark (Want), star (Liked), check (Seen), eye-slash (Not Interested), right from Discover with no need to open the detail page. Hover any icon on desktop, or long-press it on a touchscreen, to see what it means.</div></div>
       <div class="gh2">My List</div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Shows: Want to Watch</span></div><div class="gdesc">Only titles marked &#128278; Want appear here, with their own Sort (Recently Added, Top Rated, Newest, A&ndash;Z). Liked/Seen/Not Interested aren't listed anywhere &mdash; they just affect what Discover shows you (see Tag Reference).</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Sync</span></div><div class="gdesc">Save &uarr; backs your list up online. Load &darr; brings it down on any device.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Export</span></div><div class="gdesc">Downloads a backup file of your list &mdash; save it to Google Drive or anywhere safe.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Import</span></div><div class="gdesc">Restores your list from that backup file.</div></div>
       <div class="gh2">Platforms &amp; Genres</div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Appearance</span></div><div class="gdesc">Dark (default) or Light theme &mdash; switch here, or with the sun/moon icon in the header. Your choice is remembered on this device.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Platforms</span></div><div class="gdesc">Toggle streaming services on/off. Only enabled platforms appear in Discover.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Genres</span></div><div class="gdesc">Toggle genre categories. Select All / Clear All for quick resets.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">+ Custom</span></div><div class="gdesc">Pin any specific film to your Discover feed.</div></div>
     </div>
     <div class="gsect" id="gs4">
       <div class="gh1">4 &middot; The Filter Bar</div>
-      <p class="gbody">Below the nav tabs, up to 3 rows &mdash; instant filters without going into Settings.</p>
+      <p class="gbody">Tap Filters next to the search box to open Genres, Language, Sort and Availability &mdash; instant filters without going into Settings.</p>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Film Genres</span></div><div class="gdesc">All / None + a button for every genre you've turned on in Settings. Tap one to switch it on or off &mdash; gold means active. Shown whenever you're browsing Films or Both.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Series Genres</span></div><div class="gdesc">Its own All / None + a button per TV genre. Only appears when you're browsing Series or Both &mdash; these genres aren't in Settings, this is the only place to choose them.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Lang</span></div><div class="gdesc">Filter the current feed by original language instantly.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Sort</span></div><div class="gdesc">Mix, Top Rated, Newest, Oldest, Newest + Rated, A&ndash;Z. Changing sort restarts from Page 1.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Avail</span></div><div class="gdesc">All, Stream (subscription) only, or Rent/Buy only.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Reset</span></div><div class="gdesc">Top-right of the sheet &mdash; clears every filter back to its default in one tap.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Show Results</span></div><div class="gdesc">Bottom button &mdash; closes the sheet and returns to your updated Discover feed. Tapping outside the sheet does the same.</div></div>
       <div class="gnote">Newest + Rated: fetches by year descending, then sorts by rating within each year &mdash; best for recent acclaimed films.</div>
     </div>
     <div class="gsect" id="gs5">
@@ -725,7 +838,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <p class="gbody">Tap any card to open the full detail view.</p>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Info row</span></div><div class="gdesc">&#10003; Available in India &middot; Year &middot; &#9733; Rating &middot; Number of votes &middot; Runtime &middot; Language &middot; Age rating &middot; Genres.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Actions</span></div><div class="gdesc">Want to Watch &middot; &#9733; Liked &middot; &#10003; Seen &middot; Not Interested. Tap the same one again to undo. Seen and Not Interested remove the title from Discover (see Tag Reference for how to bring it back).</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">Where to Watch</span></div><div class="gdesc">Every India platform with Stream or Rent/Buy tags. Tap to open that platform's search directly.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Where to Watch</span></div><div class="gdesc">Every India platform with Stream or Rent/Buy tags. The small text under each button (e.g. "Available in India &middot; Opens Netflix Search") sets expectations before you tap &mdash; it opens that platform's search, not the title directly, since platforms don't support deep-linking to a specific title from outside their own app.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:#F5C518">IMDb &rarr;</span></div><div class="gdesc">Opens the film's official IMDb page directly, when one is available. Useful for reviews from a wider audience, parental guidance, and fuller cast/crew credits.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Letterboxd &rarr;</span></div><div class="gdesc">Opens <a class="glink" href="https://letterboxd.com" target="_blank">Letterboxd &rarr;</a> search for that exact film. Letterboxd is a dedicated film community of nearly 30 million users who rate on a 5-star scale (with half-stars). Its ratings run 0.3&ndash;0.5 stars colder than the rating you see in WatchPick, because the audience takes film seriously &mdash; making it the most trustworthy rating source for world cinema, philosophy films, and arthouse titles. A film rated 4.0&nbsp;on Letterboxd by 200,000 film lovers is a stronger signal than an 8.2 in WatchPick's own rating from a general audience. Tap to read reviews and see what dedicated film watchers think before you commit your evening.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">&#9654; Trailers</span></div><div class="gdesc">Tap the thumbnail to play it right here in the app. Only works on the real WatchPick address.</div></div>
@@ -751,10 +864,10 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span class="cavail av-rent" style="position:static">Rent/Buy</span></div><div class="gdesc">Paid rental or purchase only</div></div>
       <div class="grow"><div class="gtag"><span class="cavail av-none" style="position:static">Not in IN</span></div><div class="gdesc">Not currently streaming in India &mdash; shown in search only</div></div>
       <div class="gh2">Status icons</div>
-      <div class="grow"><div class="gtag"><span style="font-size:13px;font-weight:700;color:var(--blue)">W</span></div><div class="gdesc">Want to Watch &mdash; saved to My List</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:14px;color:var(--gold)">&#9733;</span></div><div class="gdesc">Liked It &mdash; gold border on card. Surfaces similar titles in More Like This.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:14px;color:#888">&#10003;</span></div><div class="gdesc">Already Seen &mdash; removed from Discover. Not listed in My List (that tab only shows Want to Watch) &mdash; to undo, find it again via Search (unaffected by this) and tap &#10003; again on its card or detail page.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:13px;font-weight:700;color:#ff9090">N</span></div><div class="gdesc">Not Interested &mdash; excluded from Discover. Same as Seen: not listed in My List, undo by finding it via Search and tapping N again.</div></div>
+      <div class="grow"><div class="gtag"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--blue)" stroke="none"><path d="M6 3a1 1 0 0 0-1 1v16a1 1 0 0 0 1.55.83L12 17.1l5.45 3.73A1 1 0 0 0 19 20V4a1 1 0 0 0-1-1z"/></svg></div><div class="gdesc">Want to Watch (bookmark) &mdash; saved to My List</div></div>
+      <div class="grow"><div class="gtag"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)" stroke="none"><path d="M12 2.5l2.97 6.53 7.03.86-5.2 5 1.38 7.1L12 18.6l-6.18 3.4 1.38-7.1-5.2-5 7.03-.86z"/></svg></div><div class="gdesc">Liked It (star) &mdash; gold border on card. Surfaces similar titles in More Like This.</div></div>
+      <div class="grow"><div class="gtag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div><div class="gdesc">Already Seen (check) &mdash; removed from Discover. Not listed in My List (that tab only shows Want to Watch) &mdash; to undo, find it again via Search (unaffected by this) and tap the check again on its card or detail page.</div></div>
+      <div class="grow"><div class="gtag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff9090" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.55M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></div><div class="gdesc">Not Interested (eye-slash) &mdash; excluded from Discover. Same as Seen: not listed in My List, undo by finding it via Search and tapping the icon again.</div></div>
       <div class="gh2">Other tags</div>
       <div class="grow"><div class="gtag"><span class="crating" style="position:static">&#9733; 8.4</span></div><div class="gdesc">Community rating out of 10, from the <a class="glink" href="https://www.themoviedb.org" target="_blank">movie database &rarr;</a> WatchPick pulls info from</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--t2)">12,430 votes</span></div><div class="gdesc">Number of people who rated it &mdash; the more votes, the more you can trust the rating</div></div>
@@ -812,9 +925,15 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 <div id="tab-discover" class="scroll">
 
-  <div class="sbox">
-    <input class="sinput" type="search" id="sinput" placeholder="Search titles, directors, actors…" oninput="onSearch(this.value)" autocomplete="off" style="padding-left:12px;padding-right:56px">
-    <button class="smic" id="micbtn" onclick="toggleVoice()" title="Voice search">Voice</button>
+  <div class="sf-row">
+    <div class="sbox">
+      <input class="sinput" type="search" id="sinput" placeholder="Search titles, directors, actors…" oninput="onSearch(this.value)" autocomplete="off" style="padding-left:12px;padding-right:56px">
+      <button class="smic" id="micbtn" onclick="toggleVoice()" title="Voice search">Voice</button>
+    </div>
+    <div class="filt-btn" onclick="openFilterSheet()" tabindex="0" role="button">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="7" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+      Filters
+    </div>
   </div>
   <div class="vtranscript" id="vtranscript"></div>
 
@@ -829,9 +948,11 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   <div id="masters-sect" class="masters-sect sect-block" style="display:none">
     <div class="secrow" style="margin-bottom:8px">
       <div class="slabel">Masters of Cinema</div>
-      <div style="font-size:9px;color:var(--t3)">tap to explore filmography</div>
+      <div class="browse-theme-link" id="browseThemeLink" onclick="toggleMastersTags()" tabindex="0" role="button">Browse by theme
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
     </div>
-    <div class="masters-tags" id="masters-tags"></div>
+    <div class="masters-tags collapsed" id="masters-tags"></div>
     <div class="mscroll" id="masters-scroll"></div>
   </div>
 
@@ -941,6 +1062,14 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 </div>
 
 <div id="tab-settings" class="scroll" style="display:none">
+
+  <div class="sect-block">
+  <div class="slabel" style="margin-bottom:8px">Appearance</div>
+  <div style="display:flex;gap:6px">
+    <button id="theme-dark-btn" class="mtbtn active" onclick="setTheme('dark')">Dark</button>
+    <button id="theme-light-btn" class="mtbtn" onclick="setTheme('light')">Light</button>
+  </div>
+  </div>
 
   <div class="sect-block">
   <div class="slabel" style="margin-bottom:8px">Platforms</div>
@@ -1479,17 +1608,31 @@ function masterCardImg(m){
     onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://image.tmdb.org/t/p/w185${p}'}else{this.remove()}">`;
 }
 
+let mastersTagsOpen=false;
+function toggleMastersTags(){
+  mastersTagsOpen=!mastersTagsOpen;
+  $('masters-tags').classList.toggle('collapsed',!mastersTagsOpen);
+  $('browseThemeLink').classList.toggle('open',mastersTagsOpen);
+}
+
 function renderMasters(){
   const sect=$('masters-sect');
   const tagsEl=$('masters-tags');
   const scroll=$('masters-scroll');
   if(!sect||!tagsEl||!scroll) return;
+  // Keep it hidden while searching. S.searchMode itself only flips true after the 400ms
+  // debounce in onSearch(), so also check the live input value — it's synchronous and
+  // covers the brief window where typing has already hidden this section but the
+  // debounce hasn't landed yet (e.g. a quick tab switch right after typing starts).
+  const sIn=$('sinput');
+  if(S.searchMode||(sIn&&sIn.value.trim())) return;
   sect.style.display='block';
 
   // Render tag filters
   tagsEl.innerHTML=MASTER_TAGS.map(t=>
     `<div class="mtag ${t===mastersActiveTag?'on':''}" onclick="setMasterTag('${t}')">${t}</div>`
   ).join('');
+  tagsEl.classList.toggle('collapsed',!mastersTagsOpen);
 
   // Render person cards for active tag (fallback icon shows until a real photo is fetched)
   const filtered=MASTERS.filter(m=>m.tag===mastersActiveTag);
@@ -2080,7 +2223,7 @@ function onSearch(q){
 
   if(!q.trim()){
 
-    // Clear search — hide new arrivals spinner, restore discover
+    // Clear search — restore Masters of Cinema, new arrivals, and the normal feed
 
     S.searchMode=false;
 
@@ -2088,15 +2231,20 @@ function onSearch(q){
 
     $('newarrivals-sect').style.display='block';
 
+    $('masters-sect').style.display='block';
+
     loadDiscover(true);
 
     return;
 
   }
 
-  // Hide new arrivals while searching
+  // Hide Masters of Cinema and New Arrivals while searching, so results appear
+  // directly below the search box instead of underneath those sections.
 
   $('newarrivals-sect').style.display='none';
+
+  $('masters-sect').style.display='none';
 
   stimer=setTimeout(async()=>{
 
@@ -2167,6 +2315,77 @@ if('serviceWorker' in navigator){
   });
 }
 
+// ════════════ THEME (Dark default, Light optional) ════════════
+const SUN_SVG='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+const MOON_SVG='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
+// ════════════ CARD ACTION ICONS (consistent SVG set, replaces the old W/★/✓/N glyph mix) ════════════
+const ICON_WANT='<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M6 3a1 1 0 0 0-1 1v16a1 1 0 0 0 1.55.83L12 17.1l5.45 3.73A1 1 0 0 0 19 20V4a1 1 0 0 0-1-1z"/></svg>';
+const ICON_LIKED='<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5l2.97 6.53 7.03.86-5.2 5 1.38 7.1L12 18.6l-6.18 3.4 1.38-7.1-5.2-5 7.03-.86z"/></svg>';
+const ICON_SEEN='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+const ICON_HIDDEN='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.55M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+function setTheme(theme){
+  const t=theme==='light'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  try{localStorage.setItem('wp_theme',t);}catch(e){}
+  const metaTc=$('themeColorMeta');
+  if(metaTc) metaTc.setAttribute('content',t==='light'?'#f7f5f1':'#0a0a0a');
+  updateThemeToggleUI();
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
+  setTheme(cur==='light'?'dark':'light');
+}
+function updateThemeToggleUI(){
+  const t=document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
+  const btn=$('themeToggleBtn');
+  if(btn){ btn.innerHTML=t==='light'?SUN_SVG:MOON_SVG; btn.title=t==='light'?'Switch to Dark':'Switch to Light'; }
+  const dBtn=$('theme-dark-btn'), lBtn=$('theme-light-btn');
+  if(dBtn) dBtn.classList.toggle('active',t!=='light');
+  if(lBtn) lBtn.classList.toggle('active',t==='light');
+}
+
+// ════════════ MOBILE "WHAT DOES THIS MEAN" HELP ════════════
+// title= gives desktop a hover tooltip on the card quick-action icons (W / ★ / ✓ / N),
+// but touch devices have no hover — so a long-press shows the same label as a toast,
+// without triggering the tap action underneath it.
+let cbtnPressTimer=null, cbtnLongPressTarget=null;
+document.addEventListener('touchstart',e=>{
+  const btn=e.target.closest('.cbtn');
+  clearTimeout(cbtnPressTimer);
+  cbtnLongPressTarget=null;
+  if(!btn||!btn.title) return;
+  cbtnPressTimer=setTimeout(()=>{
+    cbtnLongPressTarget=btn;
+    toast(btn.title);
+    if(navigator.vibrate) navigator.vibrate(10);
+  },450);
+},{passive:true});
+document.addEventListener('touchmove',()=>{ clearTimeout(cbtnPressTimer); },{passive:true});
+document.addEventListener('touchcancel',()=>{ clearTimeout(cbtnPressTimer); cbtnLongPressTarget=null; },{passive:true});
+document.addEventListener('touchend',e=>{
+  clearTimeout(cbtnPressTimer);
+  if(cbtnLongPressTarget && cbtnLongPressTarget===e.target.closest('.cbtn')){
+    e.preventDefault(); // it was a long-press (tooltip already shown) — don't also fire the tap action
+  }
+  cbtnLongPressTarget=null;
+},{passive:false});
+
+// ════════════ KEYBOARD SUPPORT FOR FIXED CHROME (div-as-button elements) ════════════
+// Native <button>/<input>/<select>/<a href> are already tabbable and fire click on Enter/Space.
+// These hand-authored chrome controls (nav tabs, header icons, Filters entry, filter-sheet
+// actions, Masters "Browse by theme") got tabindex="0" + role="button" in markup — this makes
+// Enter/Space activate them like a real button. Deliberately scoped to fixed chrome only, not
+// every dynamically-rendered pill/card (disproportionate effort vs. benefit there).
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' '&&e.key!=='Spacebar') return;
+  const el=e.target.closest('.ntab,.filt-btn,.ibtn,.filter-sheet-reset,.filter-sheet-cta-btn,.browse-theme-link');
+  if(!el) return;
+  e.preventDefault();
+  el.click();
+});
+
 // ════════════ WELCOME OVERLAY ════════════
 function showWelcome(){
   const seen=localStorage.getItem('wp_welcomed');
@@ -2176,8 +2395,8 @@ function dismissWelcome(skip){
   $('welcomeOverlay').classList.remove('open');
   localStorage.setItem('wp_welcomed','1');
   if(!skip){
-    // Short tour of the truly non-obvious stuff, right after the welcome card closes
-    setTimeout(()=>openTour(TOUR_QUICK),400);
+    // Full, section-by-section tour right after the welcome card closes — same tour reachable anytime from Guide
+    setTimeout(()=>openTour(TOUR_FULL),400);
     // Nudge sync setup a bit later, once the tour has had a chance to finish
     setTimeout(()=>{
       const token=localStorage.getItem('wp_synctoken');
@@ -2190,7 +2409,7 @@ function dismissWelcome(skip){
 // tab: which nav tab must be active for this step's target to exist ('discover'|'watchlist'|'settings'|null=leave as-is)
 // sel: CSS selector of the real element to highlight
 const TOUR_QUICK=[
-  {tab:'discover', sel:'#fbar-row3', t:'The Filter Bar has more rows than you think', b:'This row — Language · Sort · Availability — sits below the genre buttons. For Series there’s a third row of TV-only genres too.'},
+  {tab:'discover', sel:'.filt-btn', t:'Genres, Language, Sort & Availability — all in one place', b:'Tap Filters to open Genres, Language, Sort and Availability in one panel, instead of hunting across separate rows.'},
   {tab:'discover', sel:'#cgrid .cbtns', t:'Every card has quick actions built in', b:'Want / ★ Liked / ✓ Seen / Not Interested sit right on each poster in Discover — no need to open a title first.'},
   {tab:'discover', sel:'#cgrid .cbtns', t:'Seen and Not Interested aren’t lost — just hidden', b:'Those two never show up in My List. To bring one back, search for the title again and tap the same action once more to undo it.'},
   {tab:'discover', sel:'#micbtn', t:'Try Voice search', b:'Tap Voice next to the search box and just say a title, actor, or director instead of typing.'},
@@ -2200,10 +2419,10 @@ const TOUR_FULL=[
   {tab:null, sel:'.logo', t:'What is WatchPick', b:'A personal cinema discovery app for India — films and shows filtered by real taste categories, with availability verified across 8 streaming platforms.'},
   {tab:'discover', sel:'#sinput', t:'Search & Voice', b:'Type a title, director, or actor. A gold card means your search matched a person — tap it for their full India filmography. Tap Voice to search by speaking instead.'},
   {tab:'discover', sel:'#mediaToggleRow', t:'Films / Both / Series', b:'This toggle narrows Discover to movies only, TV only, or both together.'},
-  {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Tap a tag to switch groups, tap a name to open their full filmography.'},
+  {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Tap "Browse by theme" to reveal the group tags, tap one to switch groups, tap a name to open their full filmography.'},
   {tab:'discover', sel:'#newarrivals-sect', t:'New Arrivals', b:'Films added to Indian streaming in the last 60 days, in their own scrolling row with their own Refresh.'},
-  {tab:'discover', sel:'#curated-sect', t:'Curated feed & the Filter Bar', b:'Your main feed below has its own Sort dropdown. The Filter Bar under the nav tabs adds Genres, Language, Sort and Availability filters without leaving Discover.'},
-  {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Want, ★ Liked, ✓ Seen, and Not Interested — right on the poster. Seen and Not Interested quietly remove a title from Discover; tap the same action again (find it via Search) to undo.'},
+  {tab:'discover', sel:'#curated-sect', t:'Curated feed & Filters', b:'Your main feed below has its own Sort dropdown. The Filters button next to Search adds Genres, Language, Sort and Availability filters without leaving Discover.'},
+  {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Bookmark (Want), star (Liked), check (Seen), and eye-slash (Not Interested) — right on the poster. Hover an icon on desktop, or long-press on a phone, to see what it means. Seen and Not Interested quietly remove a title from Discover; tap the same action again (find it via Search) to undo.'},
   {tab:'watchlist', sel:'#wcontent', t:'My List', b:'Shows only what you’ve marked Want to Watch, with its own sort. Liked / Seen / Not Interested aren’t listed here — they just shape what Discover shows you.'},
   {tab:'watchlist', sel:'#syncpanel', t:'Cloud Sync', b:'Set a passphrase here to back your list up online — use the same phrase on any device to load it. Export/Import also saves a backup file you can keep yourself.'},
   {tab:'settings', sel:'#ptogs', t:'Platforms & Genres', b:'Turn streaming services on or off, choose which genres appear in your feed, or pin a specific custom title so it always shows up.'},
@@ -2239,8 +2458,10 @@ async function goToTourStep(i){
     return closeTour();
   }
 
-  el.scrollIntoView({block:'center',behavior:'instant'});
-  await tourWait(80);
+  el.scrollIntoView({block:'center',inline:'center',behavior:'instant'});
+  // Wait for the scroll to actually paint (fixed timeouts are unreliable across devices)
+  // rather than a fixed delay, so the very first measurement is already accurate.
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
   positionSpotlight(el);
   renderTourText(s,i);
 
@@ -2248,6 +2469,16 @@ async function goToTourStep(i){
   tourReposition=()=>positionSpotlight(el);
   window.addEventListener('resize',tourReposition);
 }
+
+// Keep the spotlight glued to its target through ANY scrolling — not just window
+// resize — including scrolling inside the feed itself (where Filters, cards, etc.
+// live) on both touch (mobile pan) and mouse/trackpad (desktop) input.
+let tourScrollTicking=false;
+document.addEventListener('scroll',()=>{
+  if(!tourReposition||tourScrollTicking) return;
+  tourScrollTicking=true;
+  requestAnimationFrame(()=>{ tourReposition&&tourReposition(); tourScrollTicking=false; });
+},{capture:true,passive:true});
 
 function positionSpotlight(el){
   const r=el.getBoundingClientRect();
@@ -2374,22 +2605,43 @@ function renderFbar(){
     Object.entries(TV_GENRES).map(([k,v])=>`<div class="fpill ${S.activeTVG&&S.activeTVG.has(k)?'on':''}" onclick="togTVGenre('${k}')">${v.label}</div>`).join('')
     :'';
 
-  // ── ROW 3: Lang · Sort · Avail ──
-  const lhtml=`<div class="fbar-label">Lang</div>`+
-    LANGS.map(([code,label])=>`<div class="fpill ${S.activeLang===code?'on':''}" onclick="togLang('${code}')">${label}</div>`).join('');
+  // ── Language / Sort / Availability (separate sheet sections) ──
+  const lhtml=LANGS.map(([code,label])=>`<div class="fpill ${S.activeLang===code?'on':''}" onclick="togLang('${code}')">${label}</div>`).join('');
   const SORTS=[['default','Mix'],['rating','Top Rated'],['year_desc','Newest'],['year_asc','Oldest'],['year_rated','Newest+Rated'],['title','A–Z']];
-  const shtml=`<div class="fsep"></div><div class="fbar-label">Sort</div>`+
-    SORTS.map(([code,label])=>`<div class="fpill ${S.sort===code?'on':''}" onclick="togSortPill('${code}')">${label}</div>`).join('');
+  const shtml=SORTS.map(([code,label])=>`<div class="fpill ${S.sort===code?'on':''}" onclick="togSortPill('${code}')">${label}</div>`).join('');
   const AVAILS=[['all','All'],['stream','Stream'],['rent','Rent/Buy']];
-  const ahtml=`<div class="fsep"></div><div class="fbar-label">Avail</div>`+
-    AVAILS.map(([code,label])=>`<div class="fpill ${S.avail===code?'on':''}" onclick="togAvail('${code}')">${label}</div>`).join('');
+  const ahtml=AVAILS.map(([code,label])=>`<div class="fpill ${S.avail===code?'on':''}" onclick="togAvail('${code}')">${label}</div>`).join('');
 
   const r1=$('fbar-row1');
   const r2=$('fbar-row2');
-  const r3=$('fbar-row3');
+  const r3a=$('fbar-row3a');
+  const r3b=$('fbar-row3b');
+  const r3c=$('fbar-row3c');
   if(r1) r1.innerHTML=filmMaster+ghtml;
   if(r2) r2.innerHTML=tvRow;
-  if(r3) r3.innerHTML=lhtml+shtml+ahtml;
+  if(r3a) r3a.innerHTML=lhtml;
+  if(r3b) r3b.innerHTML=shtml;
+  if(r3c) r3c.innerHTML=ahtml;
+}
+
+// ════════════ FILTERS SHEET open/close/reset ════════════
+function openFilterSheet(){
+  $('filterScrim').classList.add('open');
+  $('filterSheet').classList.add('open');
+}
+function closeFilterSheet(){
+  $('filterScrim').classList.remove('open');
+  $('filterSheet').classList.remove('open');
+}
+function resetFilters(){
+  S.genres=Object.fromEntries(Object.keys(GENRES).map(k=>[k,true]));
+  S.activeG=new Set(Object.keys(GENRES));
+  S.activeTVG=new Set(Object.keys(TV_GENRES));
+  S.activeLang='all';
+  S.sort='default';
+  S.avail='all';
+  renderFbar();
+  if(S.searchMode){renderGrid(S.results);}else{loadDiscover(true);}
 }
 
 
@@ -2538,13 +2790,13 @@ function cardHTML(item){
 
     <div class="cbtns">
 
-      <div class="cbtn ${st==='want'?'want':''}" onclick="event.stopPropagation();setStatus(${item.id},'want')">W</div>
+      <div class="cbtn ${st==='want'?'want':''}" title="Want to Watch" onclick="event.stopPropagation();setStatus(${item.id},'want')">${ICON_WANT}</div>
 
-      <div class="cbtn ${st==='liked'?'liked':''}" onclick="event.stopPropagation();setStatus(${item.id},'liked')">★</div>
+      <div class="cbtn ${st==='liked'?'liked':''}" title="Liked" onclick="event.stopPropagation();setStatus(${item.id},'liked')">${ICON_LIKED}</div>
 
-      <div class="cbtn ${st==='seen'?'seen':''}" onclick="event.stopPropagation();setStatus(${item.id},'seen')">✓</div>
+      <div class="cbtn ${st==='seen'?'seen':''}" title="Seen" onclick="event.stopPropagation();setStatus(${item.id},'seen')">${ICON_SEEN}</div>
 
-      <div class="cbtn ${st==='hidden'?'hidden':''}" onclick="event.stopPropagation();setStatus(${item.id},'hidden')">N</div>
+      <div class="cbtn ${st==='hidden'?'hidden':''}" title="Not Interested" onclick="event.stopPropagation();setStatus(${item.id},'hidden')">${ICON_HIDDEN}</div>
 
     </div>
 
@@ -2756,7 +3008,7 @@ function detailHTML(item,det,st,sims){
 
         <div class="plink-name">Watch on ${pc.label}</div>
 
-        <div class="plink-hint">Available in India · opens ${pc.label}</div>
+        <div class="plink-hint">Available in India · Opens ${pc.label} Search</div>
 
       </div>
 
@@ -2891,7 +3143,7 @@ function detailHTML(item,det,st,sims){
 
       ?`<div class="dclose" onclick="goBack()">←</div><div class="dback" onclick="closeDetail()">✕ Close</div>`
 
-      :`<div class="dclose" onclick="closeDetail()">✕</div>`}
+      :`<div class="dback" onclick="closeDetail()">✕ Close</div>`}
 
   </div>
 
@@ -3139,7 +3391,7 @@ async function renderPersonView(personId){
 
     <div style="position:relative">
 
-      <div class="dclose" onclick="goBack()" style="position:absolute">←</div>
+      ${navStack.length>1?`<div class="dclose" onclick="goBack()" style="position:absolute">←</div>`:''}
 
       <div class="dback" onclick="closeDetail()" style="position:absolute">✕ Close</div>
 
@@ -3699,7 +3951,7 @@ function updateBadge(){
 
   const b=$('wbadge'); const n=S.watchlist.filter(w=>w.status==='want').length;
 
-  b.style.display=n?'flex':'none'; b.textContent=n;
+  b.style.display=n?'inline-flex':'none'; b.textContent=n;
 
 }
 
@@ -3772,6 +4024,8 @@ function hydrate(){
 // ════════════ INIT ════════════
 
 (async()=>{
+
+  updateThemeToggleUI();
 
   hydrate();
 
