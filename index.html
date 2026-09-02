@@ -833,7 +833,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span style="font-size:10px">Film Genres</span></div><div class="gdesc">All / None + a button for every genre you've turned on in Settings. Tap one to switch it on or off &mdash; gold means active. Shown whenever you're browsing Films or Both.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Series Genres</span></div><div class="gdesc">Its own All / None + a button per TV genre. Only appears when you're browsing Series or Both &mdash; these genres aren't in Settings, this is the only place to choose them. Genres that mean the same thing on both sides (Action, Comedy, Crime, Sci-Fi, and a few others) stay in sync automatically when you tap a Film Genre, so Series doesn't keep showing everything while Films is narrowed down. Genres unique to Film (Philosophy, World Cinema, Superhero and the like) don't have a Series match &mdash; adjust Series Genres here separately for those.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Lang</span></div><div class="gdesc">Filter the current feed by original language instantly.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Sort</span></div><div class="gdesc">Mix, Top Rated, Newest, Oldest, Newest + Rated, A&ndash;Z. Changing sort restarts from Page 1.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Sort</span></div><div class="gdesc">Defaults to Top Rated. Options: Top Rated, Mix, Newest, Oldest, Newest + Rated, A&ndash;Z. Mix pulls from the same well-rated pool as Top Rated but shuffles instead of ranking &mdash; useful for variety once you've already narrowed with filters, rather than seeing the identical ranked list every time. Changing sort restarts from Page 1.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Avail</span></div><div class="gdesc">All, Stream (subscription) only, or Rent/Buy only.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Reset</span></div><div class="gdesc">Top-right of the sheet &mdash; clears every filter back to its default in one tap.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Show Results</span></div><div class="gdesc">Bottom button &mdash; closes the sheet and returns to your updated Discover feed. Tapping outside the sheet does the same.</div></div>
@@ -994,13 +994,15 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
       <select class="sortsel" id="sortsel" onchange="setSort(this.value)">
 
-        <option value="default">Sort: Curated</option>
+        <option value="default">Sort: Mix</option>
 
-        <option value="rating">Rating ↓</option>
+        <option value="rating" selected>Rating ↓</option>
 
         <option value="year_desc">Year — Newest</option>
 
         <option value="year_asc">Year — Oldest</option>
+
+        <option value="year_rated">Newest + Rated</option>
 
         <option value="title">Title A–Z</option>
 
@@ -1373,7 +1375,8 @@ let S={
 
   visibleCount:40,  // how many (sorted, filtered) Discover results are shown at once — grows by 40 per "Load Page" tap
 
-  sort:'default',
+  sort:'rating', // WatchPick positions as quality cinema discovery, so the feed should open ranked
+                 // strictly by rating, not a shuffled "Mix" (see the Sort dropdown option below)
 
   searchMode:false,
 
@@ -2304,6 +2307,16 @@ async function loadDiscover(reset=true){
     .filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i)
     .filter(dedup);
 
+  // Re-check against the LIVE S.results right before concatenating, not just the `existingIds`
+  // snapshot captured at the top of this function. Refresh fires loadNewArrivals() concurrently
+  // with this function (see refreshDiscover()), and its addToPool() calls can push an item (e.g.
+  // a title that's both a recent release AND matches the active genre) into S.results mid-flight —
+  // after that snapshot was taken but before this line runs. When this function's own fetch also
+  // legitimately returns that same title, the stale snapshot doesn't catch the second copy and it
+  // ends up duplicated in S.results, rendering as two identical cards.
+  const liveIds=new Set(S.results.map(r=>r.id));
+  newItems=newItems.filter(v=>!liveIds.has(v.id));
+
   S.results=S.results.concat(newItems);
 
   if(S.sort==='year_rated'){
@@ -2342,7 +2355,7 @@ async function loadMore(){
   // Each Discover fetch already pulls a few hundred candidates across categories, so most
   // "Load Page" taps just reveal 40 more of what's already sorted & fetched — no network call.
   const seen=seenIds();
-  const already=S.results.filter(passesLang).filter(i=>!seen.has(i.id)).filter(i=>i.platforms.some(p=>S.activeP.has(p))).filter(passesDiscoverFilters);
+  const already=S.results.filter(passesLang).filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i).filter(i=>!seen.has(i.id)).filter(i=>i.platforms.some(p=>S.activeP.has(p))).filter(passesDiscoverFilters);
   if(already.length>=S.visibleCount){
     renderGrid(S.results);
     return;
@@ -2854,9 +2867,10 @@ function resetFilters(){
   S.activeG=new Set(Object.keys(GENRES));
   S.activeTVG=new Set(Object.keys(TV_GENRES));
   S.activeLang='all';
-  S.sort='default';
+  S.sort='rating'; // Reset restores the app's default view, which now opens on Rating too
   S.avail='all';
   renderFbar();
+  const sel=$('sortsel'); if(sel) sel.value='rating'; // keep the header dropdown in sync
   if(S.searchMode){renderGrid(S.results);}else{loadDiscover(true);}
 }
 
@@ -2871,6 +2885,7 @@ function togAvail(v){
 function togSortPill(s){
   S.sort=s;
   renderFbar();
+  const sel=$('sortsel'); if(sel) sel.value=s; // keep the header dropdown in sync with this pill
   if(S.searchMode){renderGrid(S.results);return;}
   loadDiscover(true);
 }
@@ -2930,6 +2945,8 @@ function setSort(v){
 
   S.sort=v;
 
+  renderFbar(); // keep the Filter Sheet's Sort pills in sync with this dropdown
+
   if(S.searchMode){renderGrid(S.results);return;}
 
   loadDiscover(true);
@@ -2943,6 +2960,13 @@ function renderGrid(items){
   const seen=seenIds();
 
   let vis=items.filter(passesLang);
+
+  // Safety net: collapse duplicate ids down to a single card no matter how the duplicate got
+  // into the array — S.results doubles as a general item cache (New Arrivals, recommendations,
+  // filmography, My List all register into it via addToPool()), and a concurrent addToPool()
+  // call racing Refresh's loadDiscover() can slip a second copy of the same title in even with
+  // loadDiscover's own dedup guard (see the liveIds check in loadDiscover()).
+  vis=vis.filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i);
 
   if(!S.searchMode){
 
