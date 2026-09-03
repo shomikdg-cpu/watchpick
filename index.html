@@ -112,6 +112,17 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .fpill:active{opacity:.7}
 
+/* Language group pill: split into two independently-tappable zones so "select every language in
+   this group" (the label, the dominant tap surface) and "expand to hand-pick individually" (the
+   small chevron) can coexist on one chip without either action stealing the other's tap. */
+.fpill-group{display:inline-flex;align-items:center;gap:2px;padding:4px 4px 4px 10px}
+.fpill-glabel{padding:2px 2px}
+.fpill-gchev{padding:2px 7px;margin-right:-3px;opacity:.7}
+/* Fully selected (every language in the group is active) gets a solid fill, distinct from the
+   lighter "on" treatment used when only some of the group is selected — so at a glance you can
+   tell "all of India" apart from "just Tamil + Bengali". */
+.fpill.full{background:var(--gold);border-color:var(--gold);color:#0a0a0a}
+
 .fsep{width:.5px;height:16px;background:var(--b2);flex-shrink:0;margin:0 2px}
 
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
@@ -445,6 +456,16 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .scard-title{font-size:9px;font-weight:500;color:var(--t2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
 
 .scard-year{font-size:8px;color:var(--t3);margin-top:1px}
+
+.byl-card{flex-shrink:0;width:130px;cursor:pointer;user-select:none}
+.byl-card:active{opacity:.7}
+.byl-pw{width:130px;height:195px;border-radius:var(--rs);overflow:hidden;background:var(--s2);position:relative;margin-bottom:5px}
+.byl-pw img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
+.byl-pw img.loaded{opacity:1}
+/* A visible "why" caption is the whole point of this row (credibility over a black-box
+   recommendation) — 2-line clamp keeps it scannable in a horizontal scroll without letting a
+   long director/actor name run the card height away. */
+.byl-reason{font-size:8px;color:var(--t3);margin-top:3px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
 .person-hero{display:flex;gap:14px;padding:50px 16px 16px;align-items:flex-end}
 
@@ -810,6 +831,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span style="font-size:10px">Films / Both / Series</span></div><div class="gdesc">Toggle above the search bar &mdash; narrow Discover to movies only, TV series only, or both together. In Both, every card in Your Curation carries a small "Film" or "Series" tag next to its year so a mixed feed stays easy to scan &mdash; the tag drops away in Films-only or Series-only mode since it'd just repeat what the toggle already tells you.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Open by default with the theme tags showing &mdash; tap the "Masters of Cinema" header to collapse or reopen the whole section. Tap a theme to reveal its portraits ("Click on any Theme to reveal Masters"), then tap any thumbnail to open that person's full India-available filmography ("Click on any thumbnail to open Filmography"). Once portraits are showing, tap "Collapse" to hide them again without closing the whole section.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New on Streaming</strong> &mdash; films added to Indian streaming in the last 60 days. Collapsed by default, right below Masters of Cinema &mdash; tap the header to open it, which loads the row and reveals its own Refresh button. If you want recency inside your main feed instead, use the Newest or Newest + Rated sort in Your Curation below.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Liked</span></div><div class="gdesc"><strong>Because You Liked</strong> &mdash; built from crew and cast overlap with your own Liked and Want to Watch titles, not an opaque algorithm: every card names exactly who connects it back ("because you liked X &mdash; also directed by Y" or "also stars Y"), so you can judge the recommendation for yourself instead of just trusting it. Appears once you've Liked or Want-to-Watch'd at least one title; collapsed by default, right below New on Streaming &mdash; tap the header to open it.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Refresh</span></div><div class="gdesc">Fresh batch for your current filters.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Load Page &darr;</span></div><div class="gdesc">Next page of results &mdash; genuinely new titles.</div></div>
       <div class="grow"><div class="gtag"><span style="display:inline-flex;gap:6px;align-items:center">
@@ -834,7 +856,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <p class="gbody">Tap Filters next to the search box to open Genres, Language, Sort and Availability &mdash; instant filters without going into Settings.</p>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Film Genres</span></div><div class="gdesc">All / None + a button for every genre you've turned on in Settings. Tap one to switch it on or off &mdash; gold means active. Shown whenever you're browsing Films or Both.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Series Genres</span></div><div class="gdesc">Its own All / None + a button per TV genre. Only appears when you're browsing Series or Both &mdash; these genres aren't in Settings, this is the only place to choose them. Genres that mean the same thing on both sides (Action, Comedy, Crime, Sci-Fi, and a few others) stay in sync automatically when you tap a Film Genre, so Series doesn't keep showing everything while Films is narrowed down. Genres unique to Film (Philosophy, World Cinema, Superhero and the like) don't have a Series match &mdash; adjust Series Genres here separately for those.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Lang</span></div><div class="gdesc">Filter the current feed by original language instantly &mdash; and pick more than one at once (Tamil + Malayalam together, for example). Grouped by country instead of one long list &mdash; tap "India ▸" for Hindi, Tamil, Telugu, Malayalam, Bengali, Kannada, Marathi and Punjabi, or "International ▸" for English, French, Korean, Japanese and others. Tapping a language toggles it on/off and keeps its group open so your picks stay visible; "All Languages" clears every specific pick.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Lang</span></div><div class="gdesc">Filter the current feed by original language instantly &mdash; and pick more than one at once, even across groups (Tamil from India + Korean from International together, for example). Grouped by country instead of one long list &mdash; tap the "India" or "International" chevron to expand it for Hindi, Tamil, Telugu, Malayalam, Bengali, Kannada, Marathi, Punjabi, or English, French, Korean, Japanese and others. Tapping a language toggles it on/off and keeps its group open so your picks stay visible. Tapping the group name itself (not the chevron) selects every language in that group at once &mdash; tap it again to clear the whole group. Selecting every language in BOTH groups at the same time is treated as the same thing as "All Languages" and snaps back to it automatically, since a real "everything" is faster and more complete than picking every language you see individually. "All Languages" itself clears every specific pick everywhere.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Sort</span></div><div class="gdesc">Defaults to Top Rated. Options: Top Rated, Mix, Newest, Oldest, Newest + Rated, A&ndash;Z. Mix pulls from the same well-rated pool as Top Rated but shuffles instead of ranking &mdash; useful for variety once you've already narrowed with filters, rather than seeing the identical ranked list every time. Changing sort restarts from Page 1.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Avail</span></div><div class="gdesc">All, Stream (subscription) only, or Rent/Buy only.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Reset</span></div><div class="gdesc">Top-right of the sheet &mdash; clears every filter back to its default in one tap.</div></div>
@@ -987,6 +1009,29 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
         <div class="loading" style="grid-column:unset;padding:10px 0"><div class="spin"></div></div>
 
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="byl-sect" class="sect-block" style="display:none">
+
+    <div class="secrow" style="margin-bottom:8px">
+      <div class="masters-toggle" id="bylToggle" onclick="toggleBYLSection()" tabindex="0" role="button" aria-expanded="false">
+        <div class="slabel">Because You Liked</div>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+
+    <div class="masters-body" id="byl-body">
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+        <div class="more" onclick="loadBecauseYouLiked(true)">Refresh</div>
+      </div>
+
+      <div class="sim-scroll" id="byl-scroll">
+        <div class="loading" style="grid-column:unset;padding:10px 0"><div class="spin"></div></div>
       </div>
 
     </div>
@@ -1415,6 +1460,8 @@ let S={
   searchPool:[],
 
   newArrivalsLoaded:false,
+
+  bylLoaded:false,
 
   mediaType:'both',  // 'movie' | 'tv' | 'both'
 
@@ -1973,7 +2020,133 @@ async function loadNewArrivals(forceRefresh=false){
 
 }
 
+// ════════════ BECAUSE YOU LIKED ════════════
+// Recommendations built from crew/cast overlap with your own Liked + Want to Watch titles,
+// rather than TMDB's opaque /recommendations endpoint — deliberately, so every card can carry an
+// honest, specific reason ("because you liked X — also directed by Y") instead of an unexplained
+// suggestion. Collapsed by default and only fetched on first expand, same reasoning as New
+// Arrivals: this fans out into several TMDB calls (credits per seed, then a full filmography per
+// person), so it shouldn't run on every Discover load regardless of whether anyone opens it.
+let bylSectionOpen=false;
+function renderBYLShell(){
+  const sect=$('byl-sect');
+  if(!sect) return;
+  // Nothing to base recommendations on yet — hide the whole section rather than show an empty
+  // shell. It reappears next time the shell renders (tab switch, refresh) once you've Liked or
+  // Want-to-Watch'd something.
+  const hasSeeds=S.watchlist.some(w=>w.status==='liked'||w.status==='want');
+  sect.style.display=hasSeeds?'block':'none';
+}
+function toggleBYLSection(){
+  bylSectionOpen=!bylSectionOpen;
+  $('byl-body').classList.toggle('open',bylSectionOpen);
+  $('bylToggle').classList.toggle('open',bylSectionOpen);
+  $('bylToggle').setAttribute('aria-expanded',String(bylSectionOpen));
+  if(bylSectionOpen&&!S.bylLoaded) loadBecauseYouLiked();
+}
 
+async function loadBecauseYouLiked(forceRefresh=false){
+  const sect=$('byl-sect');
+  const scroll=$('byl-scroll');
+  if(!sect||!scroll) return;
+  if(S.bylLoaded&&!forceRefresh) return;
+
+  // Seeds: your most recently Liked or Want-to-Watch titles — both are a genuine positive
+  // signal, not just titles marked "Liked". Most recent first; capped at 6 so this can't fan out
+  // into dozens of TMDB calls for someone with a long list.
+  const seeds=S.watchlist
+    .filter(w=>w.status==='liked'||w.status==='want')
+    .sort((a,b)=>(b.addedAt||0)-(a.addedAt||0))
+    .slice(0,6);
+
+  if(!seeds.length){ sect.style.display='none'; return; }
+
+  scroll.innerHTML=`<div style="padding:10px 0"><div class="spin"></div></div>`;
+  if(forceRefresh) S.prov={};
+  S.bylLoaded=false;
+
+  // Pull each seed's director + top-2 billed cast — the same "credits" data the detail page
+  // already fetches — so we know exactly WHOSE other work to recommend, and can name that person
+  // in the reason shown on each card, rather than a black-box "recommended for you".
+  const seedCredits=await Promise.all(seeds.map(async seed=>{
+    const t=seed.type==='tv'?'tv':'movie';
+    const d=await tmdb(`/${t}/${seed.id}?append_to_response=credits&language=en-US`);
+    const director=(d.credits?.crew||[]).find(c=>c.job==='Director');
+    const cast=(d.credits?.cast||[]).slice(0,2);
+    const people=[
+      ...(director?[{id:director.id,name:director.name,role:'Director'}]:[]),
+      ...cast.map(c=>({id:c.id,name:c.name,role:'Actor'}))
+    ];
+    return {seed,people};
+  }));
+
+  // Flatten to one list of people to look up, tagging each with which seed and role earned it a
+  // spot — deduping so a person who shows up via more than one seed only gets looked up once
+  // (its first tag is what ends up in the "why" caption; still fully honest, just not exhaustive
+  // about every seed that happened to also connect to them).
+  const seenPerson=new Set();
+  const personEntries=[];
+  seedCredits.forEach(({seed,people})=>{
+    people.forEach(p=>{
+      if(seenPerson.has(p.id)) return;
+      seenPerson.add(p.id);
+      personEntries.push({...p, sourceTitle:seed.title, sourceId:seed.id});
+    });
+  });
+  const capped=personEntries.slice(0,10); // bound total API calls
+
+  const seen=seenIds();
+  const seedIds=new Set(seeds.map(s=>s.id));
+
+  const perPerson=await Promise.all(capped.map(async entry=>{
+    const p=await tmdbPerson(entry.id);
+    const credits=[...(p.combined_credits?.cast||[]),...(p.combined_credits?.crew||[])]
+      .filter(c=>c.poster_path&&(c.title||c.name))
+      .filter(c=>!seedIds.has(c.id)&&!seen.has(c.id))
+      .sort((a,b)=>(b.vote_count||0)-(a.vote_count||0))
+      .slice(0,6)
+      .map(c=>mapItem(c));
+    return credits.map(c=>({...c, __why:entry}));
+  }));
+
+  let pool=perPerson.flat().filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i);
+  await Promise.all(pool.map(enrich));
+  pool=pool.filter(i=>i.platforms.length>0);
+
+  // Re-check against the LIVE S.results right before finalizing, not just the `seen`/`seedIds`
+  // snapshot captured above — New Arrivals or the main Curation feed can push a matching item
+  // into S.results while these several rounds of TMDB calls were in flight (same race already
+  // fixed in loadDiscover; the fix here is the same shape).
+  const liveIds=new Set(S.results.map(r=>r.id));
+  pool=pool.filter(v=>!liveIds.has(v.id));
+
+  pool=pool.sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,20);
+  pool.forEach(addToPool);
+
+  if(!pool.length){ sect.style.display='none'; return; }
+  S.bylLoaded=true;
+
+  scroll.innerHTML=pool.map(s=>{
+    const plt=s.platforms[0]; const pc=PLAT[plt];
+    const labels=Object.values(s.avail||{});
+    const avCls=(labels.includes('Stream')||labels.includes('Free'))?'av-stream':'av-rent';
+    const avTxt=(labels.includes('Stream')||labels.includes('Free'))?'Stream':'Rent/Buy';
+    const why=s.__why;
+    const whyText=why.role==='Director'
+      ? `Because you liked ${why.sourceTitle} — also directed by ${why.name}`
+      : `Because you liked ${why.sourceTitle} — also stars ${why.name}`;
+    return`<div class="byl-card" onclick="openDetail(${s.id},'${s.type||'movie'}')">
+      <div class="byl-pw">
+        <div class="scard-fb">${s.type==='tv'?'Series':'Film'}</div>${imgTag(s.poster_path,'w342','')}
+        ${pc?`<div class="cplt plt-${plt}" style="top:4px;left:4px;font-size:6px;padding:2px 4px">${pc.label}</div>`:''}
+        <div class="cavail ${avCls}" style="bottom:4px;right:4px">${avTxt}</div>
+      </div>
+      <div class="scard-title">${s.title}</div>
+      <div class="scard-year">${s.year}${s.rating?` · ★${s.rating}`:''}</div>
+      <div class="byl-reason">${whyText}</div>
+    </div>`;
+  }).join('');
+}
 
 function baseParams(page, voteMin, langOverride){
 
@@ -2492,6 +2665,13 @@ async function refreshDiscover(){
     loadNewArrivals(true);
   }
 
+  // Same reasoning: only re-fetch "Because You Liked" if it's actually been opened — most
+  // Refresh taps have nothing loaded there yet.
+  if(S.bylLoaded){
+    S.bylLoaded=false;
+    loadBecauseYouLiked(true);
+  }
+
   await loadDiscover(true);
 
 }
@@ -2516,6 +2696,8 @@ function onSearch(q){
 
     $('masters-sect').style.display='block';
 
+    renderBYLShell();
+
     loadDiscover(true);
 
     return;
@@ -2528,6 +2710,8 @@ function onSearch(q){
   $('newarrivals-sect').style.display='none';
 
   $('masters-sect').style.display='none';
+
+  $('byl-sect').style.display='none';
 
   stimer=setTimeout(async()=>{
 
@@ -2751,6 +2935,7 @@ const TOUR_FULL=[
   {tab:'discover', sel:'#mediaToggleRow', t:'Films / Both / Series', b:'This toggle narrows Discover to movies only, TV only, or both together. In Both mode, a small Film/Series tag appears on every card in Your Curation so the mixed feed is easy to scan at a glance.'},
   {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Open by default — tap the header to collapse or reopen the whole section. Tap any theme to reveal its portraits, tap a thumbnail to open that person\'s full filmography, and tap Collapse to hide the portraits again.'},
   {tab:'discover', sel:'#newarrivals-sect', t:'New on Streaming', b:'Films added to Indian streaming in the last 60 days. Collapsed by default so it doesn\'t stand between Masters of Cinema and Your Curation — tap the header to open it, which loads the row and reveals its own Refresh.'},
+  {tab:'discover', sel:'#byl-sect', t:'Because You Liked', b:'Built from crew and cast overlap with your own Liked and Want to Watch titles, not a black-box algorithm — every card names exactly who connects it back ("because you liked X — also directed by Y"), so you can judge the recommendation yourself. Only appears once you\'ve Liked or Want-to-Watch\'d something; collapsed by default like New on Streaming.'},
   {tab:'discover', sel:'#curated-sect', t:'Your Curation', b:'The feed built for you — Sort dropdown and Refresh sit right above it. The Filters button next to Search adds Genres, Language, Sort and Availability filters without leaving Discover.'},
   {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Bookmark (Want), star (Liked), check (Seen), and eye-slash (Not Interested) — right on the poster. Hover an icon on desktop, or long-press on a phone, to see what it means. Seen and Not Interested quietly remove a title from Discover; tap the same action again (find it via Search) to undo.'},
   {tab:'watchlist', sel:'#wcontent', t:'My List', b:'Shows only what you’ve marked Want to Watch, with its own sort. Liked / Seen / Not Interested aren’t listed here — they just shape what Discover shows you.'},
@@ -2947,8 +3132,16 @@ function renderFbar(){
       return `<div class="fpill ${isOn?'on':''}" onclick="toggleLang('${code}')">${label}</div>`;
     }
     const isOpen=langGroupOpen===entry.group;
-    const groupHasSelection=entry.codes.some(([c])=>S.activeLangs.has(c));
-    const groupPill=`<div class="fpill ${groupHasSelection?'on':''}" onclick="toggleLangGroup('${entry.group}')">${entry.group} ${isOpen?'▾':'▸'}</div>`;
+    const groupCodes=entry.codes.map(([c])=>c);
+    const groupHasSelection=groupCodes.some(c=>S.activeLangs.has(c));
+    const groupFullySelected=groupCodes.every(c=>S.activeLangs.has(c));
+    // Two separate tap targets in one chip: the label toggles "select every language in this
+    // group" (fills to all, or clears back to none if every one is already selected — a standard
+    // group-checkbox toggle), while the small chevron only expands/collapses the individual-pick
+    // list below. Neither touches the other group's selections, since S.activeLangs is one flat
+    // Set shared across both — India can be fully selected while International is only partially
+    // selected, or vice versa, or both fully selected at once.
+    const groupPill=`<div class="fpill fpill-group ${groupHasSelection?'on':''} ${groupFullySelected?'full':''}"><span class="fpill-glabel" onclick="toggleGroupSelectAll('${entry.group}')">${entry.group}${groupFullySelected?' ✓':''}</span><span class="fpill-gchev" onclick="toggleLangGroup('${entry.group}')">${isOpen?'▾':'▸'}</span></div>`;
     const subPills=isOpen?entry.codes.map(([code,label])=>`<div class="fpill fpill-sub ${S.activeLangs.has(code)?'on':''}" onclick="toggleLang('${code}')">${label}</div>`).join(''):'';
     return groupPill+subPills;
   }).join('');
@@ -3020,6 +3213,27 @@ function togActiveG(k){
   loadDiscover(true);
 }
 
+// Selecting every language in BOTH groups at once is a confusing state, not a useful one: it
+// LOOKS like "every language" but under with_original_language it's actually a strict 15-code
+// allowlist that still EXCLUDES anything outside our pill list (Chinese, Arabic, Thai, and so on)
+// — the opposite of what "select everything" should mean. It's also the single most expensive
+// state the filter can reach: a full fan-out across all 15 codes runs into the hundreds of TMDB
+// requests for one feed load. Rather than let that state exist, the moment both entire sections
+// are simultaneously fully selected, snap straight back to true "All Languages" (an empty Set —
+// zero restriction, and the cheap 1-query-per-genre path). Any other combination — a few of one
+// group plus all of the other, or a few of both — is left exactly as picked.
+function enforceLangInvariant(){
+  const groups=LANGS.filter(l=>!Array.isArray(l));
+  const bothFull=groups.every(g=>g.codes.every(([c])=>S.activeLangs.has(c)));
+  if(bothFull){
+    S.activeLangs.clear();
+    langGroupOpen=null;
+    toast('Selecting every language = All Languages');
+    return true;
+  }
+  return false;
+}
+
 function toggleLang(lang){
   // Language is multi-select: picking "All Languages" clears every specific pick (they're
   // mutually exclusive with "all"), while picking a specific language toggles it in/out of the
@@ -3028,11 +3242,13 @@ function toggleLang(lang){
     S.activeLangs.clear();
   }else{
     S.activeLangs.has(lang)?S.activeLangs.delete(lang):S.activeLangs.add(lang);
+    if(!enforceLangInvariant()){
+      // Keep the picked language's group expanded so the selection stays visible instead of
+      // vanishing back behind its group pill the instant you make a choice.
+      const grp=LANGS.find(l=>!Array.isArray(l)&&l.codes.some(([c])=>c===lang));
+      langGroupOpen=grp?grp.group:langGroupOpen;
+    }
   }
-  // Keep the picked language's group expanded so the selection stays visible instead of
-  // vanishing back behind its group pill the instant you make a choice.
-  const grp=LANGS.find(l=>!Array.isArray(l)&&l.codes.some(([c])=>c===lang));
-  langGroupOpen=grp?grp.group:langGroupOpen;
   renderFbar();
   if(S.searchMode) return; // language doesn't filter search results (see Guide)
   loadDiscover(true);
@@ -3041,6 +3257,27 @@ function toggleLang(lang){
 function toggleLangGroup(group){
   langGroupOpen=langGroupOpen===group?null:group;
   renderFbar();
+}
+
+function toggleGroupSelectAll(group){
+  // Tapping the group's label (as opposed to its chevron) selects every language in that group
+  // at once — or, if every one of them is already selected, clears just this group back out.
+  // This layers on top of whatever's already active: picking "all of India" while a couple of
+  // International languages are already selected leaves those International picks untouched.
+  // Selecting "all" of BOTH groups this way is exactly the state enforceLangInvariant() catches
+  // and collapses back to true "All Languages" — see its comment above.
+  const entry=LANGS.find(l=>!Array.isArray(l)&&l.group===group);
+  if(!entry) return;
+  const codes=entry.codes.map(([c])=>c);
+  const allSelected=codes.every(c=>S.activeLangs.has(c));
+  if(allSelected) codes.forEach(c=>S.activeLangs.delete(c));
+  else codes.forEach(c=>S.activeLangs.add(c));
+  if(!enforceLangInvariant()){
+    langGroupOpen=group; // expand it so the change is visible, not hidden behind a collapsed pill
+  }
+  renderFbar();
+  if(S.searchMode) return; // language doesn't filter search results (see Guide)
+  loadDiscover(true);
 }
 
 function passesLang(item){return S.activeLangs.size===0||S.activeLangs.has(item.lang);}
@@ -3926,6 +4163,10 @@ function setStatus(id,status){
 
   if(!$('overlay').classList.contains('open'))renderGrid(S.results);
 
+  // Cheap, no-fetch — just reveals the "Because You Liked" header the moment there's something
+  // to base it on (e.g. your first Like or Want), rather than waiting for the next tab switch.
+  renderBYLShell();
+
 }
 
 function stMsg(s){return s==='liked'?'★ Marked as liked':s==='seen'?'✓ Seen — won\'t suggest again':s==='hidden'?'Not interested — won\'t suggest again':'Added to watchlist';}
@@ -4375,7 +4616,7 @@ function showTab(t){
 
   if(t==='settings')renderSettings();
 
-  if(t==='discover'){renderGrid(S.results);renderNewArrivalsShell();renderMasters();}
+  if(t==='discover'){renderGrid(S.results);renderNewArrivalsShell();renderBYLShell();renderMasters();}
 
 }
 
@@ -4478,6 +4719,8 @@ function hydrate(){
   renderMasters();
 
   renderNewArrivalsShell();
+
+  renderBYLShell();
 
   await loadDiscover(true);
 
