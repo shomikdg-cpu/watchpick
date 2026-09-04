@@ -156,6 +156,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .fbar-row3a,.fbar-row3b,.fbar-row3c{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .sf-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
 .sf-row .sbox{flex:1;margin-bottom:0}
+.discover-sticky-hdr{position:sticky;top:-12px;z-index:50;background:var(--bg);margin:-12px -12px 0;padding:12px 12px 0}
 .filt-btn{flex-shrink:0;display:flex;align-items:center;gap:5px;background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);height:38px;padding:0 13px;color:var(--t2);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;user-select:none}
 .filt-btn:active{opacity:.7}
 .filter-scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:250}
@@ -956,23 +957,25 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 <div id="tab-discover" class="scroll">
 
-  <div class="sf-row">
-    <div class="sbox">
-      <input class="sinput" type="search" id="sinput" placeholder="Search titles, directors, actors…" oninput="onSearch(this.value)" autocomplete="off" style="padding-left:12px;padding-right:56px">
-      <button class="smic" id="micbtn" onclick="toggleVoice()" title="Voice search" aria-label="Voice search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
+  <div class="discover-sticky-hdr" id="discoverStickyHdr">
+    <div class="sf-row">
+      <div class="sbox">
+        <input class="sinput" type="search" id="sinput" placeholder="Search titles, directors, actors…" oninput="onSearch(this.value)" autocomplete="off" style="padding-left:12px;padding-right:56px">
+        <button class="smic" id="micbtn" onclick="toggleVoice()" title="Voice search" aria-label="Voice search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
+      </div>
+      <div class="filt-btn" onclick="openFilterSheet()" tabindex="0" role="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="7" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+        Filters
+      </div>
     </div>
-    <div class="filt-btn" onclick="openFilterSheet()" tabindex="0" role="button">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="7" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
-      Filters
-    </div>
-  </div>
-  <div class="vtranscript" id="vtranscript"></div>
+    <div class="vtranscript" id="vtranscript"></div>
 
-  <!-- MEDIA TYPE TOGGLE -->
-  <div id="mediaToggleRow" style="display:flex;gap:6px;padding:0 0 10px;flex-shrink:0">
-    <button id="mt-movie" onclick="setMediaType('movie')" class="mtbtn">Films</button>
-    <button id="mt-both"  onclick="setMediaType('both')"  class="mtbtn active">Both</button>
-    <button id="mt-tv"    onclick="setMediaType('tv')"    class="mtbtn">Series</button>
+    <!-- MEDIA TYPE TOGGLE -->
+    <div id="mediaToggleRow" style="display:flex;gap:6px;padding:0 0 10px;flex-shrink:0">
+      <button id="mt-movie" onclick="setMediaType('movie')" class="mtbtn">Films</button>
+      <button id="mt-both"  onclick="setMediaType('both')"  class="mtbtn active">Both</button>
+      <button id="mt-tv"    onclick="setMediaType('tv')"    class="mtbtn">Series</button>
+    </div>
   </div>
 
   <!-- MASTERS OF CINEMA -->
@@ -1786,9 +1789,36 @@ function mapItem(r,type){
 
 }
 
+// Single source of truth for how each Sort option orders items — shared by the bulk re-sort a
+// Discover fetch does (loadDiscover) and by addToPool's insertion below. Without this, a title
+// added to S.results OUTSIDE a Discover fetch — New Arrivals, Because You Liked, Upcoming, a
+// detail page's "More Like This", search, My List navigation, a custom pin — would just get
+// pushed onto the end unsorted, and the very next render (e.g. tapping "Load Page" when enough
+// was already fetched to skip a new request, or just marking something Seen) would show it
+// wherever it happened to land in the array instead of where its rating/year/title actually
+// puts it. That's exactly the bug reported as "Page 2 has higher-rated titles that didn't show
+// on Page 1": a high-rated title picked up via New Arrivals or Because You Liked in the
+// background landed at the tail of S.results, sorted plainly wrong, and only surfaced once
+// paging revealed that tail. 'default' (Mix) has no strict order to maintain — it's a shuffle —
+// so it returns null and callers leave those insertions alone.
+function sortComparator(sort){
+  if(sort==='year_rated') return (a,b)=>{ const yd=(+b.year||0)-(+a.year||0); return yd!==0?yd:(b.rating||0)-(a.rating||0); };
+  if(sort==='year_desc') return (a,b)=>(+b.year||0)-(+a.year||0);
+  if(sort==='year_asc') return (a,b)=>(+a.year||0)-(+b.year||0);
+  if(sort==='rating') return (a,b)=>(b.rating||0)-(a.rating||0);
+  if(sort==='title') return (a,b)=>(a.title||'').localeCompare(b.title||'');
+  return null;
+}
+
 function addToPool(item){
 
-  if(!S.results.find(x=>x.id===item.id)) S.results.push(item);
+  if(S.results.find(x=>x.id===item.id)) return;
+
+  const cmp=sortComparator(S.sort);
+  if(!cmp){ S.results.push(item); return; }
+
+  const idx=S.results.findIndex(x=>cmp(item,x)<0);
+  if(idx===-1) S.results.push(item); else S.results.splice(idx,0,item);
 
 }
 
@@ -2748,22 +2778,17 @@ async function loadDiscover(reset=true){
 
   S.results=S.results.concat(newItems);
 
-  if(S.sort==='year_rated'){
-    S.results.sort((a,b)=>{
-      const yd=(+b.year||0)-(+a.year||0);
-      return yd!==0?yd:(b.rating||0)-(a.rating||0);
-    });
-  } else if(S.sort==='year_desc'){
-    S.results.sort((a,b)=>(+b.year||0)-(+a.year||0));
-  } else if(S.sort==='year_asc'){
-    S.results.sort((a,b)=>(+a.year||0)-(+b.year||0));
-  } else if(S.sort==='rating'){
-    S.results.sort((a,b)=>(b.rating||0)-(a.rating||0));
-  } else if(S.sort==='title'){
-    S.results.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
-  } else if(S.sort==='default'){
+  if(S.sort==='default'){
     const existing=S.results.slice(0,S.results.length-newItems.length);
     S.results=[...existing,...shuffle(newItems)];
+  } else {
+    // Guard against calling .sort(null) — an unrecognized S.sort value would otherwise trigger
+    // JS's default string-coercion sort instead of leaving order untouched, unlike the original
+    // if/else chain this replaced (which simply matched nothing and left the array alone). No UI
+    // path sets S.sort to anything outside the 6 known values, but this keeps the refactor exactly
+    // behavior-preserving instead of relying on that.
+    const cmp=sortComparator(S.sort);
+    if(cmp) S.results.sort(cmp);
   }
 
   if(reset)setLoading(false);
