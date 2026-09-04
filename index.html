@@ -1481,7 +1481,16 @@ const enc=s=>encodeURIComponent(s);
 
 const $=id=>document.getElementById(id);
 
-const seenIds=()=>new Set(S.watchlist.filter(w=>w.status==='seen'||w.status==='hidden').map(w=>w.id));
+// "Liked" is folded in here alongside "seen"/"hidden" deliberately: if you liked something, you've
+// necessarily already watched it, so it shouldn't keep resurfacing in the curated Discover feed or
+// New Arrivals as if it were unwatched. This does NOT affect "Because You Liked" — its seed pool
+// reads S.watchlist directly by status ('liked' or 'want'), a separate check from this one, so a
+// Liked title keeps feeding recommendations exactly as before; this only stops it from ALSO being
+// offered back to you as a recommendation candidate or curated-feed item, which is exactly right —
+// it's the source of the recommendation, not something that still needs discovering. "Want to
+// Watch" deliberately stays OUT of this set: you haven't seen those yet, so they should keep
+// showing up in Discover.
+const seenIds=()=>new Set(S.watchlist.filter(w=>w.status==='seen'||w.status==='hidden'||w.status==='liked').map(w=>w.id));
 
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(([,v])=>v);}
 
@@ -2944,7 +2953,7 @@ const TOUR_FULL=[
   {tab:'discover', sel:'#byl-sect', t:'Because You Liked', b:'Built from crew and cast overlap with your own Liked and Want to Watch titles, not a black-box algorithm — every card names exactly who connects it back ("because you liked X — also directed by Y"), so you can judge the recommendation yourself. Only appears once you\'ve Liked or Want-to-Watch\'d something; collapsed by default like New on Streaming.'},
   {tab:'discover', sel:'#curated-sect', t:'Your Curation', b:'The feed built for you — Sort dropdown and Refresh sit right above it. The Filters button next to Search adds Genres, Language, Sort and Availability filters without leaving Discover.'},
   {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Bookmark (Want), star (Liked), check (Seen), and eye-slash (Not Interested) — right on the poster. Hover an icon on desktop, or long-press on a phone, to see what it means. Seen and Not Interested quietly remove a title from Discover; tap the same action again (find it via Search) to undo.'},
-  {tab:'watchlist', sel:'#wcontent', t:'My List', b:'Shows only what you’ve marked Want to Watch, with its own sort. Liked / Seen / Not Interested aren’t listed here — they just shape what Discover shows you.'},
+  {tab:'watchlist', sel:'#wcontent', t:'My List', b:'Want to Watch is always front and center, with its own sort. Tap the Liked / Seen chips beside the header to peek at those too — Not Interested isn’t listed anywhere; it just shapes what Discover shows you.'},
   {tab:'watchlist', sel:'#syncpanel', t:'Cloud Sync', b:'Set a passphrase here to back your list up online — use the same phrase on any device to load it. Export/Import also saves a backup file you can keep yourself.'},
   {tab:'settings', sel:'#ptogs', t:'Platforms & Genres', b:'Turn streaming services on or off, choose which genres appear in your feed, or pin a specific custom title so it always shows up.'},
   {tab:'discover', sel:'#cgrid .card', t:'The Title Detail Page', b:'Tap any card for the full page — where to watch, trailers, IMDb and Letterboxd links, cast and crew (tap any name for their filmography), and a Did You Know trivia section when there’s something notable.'},
@@ -3350,7 +3359,7 @@ function renderGrid(items){
 
     vis=vis.filter(i=>!seen.has(i.id));
 
-    vis=vis.filter(i=>i.platforms.some(p=>S.activeP.has(p)));
+    vis=vis.filter(i=>(i.platforms||[]).some(p=>S.activeP.has(p)));
 
     vis=vis.filter(passesDiscoverFilters);
 
@@ -4183,6 +4192,56 @@ function removeWL(id){S.watchlist=S.watchlist.filter(w=>w.id!==id);persist();upd
 
 // ════════════ WATCHLIST ════════════
 
+// Liked and Seen each get their own collapsible grid, toggled via a small chip inline in the
+// Want to Watch header row (using the spare horizontal space beside the title) — collapsed by
+// default so Want to Watch (the list you actually act on) stays the fastest thing to reach when
+// you open My List. Expanding a chip shows its grid immediately below the header, above the
+// Want to Watch grid itself. "Not Interested" deliberately gets no section at all: that status
+// exists purely as a "don't resurface this" signal, not something worth browsing back through.
+// A title can only ever be in ONE of these buckets at a time (S.watchlist stores a single status
+// per title, not independent tags — see setStatus()), so liking a title that was previously marked
+// Seen moves it out of Seen and into Liked automatically; there's no separate step needed for that.
+let likedSectionOpen=false;
+let seenSectionOpen=false;
+function toggleLikedSection(){ likedSectionOpen=!likedSectionOpen; renderWatchlist(); }
+function toggleSeenSection(){ seenSectionOpen=!seenSectionOpen; renderWatchlist(); }
+// Tapping the "Want to Watch" label itself is the fast way back — closes both Liked and Seen in
+// one tap instead of having to untoggle each chip individually.
+function showWantOnly(){ likedSectionOpen=false; seenSectionOpen=false; renderWatchlist(); }
+
+function watchlistCardHTML(item){
+  addToPool(item);
+  const plt=item.platforms?.[0];const pc=plt?PLAT[plt]:null;
+  return`<div class="card" onclick="openDetail(${item.id},'${item.type||'movie'}')">
+    <div class="pw">
+      <div class="pfb">${item.type==='tv'?'Series':'Film'}</div>
+      ${imgTag(item.poster_path,'w342','')}
+      <div class="pgrd"></div>
+      ${pc?`<div class="cplt plt-${plt}">${pc.label}</div>`:''}
+      ${item.rating?`<div class="crating">★ ${item.rating}</div>`:''}
+    </div>
+    <div class="cbody"><div class="ctitle">${item.title}</div><div class="cmeta"><span>${item.year||'–'}</span></div></div>
+    <div class="cbtns"><div class="cbtn seen" style="flex:unset;width:100%" onclick="event.stopPropagation();removeWL(${item.id})">✕ Remove</div></div>
+  </div>`;
+}
+
+// Liked/Seen toggle chips live INSIDE the Want to Watch header row (there's spare horizontal
+// room there), pushed to the far right via margin-left:auto. A chip only appears once that
+// bucket has at least one item — no point offering an empty "Liked" toggle. Tapping a chip
+// expands its grid immediately below the header (see wlInlineBlockHTML), ABOVE the Want to
+// Watch grid itself — that's the explicitly-chosen placement, not a default.
+function wlChipHTML(label,items,isOpen,toggleFn){
+  if(!items.length) return '';
+  return`<div class="fpill ${isOpen?'on':''}" style="font-size:9px;padding:3px 10px" onclick="event.stopPropagation();${toggleFn}()" tabindex="0" role="button" aria-expanded="${isOpen}">${label}<span class="wcount" style="margin-left:4px">${items.length}</span></div>`;
+}
+function wlInlineBlockHTML(label,items,isOpen){
+  if(!isOpen||!items.length) return '';
+  return`<div class="sect-block" style="margin-bottom:14px">
+    <div style="font-size:9px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">${label}</div>
+    <div class="grid">${items.map(watchlistCardHTML).join('')}</div>
+  </div>`;
+}
+
 function renderWatchlist(){
 
   const el=$('wcontent');
@@ -4199,7 +4258,8 @@ function renderWatchlist(){
 
   S.watchlist.forEach(w=>gr[w.status]?.push(w));
 
-  // Want to Watch — apply selected sort
+  // Want to Watch — apply selected sort. This section always renders, front and center, even when
+  // empty — it's the list you're meant to act on, so it never collapses or hides behind a toggle.
   const sorted=[...gr.want];
   if(wantSort==='added')      sorted.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
   else if(wantSort==='rating') sorted.sort((a,b)=>(b.rating||0)-(a.rating||0));
@@ -4217,32 +4277,35 @@ function renderWatchlist(){
 
   const wantItems=sorted;
 
-  if(!wantItems.length){
-    el.innerHTML=`<div class="empty"><div class="et">Nothing in your watch queue</div><div style="font-size:10px;color:var(--t3)">Mark titles Want to Watch from the Discover tab</div></div>`;
-    return;
-  }
+  // Liked and Seen sort most-recently-marked first — there's no user-facing sort control for these
+  // two, keeping them simple since they're reference lists, not action queues like Want to Watch.
+  const likedItems=[...gr.liked].sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
+  const seenItems=[...gr.seen].sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
 
-  el.innerHTML=`<div class="wsect">
-      <div class="whead">Want to Watch<span class="wcount">${wantItems.length}</span></div>
-      ${sortBar}
-      <div class="grid">${wantItems.map(item=>{
-        addToPool(item);
-        const plt=item.platforms?.[0];const pc=plt?PLAT[plt]:null;
-        return`<div class="card" onclick="openDetail(${item.id},'${item.type||'movie'}')">
-          <div class="pw">
-            <div class="pfb">${item.type==='tv'?'Series':'Film'}</div>
-            ${imgTag(item.poster_path,'w342','')}
-            <div class="pgrd"></div>
-            ${pc?`<div class="cplt plt-${plt}">${pc.label}</div>`:''}
-            ${item.rating?`<div class="crating">★ ${item.rating}</div>`:''}
-          </div>
-          <div class="cbody"><div class="ctitle">${item.title}</div><div class="cmeta"><span>${item.year||'–'}</span></div></div>
-          <div class="cbtns"><div class="cbtn seen" style="flex:unset;width:100%" onclick="event.stopPropagation();removeWL(${item.id})">✕ Remove</div></div>
-        </div>`;
-      }).join('')}</div>
-    </div>`;
+  // Toggle chips sit in the Want to Watch header row itself (spare space to the right of the
+  // title/count) rather than as their own separate section headers further down — tapping one
+  // expands its grid immediately below the header, above the Want to Watch grid.
+  const chipsHTML=wlChipHTML('Liked',likedItems,likedSectionOpen,'toggleLikedSection')
+    +wlChipHTML('Seen',seenItems,seenSectionOpen,'toggleSeenSection');
+  const chipRow=chipsHTML?`<div style="margin-left:auto;display:flex;gap:6px">${chipsHTML}</div>`:'';
 
+  const inlineBlocks=wlInlineBlockHTML('Liked',likedItems,likedSectionOpen)
+    +wlInlineBlockHTML('Seen',seenItems,seenSectionOpen);
 
+  const wantBlockHTML=wantItems.length
+    ? `<div class="wsect">
+        <div class="whead"><span style="cursor:pointer" onclick="showWantOnly()" tabindex="0" role="button">Want to Watch</span><span class="wcount">${wantItems.length}</span>${chipRow}</div>
+        ${inlineBlocks}
+        ${sortBar}
+        <div class="grid">${wantItems.map(watchlistCardHTML).join('')}</div>
+      </div>`
+    : `<div class="wsect">
+        <div class="whead"><span style="cursor:pointer" onclick="showWantOnly()" tabindex="0" role="button">Want to Watch</span><span class="wcount">0</span>${chipRow}</div>
+        ${inlineBlocks}
+        <div class="empty" style="padding:16px 0"><div class="et">Nothing in your watch queue</div><div style="font-size:10px;color:var(--t3)">Mark titles Want to Watch from the Discover tab</div></div>
+      </div>`;
+
+  el.innerHTML=wantBlockHTML;
 
 }
 
