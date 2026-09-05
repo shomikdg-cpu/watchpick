@@ -2574,13 +2574,15 @@ async function buildSuperheroQuery(page,lang){
 
 
 
-// Hindi has a vastly larger domestic audience/vote base than India's other regional languages,
-// so a 1-vote fluke sitting at the top of a Rating-sorted Hindi feed is a real quality miss in a
-// way it arguably isn't for a genuinely under-voted regional title — a request to only tighten
-// the bar for Hindi, and only when Rating is actually driving the visible order (not Newest/Mix,
-// where a niche regional title with a handful of votes — e.g. "Nishi Padma", 3 votes — should
-// still surface). See buildUnifiedQuery and buildTVQuery below for where this applies.
+// Hindi and English both have a vastly larger audience/vote base than India's other regional
+// languages, so a 1-vote fluke sitting at the top of a Rating-sorted Hindi or English feed is a
+// real quality miss in a way it arguably isn't for a genuinely under-voted regional title — a
+// request to tighten the bar for Hindi (and, later, English too), and only when Rating is
+// actually driving the visible order (not Newest/Mix, where a niche regional title with a
+// handful of votes — e.g. "Nishi Padma", 3 votes — should still surface). See buildUnifiedQuery
+// and buildTVQuery below for where this applies.
 const HINDI_RATING_VOTE_FLOOR=5;
+const RATING_VOTE_FLOOR_LANGS=new Set(['hi','en']);
 
 // Unified query for all remaining genres with real tmdbId (Rock, Sci-Fi, Action, etc.)
 
@@ -2610,11 +2612,12 @@ async function buildUnifiedQuery(page,lang){
   // Critically Acclaimed, Brilliant Screenplay, Cinematography, Superhero, Philosophy — have
   // their own builder functions and keep their bar regardless of language, since a high vote
   // floor IS their definition), so it's safe to drop the floor to 0 here whenever a language is
-  // selected — EXCEPT Hindi specifically, and only while Rating is what actually orders the
-  // results: TMDB's vote_average.desc sort_by (see TMDB_SORT) surfaces 1-vote 10.0 flukes ahead
-  // of genuinely well-regarded, well-voted titles when the floor is 0, and Hindi's audience size
-  // makes that a real quality problem rather than a legitimate niche title being excluded.
-  const minVotes=lang?(lang==='hi'&&S.sort==='rating'?HINDI_RATING_VOTE_FLOOR:0):Math.min(...unified.map(g=>{
+  // selected — EXCEPT Hindi and English specifically, and only while Rating is what actually
+  // orders the results: TMDB's vote_average.desc sort_by (see TMDB_SORT) surfaces 1-vote 10.0
+  // flukes ahead of genuinely well-regarded, well-voted titles when the floor is 0, and Hindi's
+  // and English's audience size makes that a real quality problem rather than a legitimate niche
+  // title being excluded.
+  const minVotes=lang?(RATING_VOTE_FLOOR_LANGS.has(lang)&&S.sort==='rating'?HINDI_RATING_VOTE_FLOOR:0):Math.min(...unified.map(g=>{
 
     const isYearSort=S.sort==='year_desc'||S.sort==='year_asc'||S.sort==='year_rated';
 
@@ -2730,9 +2733,9 @@ async function buildTVQuery(page, tvGenreKey, langOverride){
   // most for — very much included) can actually surface, instead of being silently excluded by
   // a popularity bar the user never asked for. "Critically Acclaimed" TV (conf.noGenre) is a
   // dedicated vote-count quality signal, not a general genre, so it keeps its own bar regardless.
-  // Hindi is the one language exception — see HINDI_RATING_VOTE_FLOOR above — and only while
-  // Rating is actually ordering the results.
-  const voteMin=(langOverride&&!conf.noGenre)?(langOverride==='hi'&&S.sort==='rating'?HINDI_RATING_VOTE_FLOOR:0):(isYearSort?20:(conf.voteMin||50));
+  // Hindi and English are the language exceptions — see RATING_VOTE_FLOOR_LANGS above — and only
+  // while Rating is actually ordering the results.
+  const voteMin=(langOverride&&!conf.noGenre)?(RATING_VOTE_FLOOR_LANGS.has(langOverride)&&S.sort==='rating'?HINDI_RATING_VOTE_FLOOR:0):(isYearSort?20:(conf.voteMin||50));
   const sortBy=TMDB_SORT[S.sort]||'vote_average.desc';
 
   const params=new URLSearchParams({
