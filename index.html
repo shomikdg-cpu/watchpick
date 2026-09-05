@@ -708,7 +708,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
   <div class="ntab" data-tab="watchlist" onclick="showTab('watchlist')" tabindex="0" role="button">My List<span class="badge" id="wbadge" style="display:none;position:static;vertical-align:middle;margin-left:5px;width:14px;height:14px;font-size:7px">0</span></div>
 
-  <div class="ntab" data-tab="settings" onclick="showTab('settings')" tabindex="0" role="button">Platforms & Genres</div>
+  <div class="ntab" data-tab="settings" onclick="showTab('settings')" tabindex="0" role="button">Platform</div>
 
 
 </div>
@@ -733,7 +733,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       </div>
       <div class="wfeat">
         <div class="wfeat-ico">2</div>
-        <div class="wfeat-text"><b>India availability, verified</b> — every title cross-checked across 8 platforms. Stream or Rent/Buy, clearly labelled.</div>
+        <div class="wfeat-text"><b>India availability, verified</b> — every title cross-checked across 18 platforms. Stream or Rent/Buy, clearly labelled.</div>
       </div>
       <div class="wfeat">
         <div class="wfeat-ico">3</div>
@@ -813,7 +813,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
     </div>
     <div class="gsect" id="gs1">
       <div class="gh1">1 &middot; What is WatchPick?</div>
-      <p class="gbody">WatchPick is a personal cinema discovery app for people who care about what they watch. It shows films streaming in India right now, filtered by your taste, with verified availability across 8 platforms.</p>
+      <p class="gbody">WatchPick is a personal cinema discovery app for people who care about what they watch. It shows films streaming in India right now, filtered by your taste, with verified availability across 18 platforms.</p>
       <p class="gbody">Built for world cinema, philosophy films, critically acclaimed titles, music documentaries, brilliant screenplays, and visually extraordinary cinema &mdash; with everything double-checked against real, up-to-date streaming information for India.</p>
       <p class="gbody">Access: <a class="glink" href="https://watchpick-dun.vercel.app" target="_blank">watchpick-dun.vercel.app &rarr;</a></p>
     </div>
@@ -1030,7 +1030,8 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
     <div class="masters-body" id="byl-body">
 
-      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div id="byl-pageinfo" style="font-size:9px;color:var(--t3)"></div>
         <div class="more" onclick="loadBecauseYouLiked(true)">Refresh</div>
       </div>
 
@@ -1171,12 +1172,6 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   </div>
 
   <div class="sect-block">
-  <div class="slabel" style="margin-bottom:8px">Genres</div>
-
-  <div id="gtogs"></div>
-  </div>
-
-  <div class="sect-block">
   <div class="slabel" style="margin-bottom:8px">Add custom title</div>
 
   <div class="addrow">
@@ -1241,7 +1236,31 @@ const PLAT={
 
   sonyliv: {label:'SonyLIV',    match:/sony liv|sonyliv|sony/i,             url:q=>`https://www.sonyliv.com/search?q=${enc(q)}`},
 
-  zee5:    {label:'ZEE5',       match:/zee5|zee/i,                          url:q=>`https://www.zee5.com/search?q=${enc(q)}`}
+  zee5:    {label:'ZEE5',       match:/zee5|zee/i,                          url:q=>`https://www.zee5.com/search?q=${enc(q)}`},
+
+  // Added after verifying each against TMDB's live /watch/providers/movie?watch_region=IN
+  // response (provider_id + exact provider_name), not assumed — see PROV_IDS below for the id
+  // side of the same verification. Regional-language platforms first (they fill a real gap: this
+  // app's own language filters include Tamil/Telugu/Kannada/Malayalam/Bengali, none of which
+  // Netflix/Prime/JioHotstar cover completely), then general-catalog additions.
+  sunnxt:        {label:'Sun NXT',        match:/sun\s*nxt/i,          url:q=>`https://www.google.com/search?q=${enc(q)}+site:sunnxt.com`},
+  hoichoi:       {label:'Hoichoi',        match:/hoichoi/i,            url:q=>`https://hoichoi.tv/search?q=${enc(q)}`},
+  aha:           {label:'aha',            match:/^aha$/i,              url:q=>`https://www.aha.video/search?q=${enc(q)}`},
+  mxplayer:      {label:'MX Player',      match:/mx player/i,          url:q=>`https://www.google.com/search?q=${enc(q)}+site:mxplayer.in`},
+  lionsgateplay: {label:'Lionsgate Play', match:/lionsgate play/i,     url:q=>`https://www.google.com/search?q=${enc(q)}+site:lionsgateplay.com`},
+  discoveryplus: {label:'Discovery+',     match:/discovery\+/i,        url:q=>`https://www.google.com/search?q=${enc(q)}+site:discoveryplus.in`},
+  epicon:        {label:'EPIC ON',        match:/epic on/i,            url:q=>`https://www.google.com/search?q=${enc(q)}+site:epicon.in`},
+  // "Vi movies and tv" is a 20-apps-in-one aggregator bundle (a Vi/Vodafone Idea telecom
+  // product), not a catalog with its own per-title search page, so its link goes to the
+  // aggregator's own info page rather than a guessed (and likely broken) search URL.
+  vimoviesandtv: {label:'Vi movies and tv',match:/vi movies and tv/i,  url:()=>`https://www.myvi.in/vi-movies-and-tv`},
+
+  // Second round of additions — Malayalam (manoramamax) closes another language-filter gap
+  // (alongside Sun NXT); NFDC ("Cinemas of India") is a Prime Video add-on channel, not a
+  // separate app with its own search page, so it links straight to that channel's real Prime
+  // Video page rather than a guessed search URL — same reasoning as Vi movies and tv above.
+  manoramamax: {label:'ManoramaMax', match:/manoramamax|manorama\s*max/i, url:q=>`https://www.google.com/search?q=${enc(q)}+site:manoramamax.com`},
+  nfdc:        {label:'NFDC',        match:/nfdc/i,                       url:()=>`https://www.primevideo.com/-/en/channel/3964c37b-c97c-4e90-ba16-197e9daa7fb6`}
 
 };
 
@@ -1256,7 +1275,18 @@ const PLAT={
 // language turned up via a person's filmography (that path never applies this provider filter at
 // all — see tmdbPerson/renderPersonView). 122 (the pre-rebrand Hotstar ID) is left in place since
 // older catalog entries may still carry it; it's harmless to keep alongside 2336.
-const PROV_IDS='8|9|11|119|122|188|192|232|237|2336';
+// 350 (Apple TV, i.e. Apple TV+) was ALSO missing — 192 is actually YouTube's id, not Apple TV+'s
+// as previously assumed here, so Apple TV+-exclusive titles were being silently excluded from
+// Discover despite the app believing it already supported Apple TV+ (see the "apple" PLAT entry
+// above, which was always matching correctly against per-title provider_name — it just never got
+// the chance, because Discover's own query never asked TMDB for Apple TV+ titles in the first
+// place). Re-verified directly against the same live endpoint.
+// 309/315/532/515/561/510/476/614 (Sun NXT/Hoichoi/aha/MX Player/Lionsgate Play/Discovery+/EPIC
+// ON/Vi movies and tv) are the newly added platforms above — same live-endpoint verification.
+// 482 (ManoramaMax) and 2530 (NFDC, TMDB provider_name "NFDC Amazon Channel") were added in a
+// second pass after a full re-scan of TMDB's entire ~90-provider India list (the first pass only
+// surfaced a curated subset) — same live-endpoint verification.
+const PROV_IDS='8|9|11|119|122|188|192|232|237|2336|350|309|315|532|515|561|510|476|614|482|2530';
 
 
 
@@ -2099,6 +2129,36 @@ async function loadNewArrivals(forceRefresh=false){
 // Arrivals: this fans out into several TMDB calls (credits per seed, then a full filmography per
 // person), so it shouldn't run on every Discover load regardless of whether anyone opens it.
 let bylSectionOpen=false;
+// Ids this rail has EVER put into the shared S.results pool, accumulated across every page it has
+// shown (see rotation below — not just the most recent one). The live re-check further down
+// (guarding against a genuine race with New Arrivals/Discover) must never treat these as "already
+// elsewhere" — otherwise re-showing an earlier page finds its own past output already live and
+// filters it back out, or (before this was accumulated across pages) a second Refresh could wipe
+// the whole section. See loadBecauseYouLiked() for the actual check.
+let bylPoolIds=new Set();
+// Refresh pages through the full candidate pool instead of re-showing the same top 20 forever.
+// bylOffset is which page we're on; bylLastSeedKey is a snapshot of which Liked/Want-to-Watch
+// titles produced it, so a freshly Liked title resets back to page 1 (showing its recommendations
+// first) instead of leaving them buried on whatever page Refresh last landed on. bylLastTotal is
+// how many candidates the last fetch actually turned up, used to notice ahead of time when a
+// Refresh is about to run out of pages.
+const BYL_PAGE=20;
+let bylOffset=0;
+let bylLastSeedKey=null;
+let bylLastTotal=0;
+
+// How wide a net this rail casts — deliberately conservative at first (bound the TMDB calls a
+// single Refresh makes), but genuinely growable: once you've paged through everything available at
+// the current width, the NEXT Refresh widens the net (more of your Liked/Want-to-Watch titles as
+// seeds, more people looked up from them) instead of just looping back to page 1. Per-person credit
+// depth is raised once and left there rather than grown further — digging deeper into any one
+// person's least-voted-on work would start surfacing genuinely obscure titles, which cuts against
+// the same quality bar (vote-count floors) the rest of the app enforces.
+const BYL_SEED_BASE=10, BYL_SEED_STEP=5, BYL_SEED_MAX=30;
+const BYL_PERSON_BASE=15, BYL_PERSON_STEP=10, BYL_PERSON_MAX=50;
+const BYL_PER_PERSON_CREDITS=20;
+let bylSeedWindow=BYL_SEED_BASE;
+let bylPersonCap=BYL_PERSON_BASE;
 function renderBYLShell(){
   const sect=$('byl-sect');
   if(!sect) return;
@@ -2123,14 +2183,31 @@ async function loadBecauseYouLiked(forceRefresh=false){
   if(S.bylLoaded&&!forceRefresh) return;
 
   // Seeds: your most recently Liked or Want-to-Watch titles — both are a genuine positive
-  // signal, not just titles marked "Liked". Most recent first; capped at 6 so this can't fan out
-  // into dozens of TMDB calls for someone with a long list.
-  const seeds=S.watchlist
+  // signal, not just titles marked "Liked". Most recent first; windowed to bylSeedWindow so this
+  // can't fan out into dozens of TMDB calls for someone with a long list on every single load.
+  const eligible=S.watchlist
     .filter(w=>w.status==='liked'||w.status==='want')
-    .sort((a,b)=>(b.addedAt||0)-(a.addedAt||0))
-    .slice(0,6);
+    .sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
 
-  if(!seeds.length){ sect.style.display='none'; return; }
+  if(!eligible.length){ sect.style.display='none'; return; }
+
+  let seeds=eligible.slice(0,bylSeedWindow);
+  let seedKey=seeds.map(s=>s.id).sort((a,b)=>a-b).join(',');
+  const seedsChanged=bylLastSeedKey!==null&&bylLastSeedKey!==seedKey;
+
+  // About to run out of pages on an explicit Refresh with the same seeds as last time? Widen the
+  // net (more seeds, more people looked up from them) instead of wrapping back to page 1 — this is
+  // what keeps it from ever feeling like a fixed, exhaustible list.
+  if(forceRefresh&&!seedsChanged&&bylLastSeedKey!==null&&(bylOffset+BYL_PAGE>=bylLastTotal)){
+    const canGrowSeeds=bylSeedWindow<Math.min(BYL_SEED_MAX,eligible.length);
+    const canGrowPersons=bylPersonCap<BYL_PERSON_MAX;
+    if(canGrowSeeds||canGrowPersons){
+      if(canGrowSeeds) bylSeedWindow=Math.min(bylSeedWindow+BYL_SEED_STEP,BYL_SEED_MAX,eligible.length);
+      if(canGrowPersons) bylPersonCap=Math.min(bylPersonCap+BYL_PERSON_STEP,BYL_PERSON_MAX);
+      seeds=eligible.slice(0,bylSeedWindow);
+      seedKey=seeds.map(s=>s.id).sort((a,b)=>a-b).join(',');
+    }
+  }
 
   scroll.innerHTML=`<div style="padding:10px 0"><div class="spin"></div></div>`;
   if(forceRefresh) S.prov={};
@@ -2164,7 +2241,7 @@ async function loadBecauseYouLiked(forceRefresh=false){
       personEntries.push({...p, sourceTitle:seed.title, sourceId:seed.id});
     });
   });
-  const capped=personEntries.slice(0,10); // bound total API calls
+  const capped=personEntries.slice(0,bylPersonCap); // bound total API calls
 
   const seen=seenIds();
   const seedIds=new Set(seeds.map(s=>s.id));
@@ -2175,7 +2252,7 @@ async function loadBecauseYouLiked(forceRefresh=false){
       .filter(c=>c.poster_path&&(c.title||c.name))
       .filter(c=>!seedIds.has(c.id)&&!seen.has(c.id))
       .sort((a,b)=>(b.vote_count||0)-(a.vote_count||0))
-      .slice(0,6)
+      .slice(0,BYL_PER_PERSON_CREDITS)
       .map(c=>mapItem(c));
     return credits.map(c=>({...c, __why:entry}));
   }));
@@ -2187,17 +2264,46 @@ async function loadBecauseYouLiked(forceRefresh=false){
   // Re-check against the LIVE S.results right before finalizing, not just the `seen`/`seedIds`
   // snapshot captured above — New Arrivals or the main Curation feed can push a matching item
   // into S.results while these several rounds of TMDB calls were in flight (same race already
-  // fixed in loadDiscover; the fix here is the same shape).
+  // fixed in loadDiscover; the fix here is the same shape). Exception: an id this rail has EVER
+  // put into S.results itself (bylPoolIds) is not "already elsewhere".
   const liveIds=new Set(S.results.map(r=>r.id));
-  pool=pool.filter(v=>!liveIds.has(v.id));
+  pool=pool.filter(v=>!liveIds.has(v.id)||bylPoolIds.has(v.id));
 
-  pool=pool.sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,20);
-  pool.forEach(addToPool);
+  // Full candidate pool, sorted best-first — kept whole rather than cut down to one page here, so
+  // Refresh can page through the rest instead of only ever showing the same top 20.
+  pool=pool.sort((a,b)=>(b.rating||0)-(a.rating||0));
 
-  if(!pool.length){ sect.style.display='none'; return; }
+  if(!pool.length){
+    bylPoolIds=new Set(); bylOffset=0; bylLastSeedKey=null; bylLastTotal=0;
+    bylSeedWindow=BYL_SEED_BASE; bylPersonCap=BYL_PERSON_BASE;
+    if($('byl-pageinfo')) $('byl-pageinfo').textContent='';
+    sect.style.display='none'; return;
+  }
+
+  // A freshly Liked/Want-to-Watch'd title (a changed seed set) jumps back to page 1 so its own
+  // recommendations show up right away. Otherwise, an explicit Refresh with the same seeds as last
+  // time advances to the next page — including right after widening the net above, since seedKey
+  // reflects the wider seed set now but seedsChanged (computed before that widening) is still
+  // false, so this still reads as "same recommendation run, next page" rather than "starting over".
+  // Only wraps back to page 1 if there was truly nowhere left to widen into.
+  if(!forceRefresh||bylLastSeedKey===null||seedsChanged){
+    bylOffset=0;
+  } else {
+    bylOffset+=BYL_PAGE;
+    if(bylOffset>=pool.length) bylOffset=0;
+  }
+  bylLastSeedKey=seedKey;
+  bylLastTotal=pool.length;
+
+  const page=pool.slice(bylOffset,bylOffset+BYL_PAGE);
+  page.forEach(addToPool);
+  page.forEach(p=>bylPoolIds.add(p.id));
   S.bylLoaded=true;
 
-  scroll.innerHTML=pool.map(s=>{
+  const pageInfoEl=$('byl-pageinfo');
+  if(pageInfoEl) pageInfoEl.textContent=pool.length>BYL_PAGE?`${bylOffset+1}–${bylOffset+page.length} of ${pool.length}`:'';
+
+  scroll.innerHTML=page.map(s=>{
     const plt=s.platforms[0]; const pc=PLAT[plt];
     const labels=Object.values(s.avail||{});
     const avCls=(labels.includes('Stream')||labels.includes('Free'))?'av-stream':'av-rent';
@@ -2468,6 +2574,14 @@ async function buildSuperheroQuery(page,lang){
 
 
 
+// Hindi has a vastly larger domestic audience/vote base than India's other regional languages,
+// so a 1-vote fluke sitting at the top of a Rating-sorted Hindi feed is a real quality miss in a
+// way it arguably isn't for a genuinely under-voted regional title — a request to only tighten
+// the bar for Hindi, and only when Rating is actually driving the visible order (not Newest/Mix,
+// where a niche regional title with a handful of votes — e.g. "Nishi Padma", 3 votes — should
+// still surface). See buildUnifiedQuery and buildTVQuery below for where this applies.
+const HINDI_RATING_VOTE_FLOOR=5;
+
 // Unified query for all remaining genres with real tmdbId (Rock, Sci-Fi, Action, etc.)
 
 // These work correctly in a combined OR query and benefit from sort consistency.
@@ -2496,8 +2610,11 @@ async function buildUnifiedQuery(page,lang){
   // Critically Acclaimed, Brilliant Screenplay, Cinematography, Superhero, Philosophy — have
   // their own builder functions and keep their bar regardless of language, since a high vote
   // floor IS their definition), so it's safe to drop the floor to 0 here whenever a language is
-  // selected.
-  const minVotes=lang?0:Math.min(...unified.map(g=>{
+  // selected — EXCEPT Hindi specifically, and only while Rating is what actually orders the
+  // results: TMDB's vote_average.desc sort_by (see TMDB_SORT) surfaces 1-vote 10.0 flukes ahead
+  // of genuinely well-regarded, well-voted titles when the floor is 0, and Hindi's audience size
+  // makes that a real quality problem rather than a legitimate niche title being excluded.
+  const minVotes=lang?(lang==='hi'&&S.sort==='rating'?HINDI_RATING_VOTE_FLOOR:0):Math.min(...unified.map(g=>{
 
     const isYearSort=S.sort==='year_desc'||S.sort==='year_asc'||S.sort==='year_rated';
 
@@ -2613,7 +2730,9 @@ async function buildTVQuery(page, tvGenreKey, langOverride){
   // most for — very much included) can actually surface, instead of being silently excluded by
   // a popularity bar the user never asked for. "Critically Acclaimed" TV (conf.noGenre) is a
   // dedicated vote-count quality signal, not a general genre, so it keeps its own bar regardless.
-  const voteMin=(langOverride&&!conf.noGenre)?0:(isYearSort?20:(conf.voteMin||50));
+  // Hindi is the one language exception — see HINDI_RATING_VOTE_FLOOR above — and only while
+  // Rating is actually ordering the results.
+  const voteMin=(langOverride&&!conf.noGenre)?(langOverride==='hi'&&S.sort==='rating'?HINDI_RATING_VOTE_FLOOR:0):(isYearSort?20:(conf.voteMin||50));
   const sortBy=TMDB_SORT[S.sort]||'vote_average.desc';
 
   const params=new URLSearchParams({
@@ -3124,18 +3243,18 @@ const TOUR_QUICK=[
   {tab:null, sel:'#guideBtn', t:'Come back to this anytime', b:'Tap Guide whenever you want — it has a full, section-by-section tour too.'}
 ];
 const TOUR_FULL=[
-  {tab:null, sel:'.logo', t:'What is WatchPick', b:'A personal cinema discovery app for India — films and shows filtered by real taste categories, with availability verified across 8 streaming platforms.'},
+  {tab:null, sel:'.logo', t:'What is WatchPick', b:'A personal cinema discovery app for India — films and shows filtered by real taste categories, with availability verified across 18 streaming platforms.'},
   {tab:'discover', sel:'#sinput', t:'Search & Voice', b:'Type a title, director, or actor. A gold card means your search matched a person — tap it for their full India filmography. Tap the mic icon to search by speaking instead.'},
   {tab:'discover', sel:'#mediaToggleRow', t:'Films / Both / Series', b:'This toggle narrows Discover to movies only, TV only, or both together. In Both mode, a small Film/Series tag appears on every card in Your Curation so the mixed feed is easy to scan at a glance.'},
   {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Open by default — tap the header to collapse or reopen the whole section. Tap any theme to reveal its portraits, tap a thumbnail to open that person\'s full filmography, and tap Collapse to hide the portraits again.'},
   {tab:'discover', sel:'#newarrivals-sect', t:'New on Streaming', b:'Films added to Indian streaming in the last 60 days. Collapsed by default so it doesn\'t stand between Masters of Cinema and Your Curation — tap the header to open it, which loads the row and reveals its own Refresh.'},
-  {tab:'discover', sel:'#byl-sect', t:'Because You Liked', b:'Built from crew and cast overlap with your own Liked and Want to Watch titles, not a black-box algorithm — every card names exactly who connects it back ("because you liked X — also directed by Y"), so you can judge the recommendation yourself. Only appears once you\'ve Liked or Want-to-Watch\'d something; collapsed by default like New on Streaming.'},
+  {tab:'discover', sel:'#byl-sect', t:'Because You Liked', b:'Built from crew and cast overlap with your own Liked and Want to Watch titles, not a black-box algorithm — every card names exactly who connects it back ("because you liked X — also directed by Y"), so you can judge the recommendation yourself. Tap Refresh to page through more picks the same way; once you\'ve seen everything, it widens its search further into your list instead of just repeating. Liking something new jumps back to the freshest page first. Only appears once you\'ve Liked or Want-to-Watch\'d something; collapsed by default like New on Streaming.'},
   {tab:'discover', sel:'#upcoming-sect', t:'Upcoming From Who You Liked', b:'The same crew/cast connections as Because You Liked, but for what hasn\'t come out yet — a dated, real upcoming release from a director, writer, or actor behind something you Liked or Want to Watch. Collapsed by default, right below Because You Liked.'},
   {tab:'discover', sel:'#curated-sect', t:'Your Curation', b:'The feed built for you — Sort dropdown and Refresh sit right above it. The Filters button next to Search adds Genres, Language, Sort and Availability filters without leaving Discover.'},
   {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Bookmark (Want), star (Liked), check (Seen), and eye-slash (Not Interested) — right on the poster. Hover an icon on desktop, or long-press on a phone, to see what it means. Liked, Seen, and Not Interested all quietly remove a title from Discover; Liked and Seen can be undone from their chip in My List, while Not Interested needs a fresh search to bring back.'},
   {tab:'watchlist', sel:'#wcontent', t:'My List', b:'Want to Watch is always front and center, with its own sort. Tap the Liked / Seen chips beside the header to peek at those too — Not Interested isn’t listed anywhere; it just shapes what Discover shows you.'},
   {tab:'watchlist', sel:'#syncpanel', t:'Cloud Sync', b:'Set a passphrase here to back your list up online — use the same phrase on any device to load it. Export/Import also saves a backup file you can keep yourself.'},
-  {tab:'settings', sel:'#ptogs', t:'Platforms & Genres', b:'Turn streaming services on or off, choose which genres appear in your feed, or pin a specific custom title so it always shows up.'},
+  {tab:'settings', sel:'#ptogs', t:'Platform', b:'Turn streaming services on or off, or pin a specific custom title so it always shows up. Genres are managed from the Filters sheet on Discover, where you actually pick them.'},
   {tab:'discover', sel:'#cgrid .card', t:'The Title Detail Page', b:'Tap any card for the full page — where to watch, trailers, IMDb and Letterboxd links, cast and crew (tap any name for their filmography), and a Did You Know trivia section when there’s something notable.'},
   {tab:null, sel:'#guideBtn', t:'That’s everything', b:'You can reopen this tour anytime from the Guide button in the header.'}
 ];
@@ -4502,20 +4621,6 @@ function renderSettings(){
 
       <button class="tog ${S.platforms[k]?'on':''}" onclick="togPlatform('${k}')"><div class="tk"></div></button></div>`).join('');
 
-  $('gtogs').innerHTML=`
-
-    <div style="display:flex;gap:6px;margin-bottom:10px">
-
-      <button onclick="genreAllOn()" style="flex:1;padding:8px;border-radius:var(--rs);background:var(--gold2);border:.5px solid rgba(232,201,122,.4);color:var(--gold);font-size:11px;font-weight:600;cursor:pointer">✓ Select All</button>
-
-      <button onclick="genreAllOff()" style="flex:1;padding:8px;border-radius:var(--rs);background:var(--s2);border:.5px solid var(--b2);color:var(--t2);font-size:11px;font-weight:600;cursor:pointer">✕ Clear All</button>
-
-    </div>`+Object.entries(GENRES).map(([k,v])=>`
-
-    <div class="srow"><div class="slbl">${v.label}</div>
-
-      <button class="tog ${S.genres[k]?'on':''}" onclick="togGenre('${k}')"><div class="tk"></div></button></div>`).join('');
-
   renderCustList();
 
 }
@@ -4527,22 +4632,6 @@ function togPlatform(k){
   if(S.platforms[k])S.activeP.add(k);else S.activeP.delete(k);
 
   persist();renderSettings();renderGrid(S.results);
-
-}
-
-function genreAllOn(){
-
-  Object.keys(GENRES).forEach(k=>{S.genres[k]=true;S.activeG.add(k);});
-
-  persist();renderSettings();renderFbar();loadDiscover(true);
-
-}
-
-function genreAllOff(){
-
-  Object.keys(GENRES).forEach(k=>{S.genres[k]=false;S.activeG.delete(k);});
-
-  persist();renderSettings();renderFbar();renderGrid([]);
 
 }
 
@@ -4565,18 +4654,6 @@ function discoverAllOff(){
   renderFbar();renderGrid([]);
 
 }
-
-function togGenre(k){
-
-  S.genres[k]=!S.genres[k];
-
-  if(S.genres[k])S.activeG.add(k);else S.activeG.delete(k);
-
-  persist();renderSettings();renderFbar();
-
-}
-
-
 
 // ════════════ CUSTOM ════════════
 
