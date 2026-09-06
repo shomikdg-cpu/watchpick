@@ -1557,13 +1557,37 @@ function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).ma
 
 // ════════════ TMDB ════════════
 
+// A phone can report great general bandwidth (a speed test only measures the route to a nearby
+// test server) while a single request to TMDB specifically stalls — flaky mobile-carrier routing
+// to one particular overseas host, or a momentary slow response from TMDB itself. Without a
+// timeout, that one stuck fetch() would hang forever, and since every caller of tmdb() (enrich(),
+// loadDiscover's item-enrichment pass chief among them) awaits a whole batch via Promise.all, one
+// stuck item silently blocked the ENTIRE list from ever rendering — "Your Curation not opening"
+// with no error, no matter how fast the connection otherwise was. Bounding every request to 10s
+// and treating a timeout exactly like any other failure (return {}, same as the existing catch)
+// fixes that: the worst case becomes a ~10s wait for that one item, not an indefinite hang.
+const TMDB_TIMEOUT_MS=10000;
 async function tmdb(path){
 
   const sep=path.includes('?')?'&':'?';
 
   try{
 
-    const r=await fetch(`https://api.themoviedb.org/3${path}${sep}api_key=${TMDB}`);
+    const ctrl=new AbortController();
+
+    const timer=setTimeout(()=>ctrl.abort(),TMDB_TIMEOUT_MS);
+
+    let r;
+
+    try{
+
+      r=await fetch(`https://api.themoviedb.org/3${path}${sep}api_key=${TMDB}`,{signal:ctrl.signal});
+
+    }finally{
+
+      clearTimeout(timer);
+
+    }
 
     if(!r.ok) return {};
 
