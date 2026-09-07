@@ -2975,22 +2975,12 @@ async function refreshDiscover(){
 
   toast('Refreshing feed…');
 
+  // Scoped to "Your Curation" only — New Arrivals, Because You Liked, and Upcoming each have (or
+  // rely on) their own independent refresh path and should NOT reload just because this section's
+  // Refresh was tapped. (A previous version of this function refreshed all four sections at once;
+  // that was undesired — a Curation refresh silently re-fetching Because You Liked, for instance
+  // — so this button now only ever touches the section it's actually attached to.)
   S.prov={};
-
-  // All four sections are always visible now (no more tap-to-open), so Refresh always refreshes
-  // New Arrivals along with the main feed. Because You Liked / Upcoming still only refetch when
-  // there's actually a seed to work from — loadBecauseYouLiked()/loadUpcoming() bail out on their
-  // own otherwise, but checking hasSeeds here avoids even resetting their loaded flag for nothing.
-  S.newArrivalsLoaded=false;
-  loadNewArrivals(true);
-
-  const hasSeeds=S.watchlist.some(w=>w.status==='liked'||w.status==='want');
-  if(hasSeeds){
-    S.bylLoaded=false;
-    loadBecauseYouLiked(true);
-    S.upcomingLoaded=false;
-    loadUpcoming(true);
-  }
 
   await loadDiscover(true);
 
