@@ -457,9 +457,11 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .byl-pw img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
 .byl-pw img.loaded{opacity:1}
 /* A visible "why" caption is the whole point of this row (credibility over a black-box
-   recommendation) — 2-line clamp keeps it scannable in a horizontal scroll without letting a
-   long director/actor name run the card height away. */
-.byl-reason{font-size:8px;color:var(--t3);margin-top:3px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+   recommendation) — shown in full, not clamped, so the actual reasoning is always readable
+   before the quick-action buttons underneath it. Cards in the row use align-items:stretch
+   (see .sim-scroll), so a longer reason just makes that one card taller; shorter neighbors
+   simply carry a little blank space below their buttons. */
+.byl-reason{font-size:8px;color:var(--t3);margin-top:3px;line-height:1.3}
 
 .person-hero{display:flex;gap:14px;padding:50px 16px 16px;align-items:flex-end}
 
