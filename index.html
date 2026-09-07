@@ -133,7 +133,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .sbox{position:relative;margin-bottom:12px}
 
-.sinput{width:100%;background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);color:var(--t1);font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px 9px 35px;outline:none;transition:border .15s}
+.sinput{width:100%;background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);color:var(--t1);font-family:'Inter',sans-serif;font-size:13px;padding:7px 12px 7px 35px;outline:none;transition:border .15s}
 
 .sinput:focus{border-color:var(--gold)}
 
@@ -154,10 +154,10 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .fbar-row3::-webkit-scrollbar{display:none}
 .fbar-label{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--t3);white-space:nowrap;flex-shrink:0;padding-right:2px}
 .fbar-row3a,.fbar-row3b,.fbar-row3c{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.sf-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.sf-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
 .sf-row .sbox{flex:1;margin-bottom:0}
-.discover-sticky-hdr{position:sticky;top:-12px;z-index:50;background:var(--bg);margin:-12px -12px 0;padding:12px 12px 0}
-.filt-btn{flex-shrink:0;display:flex;align-items:center;gap:5px;background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);height:38px;padding:0 13px;color:var(--t2);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;user-select:none}
+.discover-sticky-hdr{position:sticky;top:-12px;z-index:50;background:var(--bg);margin:-12px -12px 0;padding:8px 12px 0}
+.filt-btn{flex-shrink:0;display:flex;align-items:center;gap:5px;background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);height:34px;padding:0 13px;color:var(--t2);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;user-select:none}
 .filt-btn:active{opacity:.7}
 .filter-scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:250}
 .filter-scrim.open{display:block}
@@ -173,21 +173,14 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .filter-sheet-body .fbar-row1,.filter-sheet-body .fbar-row2{flex-wrap:wrap;overflow-x:visible}
 .filter-sheet-cta{padding:12px 16px 18px;border-top:.5px solid var(--b1);flex-shrink:0}
 .filter-sheet-cta-btn{background:var(--gold);color:#0a0a0a;border-radius:var(--rs);height:40px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;user-select:none}
-.masters-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;user-select:none}
-.masters-toggle svg{transition:transform .15s;color:var(--gold);flex-shrink:0}
-.masters-toggle.open svg{transform:rotate(180deg)}
-.masters-body{display:none}
-.masters-body.open{display:block}
-.masters-hint{font-size:10px;color:var(--t3);font-style:italic;padding:0 0 10px}
-.masters-hint.masters-collapse-link{font-style:normal;font-weight:700;color:var(--gold);cursor:pointer;user-select:none;display:flex;align-items:center;gap:4px}
-.masters-hint.masters-collapse-link svg{transition:transform .15s}
-@media (hover:hover) and (pointer:fine){.masters-hint.masters-collapse-link:hover{opacity:.75}}
-.masters-subhint{font-size:10px;color:var(--t3);font-style:italic;padding:0 0 8px}
+.masters-body{display:block}
+.masters-hint{font-size:10px;color:var(--t3);font-style:italic;padding:0 0 6px}
+.sect-hint{font-size:9px;color:var(--t3);font-style:italic;text-align:right}
 .imdb-badge{display:inline-flex;align-items:center;gap:3px;background:#F5C518;color:#000;border-radius:var(--rt);padding:2px 6px;font-size:9px;font-weight:700;text-decoration:none;flex-shrink:0}
-.masters-sect{margin-bottom:16px}
-.sect-block{margin-bottom:20px}
-.sect-block+.sect-block{padding-top:16px;border-top:.5px solid var(--b1)}
-.masters-tags{display:flex;gap:6px;padding:0 0 8px;overflow-x:auto;scrollbar-width:none}
+.masters-sect{margin-bottom:12px}
+.sect-block{margin-bottom:14px}
+.sect-block+.sect-block{padding-top:12px;border-top:.5px solid var(--b1)}
+.masters-tags{display:flex;gap:6px;padding:0 0 6px;overflow-x:auto;scrollbar-width:none}
 .masters-tags::-webkit-scrollbar{display:none}
 .mtag{padding:4px 12px;border-radius:var(--pill);font-size:9px;font-weight:600;white-space:nowrap;cursor:pointer;border:.5px solid var(--b2);color:var(--t3);background:transparent;transition:all .15s;flex-shrink:0;user-select:none}
 .mtag.on{background:var(--gold2);border-color:var(--gold);color:var(--gold)}
@@ -288,7 +281,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .plt-zee5{background:rgba(90,200,90,.22);color:#7dd67d}
 
 .plt-none{background:rgba(120,120,120,.2);color:#999}
-.mtbtn{flex:1;padding:8px 4px;border-radius:var(--rs);border:.5px solid var(--b2);background:var(--s2);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s}
+.mtbtn{flex:1;padding:6px 4px;border-radius:var(--rs);border:.5px solid var(--b2);background:var(--s2);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s}
 .mtbtn.active{background:var(--gold2);border-color:rgba(232,201,122,.5);color:var(--gold);font-weight:600}
 .mtbtn:active{opacity:.7}
 
@@ -830,10 +823,10 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="gh2">Discover</div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Search</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography. Tap the mic icon to search by speaking instead of typing.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Films / Both / Series</span></div><div class="gdesc">Toggle above the search bar &mdash; narrow Discover to movies only, TV series only, or both together. In Both, every card in Your Curation carries a small "Film" or "Series" tag next to its year so a mixed feed stays easy to scan &mdash; the tag drops away in Films-only or Series-only mode since it'd just repeat what the toggle already tells you.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Open by default with the theme tags showing &mdash; tap the "Masters of Cinema" header to collapse or reopen the whole section. Tap a theme to reveal its portraits ("Click on any Theme to reveal Masters"), then tap any thumbnail to open that person's full India-available filmography ("Click on any thumbnail to open Filmography"). Once portraits are showing, tap "Collapse" to hide them again without closing the whole section.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New on Streaming</strong> &mdash; films added to Indian streaming in the last 60 days. Collapsed by default, right below Masters of Cinema &mdash; tap the header to open it, which loads the row and reveals its own Refresh button. If you want recency inside your main feed instead, use the Newest or Newest + Rated sort in Your Curation below.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Liked</span></div><div class="gdesc"><strong>Because You Liked</strong> &mdash; built from crew and cast overlap with your own Liked and Want to Watch titles, not an opaque algorithm: every card names exactly who connects it back ("because you liked X &mdash; also directed by Y" or "also stars Y"), so you can judge the recommendation for yourself instead of just trusting it. Appears once you've Liked or Want-to-Watch'd at least one title; collapsed by default, right below New on Streaming &mdash; tap the header to open it.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Soon</span></div><div class="gdesc"><strong>Upcoming From Who You Liked</strong> &mdash; same idea as Because You Liked, but looking forward: directors, writers, and actors from your Liked/Want to Watch titles who have something with a real, dated release still to come. Each card shows the release month and names exactly who connects it back, same as Because You Liked. Only counts titles with an actual announced date &mdash; "in production" with no date yet isn't shown. Appears once you've Liked or Want-to-Watch'd something; collapsed by default, right below Because You Liked.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Always visible, no tapping required &mdash; the theme tags and the Contemplative theme's portraits show right away. Tap another theme to switch to its portraits, then tap any thumbnail to open that person's full India-available filmography.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Liked</span></div><div class="gdesc"><strong>Because You Liked</strong> &mdash; built from crew and cast overlap with your own Liked and Want to Watch titles, not an opaque algorithm: every card names exactly who connects it back ("because you liked X &mdash; also directed by Y" or "also stars Y"), so you can judge the recommendation for yourself instead of just trusting it. Right below Masters of Cinema. Before you've Liked or Want-to-Watch'd anything, this section shows a short note instead of a grid &mdash; it fills in automatically the moment you mark your first title.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Soon</span></div><div class="gdesc"><strong>Upcoming From Who You Liked</strong> &mdash; same idea as Because You Liked, but looking forward: directors, writers, and actors from your Liked/Want to Watch titles who have something with a real, dated release still to come. Each card shows the release month and names exactly who connects it back, same as Because You Liked. Only counts titles with an actual announced date &mdash; "in production" with no date yet isn't shown. Right below Because You Liked; same empty-state note until you've Liked or Want-to-Watch'd something.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New on Streaming</strong> &mdash; films added to Indian streaming in the last 60 days. Right below Upcoming, above Your Curation &mdash; loads on its own, with its own Refresh button. If you want recency inside your main feed instead, use the Newest or Newest + Rated sort in Your Curation below.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Refresh</span></div><div class="gdesc">Fresh batch for your current filters.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Load Page &darr;</span></div><div class="gdesc">Next page of results &mdash; genuinely new titles.</div></div>
       <div class="grow"><div class="gtag"><span style="display:inline-flex;gap:6px;align-items:center">
@@ -929,7 +922,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Mark Seen</span></div><div class="gdesc">Tap &#10003; on anything you have already watched &mdash; it never appears again in Discover.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Use &#9733; Liked</span></div><div class="gdesc">More Like This on any Liked film surfaces similar India-available titles.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Tap the director</span></div><div class="gdesc">See every film of theirs available in India right now.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">New on Streaming</span></div><div class="gdesc">Collapsed by default &mdash; tap it open the first time to load what just landed, then use its own Refresh for the latest.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">New on Streaming</span></div><div class="gdesc">Always up top now, right above Your Curation &mdash; use its own Refresh for the latest.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Newest + Rated</span></div><div class="gdesc">Best sort for recent acclaimed films.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)"><a class="glink" href="https://letterboxd.com" target="_blank">Letterboxd &rarr;</a></span></div><div class="gdesc">For every film in WatchPick &mdash; especially world cinema, philosophy, and critically acclaimed titles &mdash; tap "View on Letterboxd" on the detail page. Letterboxd uses a 5-star scale rated by nearly 30 million dedicated film watchers. Its scores run colder than the rating you see in WatchPick (a 3.8 on Letterboxd is genuinely good; a 4.2 is exceptional). Read the short reviews &mdash; they are written by people who watch 200+ films a year, not casual viewers. For the genres WatchPick covers, Letterboxd is the most honest measure of whether a film is worth your time.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Save often</span></div><div class="gdesc">Tap Save &uarr; after every marking session &mdash; your list is then safe on all devices.</div></div>
@@ -971,7 +964,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
     <div class="vtranscript" id="vtranscript"></div>
 
     <!-- MEDIA TYPE TOGGLE -->
-    <div id="mediaToggleRow" style="display:flex;gap:6px;padding:0 0 10px;flex-shrink:0">
+    <div id="mediaToggleRow" style="display:flex;gap:6px;padding:0 0 6px;flex-shrink:0">
       <button id="mt-movie" onclick="setMediaType('movie')" class="mtbtn">Films</button>
       <button id="mt-both"  onclick="setMediaType('both')"  class="mtbtn active">Both</button>
       <button id="mt-tv"    onclick="setMediaType('tv')"    class="mtbtn">Series</button>
@@ -980,90 +973,59 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
   <!-- MASTERS OF CINEMA -->
   <div id="masters-sect" class="masters-sect sect-block" style="display:none">
-    <div class="secrow" style="margin-bottom:8px">
-      <div class="masters-toggle open" id="mastersToggle" onclick="toggleMastersSection()" tabindex="0" role="button" aria-expanded="true">
-        <div class="slabel">Masters of Cinema</div>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    <div class="secrow" style="margin-bottom:6px">
+      <div class="slabel">Masters of Cinema</div>
+    </div>
+    <div class="masters-body" id="masters-body">
+      <div class="masters-tags" id="masters-tags"></div>
+      <div class="masters-hint" id="masters-hint">Tap a theme to switch &middot; tap a thumbnail to open their filmography</div>
+      <div class="mscroll" id="masters-scroll"></div>
+    </div>
+  </div>
+
+  <div id="byl-sect" class="sect-block" style="display:none">
+    <div class="secrow" style="margin-bottom:6px">
+      <div class="slabel">Because You Liked</div>
+      <div class="sect-hint" id="bylEmptyHint" style="display:none">Like or Want to Watch a title to unlock this</div>
+    </div>
+    <div class="masters-body" id="byl-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div id="byl-pageinfo" style="font-size:9px;color:var(--t3)"></div>
+        <div class="more" onclick="loadBecauseYouLiked(true)">Refresh</div>
+      </div>
+      <div class="sim-scroll" id="byl-scroll">
+        <div class="loading" style="grid-column:unset;padding:10px 0"><div class="spin"></div></div>
       </div>
     </div>
-    <div class="masters-body open" id="masters-body">
-      <div class="masters-tags" id="masters-tags"></div>
-      <div class="masters-hint" id="masters-hint">Click on any Theme to reveal Masters</div>
-      <div class="masters-subhint" id="masters-subhint" style="display:none">Click on any thumbnail to open Filmography</div>
-      <div class="mscroll" id="masters-scroll" style="display:none"></div>
+  </div>
+
+  <div id="upcoming-sect" class="sect-block" style="display:none">
+    <div class="secrow" style="margin-bottom:6px">
+      <div class="slabel">Upcoming From Who You Liked</div>
+      <div class="sect-hint" id="upcomingEmptyHint" style="display:none">Like or Want to Watch a title to unlock this</div>
+    </div>
+    <div class="masters-body" id="upcoming-body">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:6px">
+        <div class="more" onclick="loadUpcoming(true)">Refresh</div>
+      </div>
+      <div class="sim-scroll" id="upcoming-scroll">
+        <div class="loading" style="grid-column:unset;padding:10px 0"><div class="spin"></div></div>
+      </div>
     </div>
   </div>
 
   <div id="newarrivals-sect" class="sect-block" style="display:none">
-
-    <div class="secrow" style="margin-bottom:8px">
-      <div class="masters-toggle" id="newArrivalsToggle" onclick="toggleNewArrivalsSection()" tabindex="0" role="button" aria-expanded="false">
-        <div class="slabel">New on Streaming · India this month</div>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
+    <div class="secrow" style="margin-bottom:6px">
+      <div class="slabel">New on Streaming &middot; India this month</div>
     </div>
-
     <div class="masters-body" id="newarrivals-body">
-
-      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:6px">
         <div class="more" onclick="loadNewArrivals(true)">Refresh</div>
       </div>
-
       <div class="sim-scroll" id="newarrivals-scroll">
-
-        <div class="loading" style="grid-column:unset;padding:10px 0"><div class="spin"></div></div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  <div id="byl-sect" class="sect-block" style="display:none">
-
-    <div class="secrow" style="margin-bottom:8px">
-      <div class="masters-toggle" id="bylToggle" onclick="toggleBYLSection()" tabindex="0" role="button" aria-expanded="false">
-        <div class="slabel">Because You Liked</div>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-    </div>
-
-    <div class="masters-body" id="byl-body">
-
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div id="byl-pageinfo" style="font-size:9px;color:var(--t3)"></div>
-        <div class="more" onclick="loadBecauseYouLiked(true)">Refresh</div>
-      </div>
-
-      <div class="sim-scroll" id="byl-scroll">
         <div class="loading" style="grid-column:unset;padding:10px 0"><div class="spin"></div></div>
       </div>
-
     </div>
-
-  </div>
-
-  <div id="upcoming-sect" class="sect-block" style="display:none">
-
-    <div class="secrow" style="margin-bottom:8px">
-      <div class="masters-toggle" id="upcomingToggle" onclick="toggleUpcomingSection()" tabindex="0" role="button" aria-expanded="false">
-        <div class="slabel">Upcoming From Who You Liked</div>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-    </div>
-
-    <div class="masters-body" id="upcoming-body">
-
-      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
-        <div class="more" onclick="loadUpcoming(true)">Refresh</div>
-      </div>
-
-      <div class="sim-scroll" id="upcoming-scroll">
-        <div class="loading" style="grid-column:unset;padding:10px 0"><div class="spin"></div></div>
-      </div>
-
-    </div>
-
   </div>
 
   <div class="sect-block" id="curated-sect">
@@ -1921,25 +1883,10 @@ function masterCardImg(m){
     onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://image.tmdb.org/t/p/w185${p}'}else{this.remove()}">`;
 }
 
-// Whole section collapsed by default (screen real estate, especially on phones) — tapping
-// the "Masters of Cinema" header reveals the theme tags. Person cards stay hidden behind a
-// "Click on any Theme to reveal Masters" hint until a theme is actually tapped, so opening
-// the section doesn't itself dump a full row of portraits on screen.
-let mastersSectionOpen=true; // expanded by default — tags + hint show immediately, matching the markup's initial "open" state
-let mastersRevealed=false;
-function toggleMastersSection(){
-  mastersSectionOpen=!mastersSectionOpen;
-  $('masters-body').classList.toggle('open',mastersSectionOpen);
-  $('mastersToggle').classList.toggle('open',mastersSectionOpen);
-  $('mastersToggle').setAttribute('aria-expanded',String(mastersSectionOpen));
-}
-
 function renderMasters(){
   const sect=$('masters-sect');
   const tagsEl=$('masters-tags');
   const scroll=$('masters-scroll');
-  const hint=$('masters-hint');
-  const subhint=$('masters-subhint');
   if(!sect||!tagsEl||!scroll) return;
   // Keep it hidden while searching. S.searchMode itself only flips true after the 400ms
   // debounce in onSearch(), so also check the live input value — it's synchronous and
@@ -1954,35 +1901,9 @@ function renderMasters(){
     `<div class="mtag ${t===mastersActiveTag?'on':''}" onclick="setMasterTag('${t}')">${t}</div>`
   ).join('');
 
-  // The hint slot doubles as a Collapse control once a theme's been revealed: same position,
-  // so there's one obvious place to look whether you're opening or closing the thumbnails —
-  // tapping it just flips mastersRevealed back off, restoring the section to how it looked
-  // before any theme was chosen (tags + hint, no thumbnails), without touching the outer
-  // masters-body/masters-toggle collapse.
-  if(hint){
-    hint.style.display='block';
-    if(mastersRevealed){
-      hint.innerHTML='<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Collapse';
-      hint.classList.add('masters-collapse-link');
-      hint.onclick=toggleMastersReveal;
-      hint.setAttribute('role','button');
-      hint.setAttribute('tabindex','0');
-    } else {
-      hint.textContent='Click on any Theme to reveal Masters';
-      hint.classList.remove('masters-collapse-link');
-      hint.onclick=null;
-      hint.removeAttribute('role');
-      hint.removeAttribute('tabindex');
-    }
-  }
-  // Once thumbnails are showing, a second, non-interactive hint line tells you what tapping one
-  // does — separate from the (interactive) Collapse link above it, so the two never fight for
-  // the same slot.
-  if(subhint) subhint.style.display=mastersRevealed?'block':'none';
-  scroll.style.display=mastersRevealed?'flex':'none';
-  if(!mastersRevealed) return; // don't bother rendering cards until a theme's been tapped
-
-  // Render person cards for active tag (fallback icon shows until a real photo is fetched)
+  // Render person cards for the active tag directly — no tap-to-reveal step, portraits for the
+  // current theme (Contemplative by default) are always visible; tapping another theme tag just
+  // switches which theme's row is showing (fallback icon shows until a real photo is fetched)
   const filtered=MASTERS.filter(m=>m.tag===mastersActiveTag);
   scroll.innerHTML=filtered.map(m=>{
     return `<div class="mcard" data-master-id="${m.id}">
@@ -2011,15 +1932,6 @@ function renderMasters(){
 
 function setMasterTag(tag){
   mastersActiveTag=tag;
-  mastersRevealed=true;
-  renderMasters();
-}
-
-// Collapses the thumbnail reveal back to just the theme tags + hint (the "Collapse" link
-// rendered in the hint slot once a theme's been tapped) — independent of the outer
-// masters-body/masters-toggle section collapse, which stays open.
-function toggleMastersReveal(){
-  mastersRevealed=false;
   renderMasters();
 }
 
@@ -2036,21 +1948,13 @@ document.addEventListener('click',e=>{
 
 
 
-// Collapsed by default: this is a secondary recency signal, not the app's core discovery
-// job — anyone who wants "what's new" can already get it from Sort → Newest inside their own
-// Curation. renderNewArrivalsShell() reveals just the (cheap, no-fetch) toggle header on load;
-// the actual data only fetches the first time someone taps it open, via toggleNewArrivalsSection().
-let newArrivalsSectionOpen=false;
+// Always visible, right above Your Curation — no more tap-to-open. renderNewArrivalsShell()
+// just reveals the (cheap, no-fetch) header; the actual data is kicked off separately by
+// loadAuxSections() once Your Curation itself has rendered, so this doesn't compete with the
+// main feed's own TMDB calls on first paint (see loadAuxSections() near the INIT block).
 function renderNewArrivalsShell(){
   const sect=$('newarrivals-sect');
   if(sect) sect.style.display='block';
-}
-function toggleNewArrivalsSection(){
-  newArrivalsSectionOpen=!newArrivalsSectionOpen;
-  $('newarrivals-body').classList.toggle('open',newArrivalsSectionOpen);
-  $('newArrivalsToggle').classList.toggle('open',newArrivalsSectionOpen);
-  $('newArrivalsToggle').setAttribute('aria-expanded',String(newArrivalsSectionOpen));
-  if(newArrivalsSectionOpen&&!S.newArrivalsLoaded) loadNewArrivals();
 }
 
 async function loadNewArrivals(forceRefresh=false){
@@ -2109,7 +2013,11 @@ async function loadNewArrivals(forceRefresh=false){
 
   results.forEach(addToPool);
 
-  if(!avail.length){sect.style.display='none';return;}
+  if(!avail.length){
+    scroll.innerHTML=`<div style="font-size:10px;color:var(--t3);font-style:italic;padding:6px 0">Nothing new found in the last 60 days — check back soon.</div>`;
+    S.newArrivalsLoaded=true;
+    return;
+  }
 
   S.newArrivalsLoaded=true;
 
@@ -2149,10 +2057,8 @@ async function loadNewArrivals(forceRefresh=false){
 // Recommendations built from crew/cast overlap with your own Liked + Want to Watch titles,
 // rather than TMDB's opaque /recommendations endpoint — deliberately, so every card can carry an
 // honest, specific reason ("because you liked X — also directed by Y") instead of an unexplained
-// suggestion. Collapsed by default and only fetched on first expand, same reasoning as New
-// Arrivals: this fans out into several TMDB calls (credits per seed, then a full filmography per
-// person), so it shouldn't run on every Discover load regardless of whether anyone opens it.
-let bylSectionOpen=false;
+// suggestion. Always visible in the layout (no more tap-to-open), but only fetched once there's
+// something to base it on — see loadAuxSections() near the INIT block for when this actually runs.
 // Ids this rail has EVER put into the shared S.results pool, accumulated across every page it has
 // shown (see rotation below — not just the most recent one). The live re-check further down
 // (guarding against a genuine race with New Arrivals/Discover) must never treat these as "already
@@ -2185,19 +2091,16 @@ let bylSeedWindow=BYL_SEED_BASE;
 let bylPersonCap=BYL_PERSON_BASE;
 function renderBYLShell(){
   const sect=$('byl-sect');
+  const body=$('byl-body');
+  const hint=$('bylEmptyHint');
   if(!sect) return;
-  // Nothing to base recommendations on yet — hide the whole section rather than show an empty
-  // shell. It reappears next time the shell renders (tab switch, refresh) once you've Liked or
-  // Want-to-Watch'd something.
+  // Section itself always shows in the layout now. Until there's something to base a
+  // recommendation on, show a short explanatory note in place of the (would-be-empty) grid
+  // instead of fetching or hiding the whole section.
   const hasSeeds=S.watchlist.some(w=>w.status==='liked'||w.status==='want');
-  sect.style.display=hasSeeds?'block':'none';
-}
-function toggleBYLSection(){
-  bylSectionOpen=!bylSectionOpen;
-  $('byl-body').classList.toggle('open',bylSectionOpen);
-  $('bylToggle').classList.toggle('open',bylSectionOpen);
-  $('bylToggle').setAttribute('aria-expanded',String(bylSectionOpen));
-  if(bylSectionOpen&&!S.bylLoaded) loadBecauseYouLiked();
+  sect.style.display='block';
+  if(body) body.style.display=hasSeeds?'block':'none';
+  if(hint) hint.style.display=hasSeeds?'none':'block';
 }
 
 async function loadBecauseYouLiked(forceRefresh=false){
@@ -2213,7 +2116,7 @@ async function loadBecauseYouLiked(forceRefresh=false){
     .filter(w=>w.status==='liked'||w.status==='want')
     .sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
 
-  if(!eligible.length){ sect.style.display='none'; return; }
+  if(!eligible.length) return; // renderBYLShell() handles the empty-state note; nothing to fetch yet
 
   let seeds=eligible.slice(0,bylSeedWindow);
   let seedKey=seeds.map(s=>s.id).sort((a,b)=>a-b).join(',');
@@ -2301,7 +2204,10 @@ async function loadBecauseYouLiked(forceRefresh=false){
     bylPoolIds=new Set(); bylOffset=0; bylLastSeedKey=null; bylLastTotal=0;
     bylSeedWindow=BYL_SEED_BASE; bylPersonCap=BYL_PERSON_BASE;
     if($('byl-pageinfo')) $('byl-pageinfo').textContent='';
-    sect.style.display='none'; return;
+    bylRenderedItems=[];
+    scroll.innerHTML=`<div style="font-size:10px;color:var(--t3);font-style:italic;padding:6px 0">No related picks found from who you've liked right now.</div>`;
+    S.bylLoaded=true;
+    return;
   }
 
   // A freshly Liked/Want-to-Watch'd title (a changed seed set) jumps back to page 1 so its own
@@ -2327,26 +2233,61 @@ async function loadBecauseYouLiked(forceRefresh=false){
   const pageInfoEl=$('byl-pageinfo');
   if(pageInfoEl) pageInfoEl.textContent=pool.length>BYL_PAGE?`${bylOffset+1}–${bylOffset+page.length} of ${pool.length}`:'';
 
-  scroll.innerHTML=page.map(s=>{
-    const plt=s.platforms[0]; const pc=PLAT[plt];
-    const labels=Object.values(s.avail||{});
-    const avCls=(labels.includes('Stream')||labels.includes('Free'))?'av-stream':'av-rent';
-    const avTxt=(labels.includes('Stream')||labels.includes('Free'))?'Stream':'Rent/Buy';
-    const why=s.__why;
-    const whyText=why.role==='Director'
-      ? `Because you liked ${why.sourceTitle} — also directed by ${why.name}`
-      : `Because you liked ${why.sourceTitle} — also stars ${why.name}`;
-    return`<div class="byl-card" onclick="openDetail(${s.id},'${s.type||'movie'}')">
+  bylRenderedItems=page;
+  renderBYLCardList();
+}
+
+// Builds one Because You Liked card, including the same Want/Liked/Seen/Not-Interested quick
+// actions every Discover card has (cardHTML()) — so a recommendation can be acted on right from
+// the rail, no need to open the detail page first.
+function bylCardHTML(s){
+  const st=S.watchlist.find(w=>w.id===s.id)?.status;
+  const plt=s.platforms[0]; const pc=PLAT[plt];
+  const labels=Object.values(s.avail||{});
+  const avCls=(labels.includes('Stream')||labels.includes('Free'))?'av-stream':'av-rent';
+  const avTxt=(labels.includes('Stream')||labels.includes('Free'))?'Stream':'Rent/Buy';
+  const why=s.__why;
+  const whyText=why.role==='Director'
+    ? `Because you liked ${why.sourceTitle} — also directed by ${why.name}`
+    : `Because you liked ${why.sourceTitle} — also stars ${why.name}`;
+  const stico=st==='liked'?`<div class="cstat" style="background:rgba(232,201,122,.35);color:var(--gold)">★</div>`
+    :st==='seen'?`<div class="cstat" style="background:rgba(100,100,100,.35);color:#888">✓</div>`
+    :st==='hidden'?`<div class="cstat" style="background:rgba(224,85,85,.3);color:#ff9090">N</div>`
+    :st==='want'?`<div class="cstat" style="background:rgba(110,170,212,.3);color:var(--blue)">W</div>`:'';
+  return`<div class="byl-card" onclick="openDetail(${s.id},'${s.type||'movie'}')">
       <div class="byl-pw">
         <div class="scard-fb">${s.type==='tv'?'Series':'Film'}</div>${imgTag(s.poster_path,'w342','')}
         ${pc?`<div class="cplt plt-${plt}" style="top:4px;left:4px;font-size:6px;padding:2px 4px">${pc.label}</div>`:''}
         <div class="cavail ${avCls}" style="bottom:4px;right:4px">${avTxt}</div>
+        ${stico}
       </div>
       <div class="scard-title">${s.title}</div>
       <div class="scard-year">${s.year}${s.rating?` · ★${s.rating}`:''}</div>
       <div class="byl-reason">${whyText}</div>
+      <div class="cbtns">
+        <div class="cbtn ${st==='want'?'want':''}" title="Want to Watch" onclick="event.stopPropagation();setStatus(${s.id},'want')">${ICON_WANT}</div>
+        <div class="cbtn ${st==='liked'?'liked':''}" title="Liked" onclick="event.stopPropagation();setStatus(${s.id},'liked')">${ICON_LIKED}</div>
+        <div class="cbtn ${st==='seen'?'seen':''}" title="Seen" onclick="event.stopPropagation();setStatus(${s.id},'seen')">${ICON_SEEN}</div>
+        <div class="cbtn ${st==='hidden'?'hidden':''}" title="Not Interested" onclick="event.stopPropagation();setStatus(${s.id},'hidden')">${ICON_HIDDEN}</div>
+      </div>
     </div>`;
-  }).join('');
+}
+
+// Re-renders the rail from the already-fetched bylRenderedItems, without a re-fetch — used both
+// for the initial render and to reflect a status change instantly (see setStatus()). Liked, Seen,
+// and Not Interested all quietly drop a card from the rail, same as they do in Discover; Want
+// stays (with its button highlighted), since marking Want to Watch doesn't mean "done with this".
+let bylRenderedItems=[];
+function renderBYLCardList(){
+  const scroll=$('byl-scroll');
+  if(!scroll) return;
+  const seen=seenIds();
+  const visible=bylRenderedItems.filter(i=>!seen.has(i.id));
+  if(!visible.length){
+    scroll.innerHTML=`<div style="font-size:10px;color:var(--t3);font-style:italic;padding:6px 0">No related picks found from who you've liked right now.</div>`;
+    return;
+  }
+  scroll.innerHTML=visible.map(bylCardHTML).join('');
 }
 
 // ════════════ UPCOMING FROM WHO YOU LIKED ════════════
@@ -2359,19 +2300,18 @@ async function loadBecauseYouLiked(forceRefresh=false){
 // an India-availability check (which is meaningless pre-release — nothing has streaming rights
 // yet). Only counts titles with an actual announced date — "in production"/"announced" entries
 // with no date at all are left out on purpose, since there'd be nothing concrete to show.
-let upcomingSectionOpen=false;
 function renderUpcomingShell(){
   const sect=$('upcoming-sect');
+  const body=$('upcoming-body');
+  const hint=$('upcomingEmptyHint');
   if(!sect) return;
+  // Section itself always shows in the layout now — see renderBYLShell() just above for the
+  // same reasoning: a short note in place of the grid until there's a seed to work from, rather
+  // than fetching or hiding the whole section.
   const hasSeeds=S.watchlist.some(w=>w.status==='liked'||w.status==='want');
-  sect.style.display=hasSeeds?'block':'none';
-}
-function toggleUpcomingSection(){
-  upcomingSectionOpen=!upcomingSectionOpen;
-  $('upcoming-body').classList.toggle('open',upcomingSectionOpen);
-  $('upcomingToggle').classList.toggle('open',upcomingSectionOpen);
-  $('upcomingToggle').setAttribute('aria-expanded',String(upcomingSectionOpen));
-  if(upcomingSectionOpen&&!S.upcomingLoaded) loadUpcoming();
+  sect.style.display='block';
+  if(body) body.style.display=hasSeeds?'block':'none';
+  if(hint) hint.style.display=hasSeeds?'none':'block';
 }
 function formatUpcomingDate(dateStr){
   const d=new Date(dateStr+'T00:00:00');
@@ -2390,7 +2330,7 @@ async function loadUpcoming(forceRefresh=false){
     .sort((a,b)=>(b.addedAt||0)-(a.addedAt||0))
     .slice(0,6);
 
-  if(!seeds.length){ sect.style.display='none'; return; }
+  if(!seeds.length) return; // renderUpcomingShell() handles the empty-state note; nothing to fetch yet
 
   scroll.innerHTML=`<div style="padding:10px 0"><div class="spin"></div></div>`;
   S.upcomingLoaded=false;
@@ -2448,24 +2388,64 @@ async function loadUpcoming(forceRefresh=false){
   pool=pool.sort((a,b)=>a.releaseDate.localeCompare(b.releaseDate)).slice(0,20);
   pool.forEach(addToPool);
 
-  if(!pool.length){ sect.style.display='none'; return; }
+  if(!pool.length){
+    upcomingRenderedItems=[];
+    scroll.innerHTML=`<div style="font-size:10px;color:var(--t3);font-style:italic;padding:6px 0">No dated upcoming releases found from who you've liked right now.</div>`;
+    S.upcomingLoaded=true;
+    return;
+  }
   S.upcomingLoaded=true;
 
-  scroll.innerHTML=pool.map(s=>{
-    const why=s.__why;
-    const dateLabel=formatUpcomingDate(s.releaseDate);
-    const whyText=why.role==='Director'
-      ? `Because you liked ${why.sourceTitle} — also directed by ${why.name}`
-      : `Because you liked ${why.sourceTitle} — also stars ${why.name}`;
-    return`<div class="byl-card" onclick="openDetail(${s.id},'${s.type||'movie'}')">
+  upcomingRenderedItems=pool;
+  renderUpcomingCardList();
+}
+
+// Builds one Upcoming card, including the same Want/Liked/Seen/Not-Interested quick actions
+// every Discover card has — Want to Watch here is what feeds the "notify me when available" flow.
+function upcomingCardHTML(s){
+  const st=S.watchlist.find(w=>w.id===s.id)?.status;
+  const why=s.__why;
+  const dateLabel=formatUpcomingDate(s.releaseDate);
+  const whyText=why.role==='Director'
+    ? `Because you liked ${why.sourceTitle} — also directed by ${why.name}`
+    : `Because you liked ${why.sourceTitle} — also stars ${why.name}`;
+  const stico=st==='liked'?`<div class="cstat" style="background:rgba(232,201,122,.35);color:var(--gold)">★</div>`
+    :st==='seen'?`<div class="cstat" style="background:rgba(100,100,100,.35);color:#888">✓</div>`
+    :st==='hidden'?`<div class="cstat" style="background:rgba(224,85,85,.3);color:#ff9090">N</div>`
+    :st==='want'?`<div class="cstat" style="background:rgba(110,170,212,.3);color:var(--blue)">W</div>`:'';
+  return`<div class="byl-card" onclick="openDetail(${s.id},'${s.type||'movie'}')">
       <div class="byl-pw">
         <div class="scard-fb">${s.type==='tv'?'Series':'Film'}</div>${imgTag(s.poster_path,'w342','')}
+        ${stico}
       </div>
       <div class="scard-title">${s.title}</div>
       <div class="scard-year">${dateLabel}</div>
       <div class="byl-reason">${whyText}</div>
+      <div class="cbtns">
+        <div class="cbtn ${st==='want'?'want':''}" title="Want to Watch" onclick="event.stopPropagation();setStatus(${s.id},'want')">${ICON_WANT}</div>
+        <div class="cbtn ${st==='liked'?'liked':''}" title="Liked" onclick="event.stopPropagation();setStatus(${s.id},'liked')">${ICON_LIKED}</div>
+        <div class="cbtn ${st==='seen'?'seen':''}" title="Seen" onclick="event.stopPropagation();setStatus(${s.id},'seen')">${ICON_SEEN}</div>
+        <div class="cbtn ${st==='hidden'?'hidden':''}" title="Not Interested" onclick="event.stopPropagation();setStatus(${s.id},'hidden')">${ICON_HIDDEN}</div>
+      </div>
     </div>`;
-  }).join('');
+}
+
+// Re-renders the rail from the already-fetched upcomingRenderedItems, without a re-fetch — used
+// both for the initial render and to reflect a status change instantly (see setStatus()). Unlike
+// Because You Liked, marking ANY status here — including Want — drops the card: this rail's own
+// fetch-time filter already treats anything already in My List (any status) as "no longer a fresh
+// discovery" (see the liveTracked filter above), so the live view matches what a refetch would show.
+let upcomingRenderedItems=[];
+function renderUpcomingCardList(){
+  const scroll=$('upcoming-scroll');
+  if(!scroll) return;
+  const tracked=new Set(S.watchlist.map(w=>w.id));
+  const visible=upcomingRenderedItems.filter(i=>!tracked.has(i.id));
+  if(!visible.length){
+    scroll.innerHTML=`<div style="font-size:10px;color:var(--t3);font-style:italic;padding:6px 0">No dated upcoming releases found from who you've liked right now.</div>`;
+    return;
+  }
+  scroll.innerHTML=visible.map(upcomingCardHTML).join('');
 }
 
 function baseParams(page, voteMin, langOverride){
@@ -2689,6 +2669,20 @@ async function buildUnifiedQuery(page,lang){
 
 // ════════════ FETCH + ENRICH ════════════
 
+// Single source of truth for "does this item match the currently selected Stream/Rent&Buy/All
+// availability filter" — shared by fetchAndEnrich/fetchAndEnrichTV (applied to freshly-fetched
+// TMDB results) AND by passesDiscoverFilters below (re-applied to items already sitting in
+// S.results, however they got there). Before this existed, only the fetch-time check applied:
+// an item that entered S.results via addToPool() — My List cards, New Arrivals, recommendations,
+// a person's filmography — never had its availability checked at all, so e.g. a Rent/Buy-only
+// title you'd Liked or Want-to-Watch'd could still show up in a Stream-filtered Your Curation
+// grid the next time it rendered, defeating the filter with no error and no obvious cause.
+function matchesAvail(item){
+  if(S.avail==='stream') return Object.values(item.avail||{}).some(v=>v==='Stream'||v==='Free');
+  if(S.avail==='rent') return Object.values(item.avail||{}).some(v=>v==='Rent/Buy');
+  return (item.platforms||[]).length>0;
+}
+
 async function fetchAndEnrich(path, seen){
 
   if(!path) return [];
@@ -2731,11 +2725,7 @@ async function fetchAndEnrich(path, seen){
 
   await Promise.all(items.map(enrich));
 
-  if(S.avail==='stream') items=items.filter(i=>Object.values(i.avail||{}).some(v=>v==='Stream'||v==='Free'));
-
-  else if(S.avail==='rent') items=items.filter(i=>Object.values(i.avail||{}).some(v=>v==='Rent/Buy'));
-
-  else items=items.filter(i=>i.platforms.length>0);
+  items=items.filter(matchesAvail);
 
   return items;
 
@@ -2826,9 +2816,7 @@ async function fetchAndEnrichTV(path, seen){
   }
 
   await Promise.all(items.map(enrich));
-  if(S.avail==='stream') items=items.filter(i=>Object.values(i.avail||{}).some(v=>v==='Stream'||v==='Free'));
-  else if(S.avail==='rent') items=items.filter(i=>Object.values(i.avail||{}).some(v=>v==='Rent/Buy'));
-  else items=items.filter(i=>i.platforms.length>0);
+  items=items.filter(matchesAvail);
   return items;
 }
 
@@ -2987,23 +2975,17 @@ async function refreshDiscover(){
 
   S.prov={};
 
-  // Only refresh New Arrivals if it's actually been opened at least once — it's collapsed by
-  // default now, so most Refresh taps have nothing loaded there to refresh. This also means the
-  // addToPool() race this section can trigger against loadDiscover() (see the liveIds check
-  // below) only comes up for people who've actually looked at New Arrivals, not on every Refresh.
-  if(S.newArrivalsLoaded){
-    S.newArrivalsLoaded=false;
-    loadNewArrivals(true);
-  }
+  // All four sections are always visible now (no more tap-to-open), so Refresh always refreshes
+  // New Arrivals along with the main feed. Because You Liked / Upcoming still only refetch when
+  // there's actually a seed to work from — loadBecauseYouLiked()/loadUpcoming() bail out on their
+  // own otherwise, but checking hasSeeds here avoids even resetting their loaded flag for nothing.
+  S.newArrivalsLoaded=false;
+  loadNewArrivals(true);
 
-  // Same reasoning: only re-fetch "Because You Liked" if it's actually been opened — most
-  // Refresh taps have nothing loaded there yet.
-  if(S.bylLoaded){
+  const hasSeeds=S.watchlist.some(w=>w.status==='liked'||w.status==='want');
+  if(hasSeeds){
     S.bylLoaded=false;
     loadBecauseYouLiked(true);
-  }
-
-  if(S.upcomingLoaded){
     S.upcomingLoaded=false;
     loadUpcoming(true);
   }
@@ -3234,7 +3216,7 @@ document.addEventListener('touchend',e=>{
 // every dynamically-rendered pill/card (disproportionate effort vs. benefit there).
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' '&&e.key!=='Spacebar') return;
-  const el=e.target.closest('.ntab,.filt-btn,.ibtn,.filter-sheet-reset,.filter-sheet-cta-btn,.masters-toggle,.masters-collapse-link');
+  const el=e.target.closest('.ntab,.filt-btn,.ibtn,.filter-sheet-reset,.filter-sheet-cta-btn');
   if(!el) return;
   e.preventDefault();
   el.click();
@@ -3273,10 +3255,10 @@ const TOUR_FULL=[
   {tab:null, sel:'.logo', t:'What is WatchPick', b:'A personal cinema discovery app for India — films and shows filtered by real taste categories, with availability verified across 18 streaming platforms.'},
   {tab:'discover', sel:'#sinput', t:'Search & Voice', b:'Type a title, director, or actor. A gold card means your search matched a person — tap it for their full India filmography. Tap the mic icon to search by speaking instead.'},
   {tab:'discover', sel:'#mediaToggleRow', t:'Films / Both / Series', b:'This toggle narrows Discover to movies only, TV only, or both together. In Both mode, a small Film/Series tag appears on every card in Your Curation so the mixed feed is easy to scan at a glance.'},
-  {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Open by default — tap the header to collapse or reopen the whole section. Tap any theme to reveal its portraits, tap a thumbnail to open that person\'s full filmography, and tap Collapse to hide the portraits again.'},
-  {tab:'discover', sel:'#newarrivals-sect', t:'New on Streaming', b:'Films added to Indian streaming in the last 60 days. Collapsed by default so it doesn\'t stand between Masters of Cinema and Your Curation — tap the header to open it, which loads the row and reveals its own Refresh.'},
-  {tab:'discover', sel:'#byl-sect', t:'Because You Liked', b:'Built from crew and cast overlap with your own Liked and Want to Watch titles, not a black-box algorithm — every card names exactly who connects it back ("because you liked X — also directed by Y"), so you can judge the recommendation yourself. Tap Refresh to page through more picks the same way; once you\'ve seen everything, it widens its search further into your list instead of just repeating. Liking something new jumps back to the freshest page first. Only appears once you\'ve Liked or Want-to-Watch\'d something; collapsed by default like New on Streaming.'},
-  {tab:'discover', sel:'#upcoming-sect', t:'Upcoming From Who You Liked', b:'The same crew/cast connections as Because You Liked, but for what hasn\'t come out yet — a dated, real upcoming release from a director, writer, or actor behind something you Liked or Want to Watch. Collapsed by default, right below Because You Liked.'},
+  {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Always visible, no tapping required — the Contemplative theme\'s portraits show right away. Tap another theme to switch to its portraits, and tap a thumbnail to open that person\'s full filmography.'},
+  {tab:'discover', sel:'#byl-sect', t:'Because You Liked', b:'Built from crew and cast overlap with your own Liked and Want to Watch titles, not a black-box algorithm — every card names exactly who connects it back ("because you liked X — also directed by Y"), so you can judge the recommendation yourself. Tap Refresh to page through more picks the same way; once you\'ve seen everything, it widens its search further into your list instead of just repeating. Liking something new jumps back to the freshest page first. Before you\'ve Liked or Want-to-Watch\'d anything, this shows a short note in place of the grid — it fills in the moment you mark your first title.'},
+  {tab:'discover', sel:'#upcoming-sect', t:'Upcoming From Who You Liked', b:'The same crew/cast connections as Because You Liked, but for what hasn\'t come out yet — a dated, real upcoming release from a director, writer, or actor behind something you Liked or Want to Watch. Right below Because You Liked, with the same empty-state note until you\'ve Liked or Want-to-Watch\'d something.'},
+  {tab:'discover', sel:'#newarrivals-sect', t:'New on Streaming', b:'Films added to Indian streaming in the last 60 days. Right below Upcoming, above Your Curation — loads on its own, with its own Refresh.'},
   {tab:'discover', sel:'#curated-sect', t:'Your Curation', b:'The feed built for you — Sort dropdown and Refresh sit right above it. The Filters button next to Search adds Genres, Language, Sort and Availability filters without leaving Discover.'},
   {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Bookmark (Want), star (Liked), check (Seen), and eye-slash (Not Interested) — right on the poster. Hover an icon on desktop, or long-press on a phone, to see what it means. Liked, Seen, and Not Interested all quietly remove a title from Discover; Liked and Seen can be undone from their chip in My List, while Not Interested needs a fresh search to bring back.'},
   {tab:'watchlist', sel:'#wcontent', t:'My List', b:'Want to Watch is always front and center, with its own sort. Tap the Liked / Seen chips beside the header to peek at those too — Not Interested isn’t listed anywhere; it just shapes what Discover shows you.'},
@@ -3634,9 +3616,15 @@ function passesLang(item){return S.activeLangs.size===0||S.activeLangs.has(item.
 // set. Re-derives the same disabled-genre-id sets loadDiscover's own fetchAndEnrich/
 // fetchAndEnrichTV already use at fetch time — legitimately-fetched items already pass this
 // check trivially, so this only ever additionally excludes items that arrived some other way.
+// Also re-checks availability via matchesAvail (see its own comment above fetchAndEnrich) for
+// the same reason: fetchAndEnrich/fetchAndEnrichTV only enforce the Stream/Rent&Buy filter at
+// the moment of a fresh TMDB fetch, so without repeating that check here too, a Rent/Buy-only
+// item that entered S.results via addToPool() (My List, New Arrivals, recommendations,
+// filmography) would keep showing up in a Stream-filtered grid indefinitely.
 function passesDiscoverFilters(item){
   if(S.mediaType==='movie'&&item.type==='tv') return false;
   if(S.mediaType==='tv'&&item.type==='movie') return false;
+  if(!matchesAvail(item)) return false;
   const table=item.type==='tv'?TV_GENRES:GENRES;
   const active=item.type==='tv'?S.activeTVG:S.activeG;
   const disabledIds=new Set(
@@ -4504,10 +4492,19 @@ function setStatus(id,status){
 
   if(!$('overlay').classList.contains('open'))renderGrid(S.results);
 
-  // Cheap, no-fetch — just reveals the "Because You Liked" header the moment there's something
-  // to base it on (e.g. your first Like or Want), rather than waiting for the next tab switch.
+  // Reveals real content in Because You Liked / Upcoming the moment there's something to base it
+  // on (e.g. your first Like or Want) — renderXShell() swaps the empty-state note for the grid,
+  // loadAuxSections() kicks off the actual fetch, rather than waiting for the next tab switch.
   renderBYLShell();
   renderUpcomingShell();
+  loadAuxSections();
+
+  // Both rails' own cards carry the same quick-action buttons — reflect the status change (and,
+  // for Liked/Seen/Not Interested, the card quietly dropping out of the rail) instantly, without
+  // waiting for a re-fetch. Guarded on *Loaded so this never overwrites an in-progress spinner
+  // before the first fetch has actually landed.
+  if(S.bylLoaded) renderBYLCardList();
+  if(S.upcomingLoaded) renderUpcomingCardList();
 
 }
 
@@ -4966,11 +4963,11 @@ function showTab(t){
 
   document.querySelectorAll('.ntab').forEach(el=>el.classList.toggle('on',el.dataset.tab===t));
 
-  if(t==='watchlist'){renderWatchlist();restoreSyncToken();}
+  if(t==='watchlist'){renderWatchlist();restoreSyncToken();checkWantAvailability();}
 
   if(t==='settings')renderSettings();
 
-  if(t==='discover'){renderGrid(S.results);renderNewArrivalsShell();renderBYLShell();renderUpcomingShell();renderMasters();}
+  if(t==='discover'){renderGrid(S.results);renderNewArrivalsShell();renderBYLShell();renderUpcomingShell();renderMasters();loadAuxSections();}
 
 }
 
@@ -5080,9 +5077,67 @@ function hydrate(){
 
   await loadDiscover(true);
 
+  // Masters of Cinema, New on Streaming, Because You Liked, and Upcoming are all visible in the
+  // layout immediately, but their own TMDB fetches are kicked off only now — after Your Curation
+  // has already rendered — so they don't compete with the main feed's own request volume on first
+  // paint. Not awaited: they fill in a moment later on their own.
+  loadAuxSections();
+
+  // Same reasoning, same timing: check Want to Watch titles' real availability only after
+  // everything above has already had first crack at the connection.
+  checkWantAvailability();
+
   openFromDeepLink();
 
 })();
+
+// Kicks off the background fetches for the three "always visible now" secondary sections. Safe to
+// call repeatedly (tab switches, Liking a title) — loadNewArrivals()/loadBecauseYouLiked()/
+// loadUpcoming() each no-op once already loaded, and the latter two no-op with nothing to fetch
+// until there's at least one Liked/Want-to-Watch title.
+function loadAuxSections(){
+  loadNewArrivals();
+  if(S.watchlist.some(w=>w.status==='liked'||w.status==='want')){
+    loadBecauseYouLiked();
+    loadUpcoming();
+  }
+}
+
+// In-app "now available" check for Want to Watch titles. No push infrastructure exists (or is
+// planned) for this app, so this is the honest version: it only runs while the app is open, at
+// app-start and whenever My List is opened — not on every button tap, to avoid piling more TMDB
+// requests onto the volume concern already flagged elsewhere. Each title is only ever toasted once
+// (availNotified), so re-opening My List doesn't re-announce the same title.
+const WANT_AVAIL_CHECK_CAP=30; // bound the fan-out for anyone with a very long Want to Watch list
+let wantAvailCheckInFlight=false;
+async function checkWantAvailability(){
+  if(wantAvailCheckInFlight) return;
+  const wantItems=S.watchlist.filter(w=>w.status==='want').slice(0,WANT_AVAIL_CHECK_CAP);
+  if(!wantItems.length) return;
+  wantAvailCheckInFlight=true;
+  try{
+    const newlyAvailable=[];
+    await Promise.all(wantItems.map(async w=>{
+      const p=await fetchProviders(w.id,w.type).catch(()=>null);
+      if(!p||!p.any) return;
+      w.platforms=Object.keys(p.plat);
+      w.avail=p.plat;
+      if(!w.availNotified){
+        w.availNotified=true;
+        newlyAvailable.push(w);
+      }
+    }));
+    if(newlyAvailable.length){
+      persist();
+      if($('tab-watchlist').style.display!=='none') renderWatchlist();
+      const names=newlyAvailable.slice(0,2).map(w=>w.title).join(', ');
+      const extra=newlyAvailable.length>2?` +${newlyAvailable.length-2} more`:'';
+      toast(`Now available: ${names}${extra}`);
+    }
+  } finally {
+    wantAvailCheckInFlight=false;
+  }
+}
 
 // ════════════ DEEP LINK ════════════
 // Lets a shared/newsletter URL open a specific title directly, e.g.
