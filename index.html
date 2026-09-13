@@ -405,9 +405,17 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .crew-row{display:flex;flex-wrap:wrap;gap:10px}
 
-.crew-chip{padding:8px 12px;border-radius:var(--rs);background:var(--s2);border:.5px solid var(--b2);cursor:pointer;transition:all .15s;user-select:none}
+.crew-chip{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:var(--rs);background:var(--s2);border:.5px solid var(--b2);cursor:pointer;transition:all .15s;user-select:none}
 
 .crew-chip:active{background:var(--s3)}
+
+.crewthumb{width:32px;height:32px;flex-shrink:0;border-radius:50%;background:var(--s3);overflow:hidden;border:.5px solid var(--b2);position:relative}
+
+.crewthumb img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
+
+.crewthumb img.loaded{opacity:1}
+
+.crewfb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--t2);position:absolute;inset:0}
 
 .crew-role{font-size:8px;color:var(--t3);margin-bottom:1px;text-transform:uppercase;letter-spacing:.5px}
 
@@ -683,6 +691,8 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
   <div class="hbtns">
 
+    <div class="ibtn" id="notifBtn" onclick="openNotifPanel()" title="Notifications" tabindex="0" role="button"><span class="badge" id="notifBadge" style="display:none">0</span></div>
+
     <div class="ibtn" id="themeToggleBtn" onclick="toggleTheme()" title="Switch to Light" tabindex="0" role="button"></div>
 
     <div class="ibtn" id="guideBtn" onclick="openLegend()" title="Guide" tabindex="0" role="button" style="width:auto;padding:0 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Guide</div>
@@ -782,6 +792,17 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
     <button class="tour-next" id="spotNext" onclick="tourNext()">Next →</button>
   </div>
   <button class="tour-skip" onclick="closeTour()">Skip tour</button>
+</div>
+
+<div class="guide-overlay" id="notifOverlay">
+  <div class="guide-hdr">
+    <div class="guide-title">Notifications</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="readmore" style="margin:0" onclick="clearAllNotifications()">Clear all</div>
+      <div class="guide-close" onclick="closeNotifPanel()">&#x2715;</div>
+    </div>
+  </div>
+  <div class="guide-body" id="notifbody"></div>
 </div>
 
 <div class="guide-overlay" id="legendOverlay">
@@ -1494,7 +1515,19 @@ let S={
 
   mediaType:'both',  // 'movie' | 'tv' | 'both'
 
-  activeTVG:new Set(Object.keys(TV_GENRES))
+  activeTVG:new Set(Object.keys(TV_GENRES)),
+
+  // People (cast/crew) you've explicitly favourited from their own page — {id,name,profile_path,
+  // department,addedAt}. Kept entirely separate from S.watchlist (which is titles, not people).
+  // Folded into Because You Liked as extra seed-people (see loadBecauseYouLiked) and surfaced as
+  // their own chip in My List, same pattern as Liked/Seen.
+  favPeople:[],
+
+  // In-app availability alerts for Want to Watch titles — {id,itemId,title,type,ts,read}. type is
+  // 'available' (was nowhere to watch, now is — Rent/Buy or Stream) or 'upgraded' (was Rent/Buy
+  // only, now also streams). Surfaced via the bell/badge in the header (see checkWantAvailability,
+  // pushNotification, openNotifPanel) rather than a one-shot toast.
+  notifications:[]
 
 };
 
@@ -1799,12 +1832,55 @@ function mapItem(r,type){
 
     overview:r.overview||'',rating:r.vote_average?+r.vote_average.toFixed(1):0,
 
+    voteCount:r.vote_count||0,
+
     poster_path:r.poster_path||null,backdrop_path:r.backdrop_path||null,
 
     platforms:[],avail:{},type:r.media_type||type||'movie',
 
     lang:r.original_language||'en',genre_ids:(r.genre_ids||[])};
 
+}
+
+// ════════════ VOTE COUNT vs GENRE+LANGUAGE AVERAGE ════════════
+// "308 Votes / Avg 690" — lets a title's vote count be read in context (a well-voted Bengali drama
+// and a well-voted Hollywood blockbuster don't mean the same thing in raw numbers) instead of as a
+// bare, incomparable number. The "average" is a sampled proxy, not a true population average — TMDB
+// has no endpoint for that — computed from the top-by-vote-count page of titles sharing the same
+// primary genre + original language, cached per (mediaType, genreId, lang) for the session so the
+// same combination is never queried twice.
+const avgVoteCache={};
+async function fetchAvgVoteCount(mediaType,genreId,lang){
+  if(!genreId) return null;
+  const key=`${mediaType}:${genreId}:${lang||''}`;
+  if(key in avgVoteCache) return avgVoteCache[key];
+  try{
+    const params=new URLSearchParams({
+      sort_by:'vote_count.desc',
+      with_genres:String(genreId),
+      include_adult:false,
+      language:'en-US',
+      page:1
+    });
+    if(lang) params.set('with_original_language',lang);
+    const d=await tmdb(`/discover/${mediaType}?${params.toString()}`);
+    const counts=(d.results||[]).map(r=>r.vote_count||0).filter(n=>n>0);
+    const avg=counts.length?Math.round(counts.reduce((a,b)=>a+b,0)/counts.length):null;
+    avgVoteCache[key]=avg;
+    return avg;
+  }catch(e){
+    avgVoteCache[key]=null;
+    return null;
+  }
+}
+// Attaches item.avgVoteCount using the item's primary (first-listed) genre + its original
+// language. Safe to call on anything mapItem() produced — items with no genre_ids just get no
+// average (nothing to compare against), same as items enrich() can't find providers for.
+async function enrichVoteAvg(item){
+  const genreId=(item.genre_ids||[])[0];
+  if(!genreId){ item.avgVoteCount=null; return item; }
+  item.avgVoteCount=await fetchAvgVoteCount(item.type==='tv'?'tv':'movie',genreId,item.lang);
+  return item;
 }
 
 // Single source of truth for how each Sort option orders items — shared by the bulk re-sort a
@@ -1959,6 +2035,34 @@ function renderNewArrivalsShell(){
   if(sect) sect.style.display='block';
 }
 
+// A single "new in the last 60 days" pool for one media type + language (or null for no language
+// restriction). Shared by every pool loadNewArrivals() below fans out into.
+async function fetchNewArrivalsPool(mediaType,lang,voteFloor,fromStr,toStr){
+  const dateField=mediaType==='tv'?'first_air_date':'primary_release_date';
+  const params=new URLSearchParams({
+    sort_by:`${dateField}.desc`,
+    [`${dateField}.gte`]:fromStr,
+    [`${dateField}.lte`]:toStr,
+    'vote_count.gte':voteFloor,
+    watch_region:'IN',
+    with_watch_providers:PROV_IDS,
+    with_watch_monetization_types:'flatrate|ads',
+    include_adult:false,
+    language:'en-US',
+    page:1
+  });
+  if(lang) params.set('with_original_language',lang);
+  const d=await tmdb(`/discover/${mediaType}?${params.toString()}`);
+  return (d.results||[]).filter(r=>r.poster_path).map(r=>mapItem(r,mediaType));
+}
+
+const NEWARRIVALS_INDIAN_LANGS=['hi','ta','te','ml','kn','bn'];
+// Which slice of LANG_ROTATION's International languages this section checks — advances on every
+// load so different refreshes surface different countries' new releases rather than always the
+// exact same handful (keeps per-load request count bounded while still covering the full list
+// over time, same idea as buildWorldCinemaQuery's own rotation above).
+let newArrivalsIntlRotationIdx=0;
+
 async function loadNewArrivals(forceRefresh=false){
 
   const sect=$('newarrivals-sect');
@@ -1980,34 +2084,51 @@ async function loadNewArrivals(forceRefresh=false){
   const today=new Date();
 
   const from=new Date(today); from.setDate(from.getDate()-60);
+  const fromStr=from.toISOString().slice(0,10);
+  const toStr=today.toISOString().slice(0,10);
 
-  const params=new URLSearchParams({
+  const intlSlice=[];
+  for(let i=0;i<4;i++) intlSlice.push(LANG_ROTATION[(newArrivalsIntlRotationIdx+i)%LANG_ROTATION.length]);
+  newArrivalsIntlRotationIdx=(newArrivalsIntlRotationIdx+4)%LANG_ROTATION.length;
 
-    sort_by:'primary_release_date.desc',
+  // Three pools, fetched in parallel and movies+TV both — the old version was /discover/movie
+  // only, with a flat vote_count.gte:30 no matter the language. That structurally favored
+  // English/Hollywood titles: TMDB's India vote data is much sparser for a title in its first 60
+  // days if it's Indian-regional or international, so a real, currently-streaming release could
+  // sit at 3-8 votes for weeks and never clear a 30-vote bar an equivalent Hollywood title clears
+  // on day one. The general pool below keeps that real bar (still meaningfully "new & notable"
+  // for the biggest, most-voted-on titles); the Indian and International pools use a near-zero
+  // floor instead, same reasoning already applied to language-specific Discover queries elsewhere.
+  const [genMovie,genTV,indianMovies,indianTV,intlMovies]=await Promise.all([
+    fetchNewArrivalsPool('movie',null,30,fromStr,toStr),
+    fetchNewArrivalsPool('tv',null,30,fromStr,toStr),
+    Promise.all(NEWARRIVALS_INDIAN_LANGS.map(l=>fetchNewArrivalsPool('movie',l,1,fromStr,toStr))),
+    Promise.all(NEWARRIVALS_INDIAN_LANGS.map(l=>fetchNewArrivalsPool('tv',l,1,fromStr,toStr))),
+    Promise.all(intlSlice.map(l=>fetchNewArrivalsPool('movie',l,1,fromStr,toStr)))
+  ]);
 
-    'primary_release_date.gte':from.toISOString().slice(0,10),
+  const seenIdsHere=new Set();
+  const dedupe=list=>list.filter(i=>{ if(seenIdsHere.has(i.id)) return false; seenIdsHere.add(i.id); return true; });
 
-    'primary_release_date.lte':today.toISOString().slice(0,10),
+  // Interleave round-robin ACROSS pools rather than concatenating them — otherwise Indian and
+  // International titles just end up stuck at the tail of the row behind however many general-pool
+  // titles happened to qualify, which defeats the point of including them at all.
+  const pools=[
+    dedupe(genMovie), dedupe(genTV),
+    dedupe(indianMovies.flat()), dedupe(indianTV.flat()),
+    dedupe(intlMovies.flat())
+  ].filter(p=>p.length);
 
-    'vote_count.gte':30,
+  const merged=[];
+  let anyLeft=pools.some(p=>p.length);
+  while(anyLeft){
+    anyLeft=false;
+    for(const p of pools){
+      if(p.length){ merged.push(p.shift()); if(p.length) anyLeft=true; }
+    }
+  }
 
-    watch_region:'IN',
-
-    with_watch_providers:PROV_IDS,
-
-    with_watch_monetization_types:'flatrate|ads',
-
-    include_adult:false,
-
-    language:'en-US',
-
-    page:1
-
-  });
-
-  const d=await tmdb(`/discover/movie?${params.toString()}`);
-
-  const results=(d.results||[]).filter(r=>r.poster_path).slice(0,14).map(r=>mapItem(r,'movie'));
+  const results=merged.slice(0,30);
 
   await Promise.all(results.map(enrich));
 
@@ -2091,6 +2212,11 @@ const BYL_PERSON_BASE=15, BYL_PERSON_STEP=10, BYL_PERSON_MAX=50;
 const BYL_PER_PERSON_CREDITS=20;
 let bylSeedWindow=BYL_SEED_BASE;
 let bylPersonCap=BYL_PERSON_BASE;
+// A stable key for "what is this rail currently built from" — the Liked/Want seeds AND the
+// favourited people, so either one changing is a genuine seed change (see loadBecauseYouLiked).
+function bylSeedKeyFor(seeds){
+  return seeds.map(s=>s.id).sort((a,b)=>a-b).join(',')+'|fav:'+S.favPeople.map(p=>p.id).sort((a,b)=>a-b).join(',');
+}
 function renderBYLShell(){
   const sect=$('byl-sect');
   const body=$('byl-body');
@@ -2099,7 +2225,7 @@ function renderBYLShell(){
   // Section itself always shows in the layout now. Until there's something to base a
   // recommendation on, show a short explanatory note in place of the (would-be-empty) grid
   // instead of fetching or hiding the whole section.
-  const hasSeeds=S.watchlist.some(w=>w.status==='liked'||w.status==='want');
+  const hasSeeds=S.watchlist.some(w=>w.status==='liked'||w.status==='want')||S.favPeople.length>0;
   sect.style.display='block';
   if(body) body.style.display=hasSeeds?'block':'none';
   if(hint) hint.style.display=hasSeeds?'none':'block';
@@ -2118,10 +2244,15 @@ async function loadBecauseYouLiked(forceRefresh=false){
     .filter(w=>w.status==='liked'||w.status==='want')
     .sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
 
-  if(!eligible.length) return; // renderBYLShell() handles the empty-state note; nothing to fetch yet
+  // Favourited cast/crew (see toggleFavPerson) are a second, independent source of seed-people —
+  // someone can favourite an actor/director with nothing Liked/Want-to-Watch yet and still get
+  // recommendations built from that person's own filmography.
+  if(!eligible.length&&!S.favPeople.length) return; // renderBYLShell() handles the empty-state note; nothing to fetch yet
 
+  // seedKey folds in favourited-people ids too, so favouriting/un-favouriting someone counts as a
+  // real seed change for staleness purposes, same as a fresh Like/Want — see bylSeedKeyFor().
   let seeds=eligible.slice(0,bylSeedWindow);
-  let seedKey=seeds.map(s=>s.id).sort((a,b)=>a-b).join(',');
+  let seedKey=bylSeedKeyFor(seeds);
   const seedsChanged=bylLastSeedKey!==null&&bylLastSeedKey!==seedKey;
 
   // About to run out of pages on an explicit Refresh with the same seeds as last time? Widen the
@@ -2134,7 +2265,7 @@ async function loadBecauseYouLiked(forceRefresh=false){
       if(canGrowSeeds) bylSeedWindow=Math.min(bylSeedWindow+BYL_SEED_STEP,BYL_SEED_MAX,eligible.length);
       if(canGrowPersons) bylPersonCap=Math.min(bylPersonCap+BYL_PERSON_STEP,BYL_PERSON_MAX);
       seeds=eligible.slice(0,bylSeedWindow);
-      seedKey=seeds.map(s=>s.id).sort((a,b)=>a-b).join(',');
+      seedKey=bylSeedKeyFor(seeds);
     }
   }
 
@@ -2163,6 +2294,14 @@ async function loadBecauseYouLiked(forceRefresh=false){
   // about every seed that happened to also connect to them).
   const seenPerson=new Set();
   const personEntries=[];
+  // Favourited people go in FIRST, ahead of the seed-derived ones below — that's what guarantees
+  // "favourite someone, get more recommendations for them" actually holds even once bylPersonCap
+  // is reached, rather than a favourite silently getting crowded out by a long Liked/Want list.
+  S.favPeople.forEach(fp=>{
+    if(seenPerson.has(fp.id)) return;
+    seenPerson.add(fp.id);
+    personEntries.push({id:fp.id, name:fp.name, favSource:true, deptLabel:fp.department});
+  });
   seedCredits.forEach(({seed,people})=>{
     people.forEach(p=>{
       if(seenPerson.has(p.id)) return;
@@ -2193,10 +2332,15 @@ async function loadBecauseYouLiked(forceRefresh=false){
   // Re-check against the LIVE S.results right before finalizing, not just the `seen`/`seedIds`
   // snapshot captured above — New Arrivals or the main Curation feed can push a matching item
   // into S.results while these several rounds of TMDB calls were in flight (same race already
-  // fixed in loadDiscover; the fix here is the same shape). Exception: an id this rail has EVER
-  // put into S.results itself (bylPoolIds) is not "already elsewhere".
+  // fixed in loadDiscover; the fix here is the same shape). Exceptions: an id this rail has EVER
+  // put into S.results itself (bylPoolIds) is not "already elsewhere" — and neither is a title
+  // that only landed in S.results because opening a person's OWN page (the only way to favourite
+  // them) registers their whole filmography via addToPool as a side effect of viewing it. Without
+  // this second exception, favouriting someone would always show zero recommendations for them —
+  // their credits are already sitting in S.results the moment you're on their page to tap the
+  // Favourite button in the first place, long before this rail ever runs.
   const liveIds=new Set(S.results.map(r=>r.id));
-  pool=pool.filter(v=>!liveIds.has(v.id)||bylPoolIds.has(v.id));
+  pool=pool.filter(v=>!liveIds.has(v.id)||bylPoolIds.has(v.id)||v.__why?.favSource);
 
   // Full candidate pool, sorted best-first — kept whole rather than cut down to one page here, so
   // Refresh can page through the rest instead of only ever showing the same top 20.
@@ -2212,13 +2356,15 @@ async function loadBecauseYouLiked(forceRefresh=false){
     return;
   }
 
-  // A freshly Liked/Want-to-Watch'd title (a changed seed set) jumps back to page 1 so its own
-  // recommendations show up right away. Otherwise, an explicit Refresh with the same seeds as last
-  // time advances to the next page — including right after widening the net above, since seedKey
-  // reflects the wider seed set now but seedsChanged (computed before that widening) is still
-  // false, so this still reads as "same recommendation run, next page" rather than "starting over".
-  // Only wraps back to page 1 if there was truly nowhere left to widen into.
-  if(!forceRefresh||bylLastSeedKey===null||seedsChanged){
+  // Page 1 is reserved for the very first time this has ever run (nothing to advance from yet).
+  // Every Refresh after that just moves to the next page — INCLUDING right after a fresh Like or
+  // Want to Watch changed the seed set. That new title's cast/crew are already folded into `pool`
+  // above, so their recommendations are in the mix and will surface as paging continues; they don't
+  // need to yank the whole rail back to the start to be "included". (Previously a changed seed set
+  // reset straight to page 1 — combined with every Like/Want also re-rendering the rail just to
+  // reflect a button state, in practice this made it look like Because You Liked "refreshed back to
+  // Page 1" on nearly every Like/Want tap, which is exactly what was reported.)
+  if(bylLastSeedKey===null){
     bylOffset=0;
   } else {
     bylOffset+=BYL_PAGE;
@@ -2249,9 +2395,11 @@ function bylCardHTML(s){
   const avCls=(labels.includes('Stream')||labels.includes('Free'))?'av-stream':'av-rent';
   const avTxt=(labels.includes('Stream')||labels.includes('Free'))?'Stream':'Rent/Buy';
   const why=s.__why;
-  const whyText=why.role==='Director'
-    ? `Because you liked ${why.sourceTitle} — also directed by ${why.name}`
-    : `Because you liked ${why.sourceTitle} — also stars ${why.name}`;
+  const whyText=why.favSource
+    ? `You favourited ${why.name}${why.deptLabel?` (${why.deptLabel})`:''} — new from them`
+    : why.role==='Director'
+      ? `Because you liked ${why.sourceTitle} — also directed by ${why.name}`
+      : `Because you liked ${why.sourceTitle} — also stars ${why.name}`;
   const stico=st==='liked'?`<div class="cstat" style="background:rgba(232,201,122,.35);color:var(--gold)">★</div>`
     :st==='seen'?`<div class="cstat" style="background:rgba(100,100,100,.35);color:#888">✓</div>`
     :st==='hidden'?`<div class="cstat" style="background:rgba(224,85,85,.3);color:#ff9090">N</div>`
@@ -2283,6 +2431,14 @@ let bylRenderedItems=[];
 function renderBYLCardList(){
   const scroll=$('byl-scroll');
   if(!scroll) return;
+  // setStatus() calls this on EVERY Like/Want/Seen/Not-Interested tap anywhere in the app (not just
+  // on a BYL card itself), just to reflect a button-highlight change or drop a now-seen card. Only
+  // the actual list of cards changes, not which page/scroll-position the user was looking at — so
+  // rebuilding the innerHTML here must not silently snap the rail back to its start. Capture and
+  // restore the horizontal scroll position across the rebuild (this is what most looked like "it
+  // refreshes back to Page 1 every time I Like or Want something" — nothing was actually re-fetched
+  // or re-paged, the row just always visually reset to the left on every single re-render).
+  const prevScrollLeft=scroll.scrollLeft;
   const seen=seenIds();
   const visible=bylRenderedItems.filter(i=>!seen.has(i.id));
   if(!visible.length){
@@ -2290,6 +2446,7 @@ function renderBYLCardList(){
     return;
   }
   scroll.innerHTML=visible.map(bylCardHTML).join('');
+  scroll.scrollLeft=prevScrollLeft;
 }
 
 // ════════════ UPCOMING FROM WHO YOU LIKED ════════════
@@ -2441,6 +2598,9 @@ let upcomingRenderedItems=[];
 function renderUpcomingCardList(){
   const scroll=$('upcoming-scroll');
   if(!scroll) return;
+  // Same fix as renderBYLCardList() above — this is called on every quick-action tap anywhere in
+  // the app, not just on an Upcoming card, so preserve scroll position across the rebuild.
+  const prevScrollLeft=scroll.scrollLeft;
   const tracked=new Set(S.watchlist.map(w=>w.id));
   const visible=upcomingRenderedItems.filter(i=>!tracked.has(i.id));
   if(!visible.length){
@@ -2448,6 +2608,7 @@ function renderUpcomingCardList(){
     return;
   }
   scroll.innerHTML=visible.map(upcomingCardHTML).join('');
+  scroll.scrollLeft=prevScrollLeft;
 }
 
 function baseParams(page, voteMin, langOverride){
@@ -2729,6 +2890,12 @@ async function fetchAndEnrich(path, seen){
 
   items=items.filter(matchesAvail);
 
+  // Fire-and-forget: Votes/Avg is a nice-to-have context stat, not something Your Curation should
+  // ever block rendering on. Kicked off after the avail filter so it only runs for titles that will
+  // actually be shown, then re-renders the grid once it lands (see the .then() below) rather than
+  // holding up the page waiting on it.
+  Promise.all(items.map(enrichVoteAvg)).then(()=>{ if(!S.searchMode) renderGrid(S.results); });
+
   return items;
 
 }
@@ -2819,6 +2986,7 @@ async function fetchAndEnrichTV(path, seen){
 
   await Promise.all(items.map(enrich));
   items=items.filter(matchesAvail);
+  Promise.all(items.map(enrichVoteAvg)).then(()=>{ if(!S.searchMode) renderGrid(S.results); });
   return items;
 }
 
@@ -3146,6 +3314,7 @@ if('serviceWorker' in navigator){
 // ════════════ THEME (Dark default, Light optional) ════════════
 const SUN_SVG='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
 const MOON_SVG='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+const BELL_SVG='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
 
 // ════════════ CARD ACTION ICONS (consistent SVG set, replaces the old W/★/✓/N glyph mix) ════════════
 const ICON_WANT='<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M6 3a1 1 0 0 0-1 1v16a1 1 0 0 0 1.55.83L12 17.1l5.45 3.73A1 1 0 0 0 19 20V4a1 1 0 0 0-1-1z"/></svg>';
@@ -3769,7 +3938,7 @@ function cardHTML(item){
 
       <div class="ctitle">${item.title}</div>
 
-      <div class="cmeta">${typeBadge}<span>${item.year||'–'}</span>${item.lang&&item.lang!=='en'?`<span style="text-transform:uppercase">${item.lang}</span>`:''}${gtags}</div>
+      <div class="cmeta">${typeBadge}<span>${item.year||'–'}</span>${item.lang&&item.lang!=='en'?`<span style="text-transform:uppercase">${item.lang}</span>`:''}${gtags}${(item.voteCount&&item.avgVoteCount)?`<span title="Votes for this title, vs the average for its genre + language">${item.voteCount.toLocaleString('en-IN')} votes/avg ${item.avgVoteCount.toLocaleString('en-IN')}</span>`:''}</div>
 
     </div>
 
@@ -3897,6 +4066,11 @@ async function renderDetailView(id, forceType){
 
   const wl=S.watchlist.find(w=>w.id===id);
 
+  // Votes vs the genre+language average — det.genres is the {id,name} shape a full detail fetch
+  // returns (unlike the lighter genre_ids array mapItem() carries on list/card items).
+  const primaryGenreId=det.genres?.[0]?.id||item.genre_ids?.[0]||null;
+  det.__avgVoteCount=primaryGenreId?await fetchAvgVoteCount((item.type==='tv'||!!det.number_of_seasons)?'tv':'movie',primaryGenreId,det.original_language||item.lang):null;
+
   page.innerHTML=detailHTML(item,det,wl?.status,sims);
 
 }
@@ -3952,7 +4126,11 @@ function detailHTML(item,det,st,sims){
 
   const country=(det.production_countries?.[0]?.iso_3166_1)||(det.origin_country?.[0])||'';
 
-  const votes=det.vote_count?det.vote_count.toLocaleString('en-IN')+' votes':'';
+  const voteCount=det.vote_count||0;
+  // avgVoteCount is fetched and attached BEFORE detailHTML() is called (this function builds
+  // markup synchronously and can't await) — see renderDetailView() where det.__avgVoteCount is set.
+  const avgVoteCount=det.__avgVoteCount||null;
+  const votes=voteCount?`${voteCount.toLocaleString('en-IN')} votes${avgVoteCount?` / avg ${avgVoteCount.toLocaleString('en-IN')}`:''}`:'';
 
   // TV-specific metadata
   const isTVItem=item.type==='tv'||!!det.number_of_seasons;
@@ -4115,9 +4293,11 @@ function detailHTML(item,det,st,sims){
 
     <div class="crew-chip" onclick="openPerson(${p.id})">
 
-      <div class="crew-role">${role}</div>
+      <div class="crewthumb"><div class="crewfb">${initials(p.name)}</div>${imgTag(p.profile_path,'w185','')}</div>
 
-      <div class="crew-name">${p.name} →</div>
+      <div><div class="crew-role">${role}</div>
+
+      <div class="crew-name">${p.name} →</div></div>
 
     </div>`).join('');
 
@@ -4284,6 +4464,124 @@ function setWantSort(s){
   renderWatchlist();
 }
 
+// ── Want to Watch filters ── A separate, lightweight, client-side-only filter for the Want to
+// Watch list itself — deliberately its OWN state (wantFilters), not S.activeG/S.activeLangs/etc.
+// Those drive live TMDB queries for the Discover feed; wiring Want to Watch into the same Sets
+// would mean changing one screen's filters silently changes the other's too. Want to Watch is
+// already a small, already-fetched local list, so this just filters it in memory — no new TMDB
+// calls needed.
+let wantFilters={ mediaType:'both', genres:new Set(), langs:new Set(), platforms:new Set() };
+let wantFiltersOpen=false;
+
+// A combined "genre label → set of TMDB genre ids" map, merging BOTH the movie (GENRES) and TV
+// (TV_GENRES) taxonomies by label — a saved Want to Watch item may be a movie or a series, and
+// TMDB uses different id numbers for some same-named genres between the two (e.g. Thriller), so a
+// single "Thriller" chip needs to match either. Skips the special curated categories with no real
+// tmdbId (Philosophy, World Cinema, Critically Acclaimed, Superhero, Indian Originals, etc.) —
+// there's no genre_id on a saved item to match those against, only a live TMDB query can express them.
+function buildWantGenreMap(){
+  const map={};
+  const add=(label,tmdbId)=>{
+    if(tmdbId==null) return;
+    String(tmdbId).split('|').forEach(idStr=>{
+      const id=+idStr; if(!id) return;
+      if(!map[label]) map[label]=new Set();
+      map[label].add(id);
+    });
+  };
+  Object.values(GENRES).forEach(g=>add(g.label,g.tmdbId));
+  Object.values(TV_GENRES).forEach(g=>add(g.label,g.tmdbId));
+  return map;
+}
+const WANT_GENRE_MAP=buildWantGenreMap();
+
+function applyWantFilters(items){
+  let out=items;
+  if(wantFilters.mediaType!=='both'){
+    out=out.filter(i=>(i.type||'movie')===wantFilters.mediaType);
+  }
+  if(wantFilters.genres.size){
+    const wantedIds=new Set();
+    wantFilters.genres.forEach(label=>(WANT_GENRE_MAP[label]||new Set()).forEach(id=>wantedIds.add(id)));
+    out=out.filter(i=>(i.genre_ids||[]).some(id=>wantedIds.has(id)));
+  }
+  if(wantFilters.langs.size){
+    out=out.filter(i=>wantFilters.langs.has(i.lang));
+  }
+  if(wantFilters.platforms.size){
+    out=out.filter(i=>(i.platforms||[]).some(p=>wantFilters.platforms.has(p)));
+  }
+  return out;
+}
+
+function wantFiltersActive(){
+  return wantFilters.mediaType!=='both'||wantFilters.genres.size>0||wantFilters.langs.size>0||wantFilters.platforms.size>0;
+}
+
+function toggleWantFiltersPanel(){ wantFiltersOpen=!wantFiltersOpen; renderWatchlist(); }
+
+function setWantMediaType(t){ wantFilters.mediaType=t; renderWatchlist(); }
+
+function toggleWantGenre(label){
+  if(wantFilters.genres.has(label)) wantFilters.genres.delete(label); else wantFilters.genres.add(label);
+  renderWatchlist();
+}
+function toggleWantLang(code){
+  if(wantFilters.langs.has(code)) wantFilters.langs.delete(code); else wantFilters.langs.add(code);
+  renderWatchlist();
+}
+function toggleWantPlatform(key){
+  if(wantFilters.platforms.has(key)) wantFilters.platforms.delete(key); else wantFilters.platforms.add(key);
+  renderWatchlist();
+}
+function resetWantFilters(){
+  wantFilters={ mediaType:'both', genres:new Set(), langs:new Set(), platforms:new Set() };
+  renderWatchlist();
+}
+
+// Only offer genre chips for genres that actually appear among your Want to Watch titles (and
+// language/platform chips likewise) — showing all ~25 possible genres when your list only spans
+// three of them is just noise.
+function wantFilterPanelHTML(wantItemsUnfiltered){
+  const presentGenreLabels=new Set();
+  const presentLangs=new Set();
+  const presentPlatforms=new Set();
+  wantItemsUnfiltered.forEach(i=>{
+    (i.genre_ids||[]).forEach(id=>{
+      Object.entries(WANT_GENRE_MAP).forEach(([label,ids])=>{ if(ids.has(id)) presentGenreLabels.add(label); });
+    });
+    if(i.lang) presentLangs.add(i.lang);
+    (i.platforms||[]).forEach(p=>presentPlatforms.add(p));
+  });
+
+  const mtRow=`<div class="fbar-label">Type</div>`+
+    ['both','movie','tv'].map(t=>`<div class="fpill ${wantFilters.mediaType===t?'on':''}" onclick="setWantMediaType('${t}')">${t==='both'?'All':t==='movie'?'Movies':'Series'}</div>`).join('');
+
+  const genreLabels=[...presentGenreLabels].sort();
+  const gRow=genreLabels.length?`<div class="fbar-label">Genre</div>`+
+    genreLabels.map(label=>`<div class="fpill ${wantFilters.genres.has(label)?'on':''}" onclick="toggleWantGenre('${label.replace(/'/g,"\\'")}')">${label}</div>`).join(''):'';
+
+  const allLangEntries=LANGS.flatMap(e=>Array.isArray(e)?[]:e.codes);
+  const langEntries=allLangEntries.filter(([code])=>presentLangs.has(code));
+  const lRow=langEntries.length?`<div class="fbar-label">Language</div>`+
+    langEntries.map(([code,label])=>`<div class="fpill ${wantFilters.langs.has(code)?'on':''}" onclick="toggleWantLang('${code}')">${label}</div>`).join(''):'';
+
+  const platEntries=Object.entries(PLAT).filter(([k])=>presentPlatforms.has(k));
+  const pRow=platEntries.length?`<div class="fbar-label">Platform</div>`+
+    platEntries.map(([k,v])=>`<div class="fpill ${wantFilters.platforms.has(k)?'on':''}" onclick="toggleWantPlatform('${k}')">${v.label}</div>`).join(''):'';
+
+  return `<div class="sect-block" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:9px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:1px">Filter Want to Watch</div>
+      ${wantFiltersActive()?`<div class="filter-sheet-reset" onclick="resetWantFilters()" tabindex="0" role="button">Reset</div>`:''}
+    </div>
+    <div class="fbar-row" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">${mtRow}</div>
+    ${gRow?`<div class="fbar-row" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px">${gRow}</div>`:''}
+    ${lRow?`<div class="fbar-row" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px">${lRow}</div>`:''}
+    ${pRow?`<div class="fbar-row" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px">${pRow}</div>`:''}
+  </div>`;
+}
+
 function setFilmSort(s){
   filmSort=s;
   // Re-render with current person data — stored on page element
@@ -4397,6 +4695,8 @@ async function renderPersonView(personId){
 
           <div class="person-role">${dept}${p.birthday?` · b. ${p.birthday.slice(0,4)}`:''}${p.place_of_birth?` · ${p.place_of_birth.split(',').pop().trim()}`:''}</div>
 
+          <div class="dact ${isFavPerson(p.id)?'on':''}" id="favbtn-${p.id}" style="display:inline-block;width:auto;padding:7px 14px;margin-top:8px" onclick="toggleFavPerson(${p.id},'${p.name.replace(/'/g,"\\'")}','${(p.profile_path||'').replace(/'/g,"\\'")}','${dept.replace(/'/g,"\\'")}')" tabindex="0" role="button">${isFavPerson(p.id)?'★ Favourited':'☆ Favourite'}</div>
+
         </div>
 
       </div>
@@ -4504,6 +4804,51 @@ function stMsg(s){return s==='liked'?'★ Marked as liked':s==='seen'?'✓ Seen 
 
 function removeWL(id){S.watchlist=S.watchlist.filter(w=>w.id!==id);persist();updateBadge();renderWatchlist();toast('Removed');}
 
+// ════════════ FAVOURITE PEOPLE ════════════
+// A person you favourite directly from their own page (see renderPersonView) — kept entirely
+// separate from S.watchlist (that's titles, not people). The only effect this has on the app:
+// their own filmography gets folded into Because You Liked as extra seed-people (see
+// loadBecauseYouLiked), and they get their own collapsible chip in My List, same pattern as the
+// existing Liked/Seen chips — deliberately NOT surfaced inside the main Want to Watch grid, so
+// that list stays exactly as uncluttered as it is today.
+function isFavPerson(id){ return S.favPeople.some(p=>p.id===id); }
+
+function toggleFavPerson(id,name,profile_path,department){
+  const ex=S.favPeople.find(p=>p.id===id);
+  if(ex){
+    S.favPeople=S.favPeople.filter(p=>p.id!==id);
+    toast('Removed from favourites');
+  }else{
+    S.favPeople.push({id,name,profile_path,department:department||'',addedAt:Date.now()});
+    toast(`★ Favourited ${name} — more of their work will surface in Because You Liked`);
+  }
+  persist();
+  refreshFavBtn(id);
+  if($('tab-watchlist').style.display!=='none')renderWatchlist();
+  // A favourited person's filmography isn't in the Because You Liked pool yet — force an actual
+  // refetch (not just a re-render) so their work shows up without waiting for the next unrelated
+  // Refresh tap. Same idea as setStatus() revealing real BYL content the moment there's something
+  // to base it on.
+  renderBYLShell();
+  loadBecauseYouLiked(true);
+}
+
+function removeFavPerson(id){
+  S.favPeople=S.favPeople.filter(p=>p.id!==id);
+  persist();renderWatchlist();
+  renderBYLShell();
+  loadBecauseYouLiked(true);
+  toast('Removed from favourites');
+}
+
+function refreshFavBtn(id){
+  const btn=$('favbtn-'+id);
+  if(!btn) return;
+  const on=isFavPerson(id);
+  btn.className='dact'+(on?' on':'');
+  btn.textContent=on?'★ Favourited':'☆ Favourite';
+}
+
 
 
 // ════════════ WATCHLIST ════════════
@@ -4519,11 +4864,13 @@ function removeWL(id){S.watchlist=S.watchlist.filter(w=>w.id!==id);persist();upd
 // Seen moves it out of Seen and into Liked automatically; there's no separate step needed for that.
 let likedSectionOpen=false;
 let seenSectionOpen=false;
+let favPeopleSectionOpen=false;
 function toggleLikedSection(){ likedSectionOpen=!likedSectionOpen; renderWatchlist(); }
 function toggleSeenSection(){ seenSectionOpen=!seenSectionOpen; renderWatchlist(); }
+function toggleFavPeopleSection(){ favPeopleSectionOpen=!favPeopleSectionOpen; renderWatchlist(); }
 // Tapping the "Want to Watch" label itself is the fast way back — closes both Liked and Seen in
 // one tap instead of having to untoggle each chip individually.
-function showWantOnly(){ likedSectionOpen=false; seenSectionOpen=false; renderWatchlist(); }
+function showWantOnly(){ likedSectionOpen=false; seenSectionOpen=false; favPeopleSectionOpen=false; renderWatchlist(); }
 
 function watchlistCardHTML(item){
   addToPool(item);
@@ -4558,11 +4905,36 @@ function wlInlineBlockHTML(label,items,isOpen){
   </div>`;
 }
 
+// A favourited person's card looks like the crew-chip on a detail page (thumbnail + name) rather
+// than a title card — tapping it opens their filmography (openPerson), and the ✕ unfavourites
+// them directly from My List without having to revisit their page.
+function favPersonCardHTML(p){
+  return`<div class="crew-chip" style="width:100%">
+    <div class="crewthumb" onclick="openPerson(${p.id})" style="cursor:pointer">
+      <div class="crewfb">${initials(p.name)}</div>${imgTag(p.profile_path,'w185','')}
+    </div>
+    <div style="flex:1;cursor:pointer" onclick="openPerson(${p.id})">
+      <div class="crew-role">${p.department||'Favourited'}</div>
+      <div class="crew-name">${p.name} →</div>
+    </div>
+    <span onclick="event.stopPropagation();removeFavPerson(${p.id})" style="color:var(--red);cursor:pointer;font-size:14px;padding:4px">✕</span>
+  </div>`;
+}
+function favPeopleInlineBlockHTML(items,isOpen){
+  if(!isOpen||!items.length) return '';
+  return`<div class="sect-block" style="margin-bottom:14px">
+    <div style="font-size:9px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Favourite Cast &amp; Crew</div>
+    <div style="display:flex;flex-direction:column;gap:8px">${items.map(favPersonCardHTML).join('')}</div>
+  </div>`;
+}
+
 function renderWatchlist(){
 
   const el=$('wcontent');
 
-  if(!S.watchlist.length){
+  const favPeopleItems=[...S.favPeople].sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
+
+  if(!S.watchlist.length&&!favPeopleItems.length){
 
     el.innerHTML=`<div class="empty"><div class="et">Your list is empty</div><div style="font-size:10px;color:var(--t3)">Mark titles from the Discover tab</div></div>`;
 
@@ -4574,9 +4946,11 @@ function renderWatchlist(){
 
   S.watchlist.forEach(w=>gr[w.status]?.push(w));
 
-  // Want to Watch — apply selected sort. This section always renders, front and center, even when
-  // empty — it's the list you're meant to act on, so it never collapses or hides behind a toggle.
-  const sorted=[...gr.want];
+  // Want to Watch — apply the Filter Want to Watch panel first (see wantFilters above), THEN the
+  // selected sort. This section always renders, front and center, even when empty — it's the list
+  // you're meant to act on, so it never collapses or hides behind a toggle.
+  const wantUnfiltered=gr.want;
+  const sorted=applyWantFilters(wantUnfiltered);
   if(wantSort==='added')      sorted.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
   else if(wantSort==='rating') sorted.sort((a,b)=>(b.rating||0)-(a.rating||0));
   else if(wantSort==='year')   sorted.sort((a,b)=>(+b.year||0)-(+a.year||0));
@@ -4600,13 +4974,19 @@ function renderWatchlist(){
 
   // Toggle chips sit in the Want to Watch header row itself (spare space to the right of the
   // title/count) rather than as their own separate section headers further down — tapping one
-  // expands its grid immediately below the header, above the Want to Watch grid.
-  const chipsHTML=wlChipHTML('Liked',likedItems,likedSectionOpen,'toggleLikedSection')
-    +wlChipHTML('Seen',seenItems,seenSectionOpen,'toggleSeenSection');
-  const chipRow=chipsHTML?`<div style="margin-left:auto;display:flex;gap:6px">${chipsHTML}</div>`:'';
+  // expands its grid immediately below the header, above the Want to Watch grid. Filters gets the
+  // same treatment, with an on-state whenever any filter is actually narrowing the list.
+  const filtersChip=wantUnfiltered.length?`<div class="fpill ${wantFiltersOpen||wantFiltersActive()?'on':''}" style="font-size:9px;padding:3px 10px" onclick="event.stopPropagation();toggleWantFiltersPanel()" tabindex="0" role="button" aria-expanded="${wantFiltersOpen}">Filters${wantFiltersActive()?` (${wantItems.length}/${wantUnfiltered.length})`:''}</div>`:'';
+  const chipsHTML=filtersChip
+    +wlChipHTML('Liked',likedItems,likedSectionOpen,'toggleLikedSection')
+    +wlChipHTML('Seen',seenItems,seenSectionOpen,'toggleSeenSection')
+    +wlChipHTML('Favourites',favPeopleItems,favPeopleSectionOpen,'toggleFavPeopleSection');
+  const chipRow=chipsHTML?`<div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">${chipsHTML}</div>`:'';
 
-  const inlineBlocks=wlInlineBlockHTML('Liked',likedItems,likedSectionOpen)
-    +wlInlineBlockHTML('Seen',seenItems,seenSectionOpen);
+  const inlineBlocks=(wantFiltersOpen&&wantUnfiltered.length?wantFilterPanelHTML(wantUnfiltered):'')
+    +wlInlineBlockHTML('Liked',likedItems,likedSectionOpen)
+    +wlInlineBlockHTML('Seen',seenItems,seenSectionOpen)
+    +favPeopleInlineBlockHTML(favPeopleItems,favPeopleSectionOpen);
 
   const wantBlockHTML=wantItems.length
     ? `<div class="wsect">
@@ -4618,7 +4998,7 @@ function renderWatchlist(){
     : `<div class="wsect">
         <div class="whead"><span style="cursor:pointer" onclick="showWantOnly()" tabindex="0" role="button">Want to Watch</span><span class="wcount">0</span>${chipRow}</div>
         ${inlineBlocks}
-        <div class="empty" style="padding:16px 0"><div class="et">Nothing in your watch queue</div><div style="font-size:10px;color:var(--t3)">Mark titles Want to Watch from the Discover tab</div></div>
+        <div class="empty" style="padding:16px 0"><div class="et">${wantFiltersActive()&&wantUnfiltered.length?'No titles match these filters':'Nothing in your watch queue'}</div><div style="font-size:10px;color:var(--t3)">${wantFiltersActive()&&wantUnfiltered.length?'Try Reset in the Filters panel above':'Mark titles Want to Watch from the Discover tab'}</div></div>
       </div>`;
 
   el.innerHTML=wantBlockHTML;
@@ -4783,7 +5163,7 @@ async function syncSave(){
 
   try{
 
-    const data={watchlist:S.watchlist,custom:S.custom,platforms:S.platforms,genres:S.genres,ts:new Date().toISOString()};
+    const data={watchlist:S.watchlist,custom:S.custom,platforms:S.platforms,genres:S.genres,favPeople:S.favPeople,ts:new Date().toISOString()};
 
     const r=await fetch(`${API}?token=${encodeURIComponent(token)}`,{
 
@@ -4843,6 +5223,8 @@ async function syncLoad(){
 
     if(d.genres) S.genres=d.genres;
 
+    if(d.favPeople) S.favPeople=d.favPeople;
+
     Object.keys(PLAT).forEach(k=>{if(S.platforms[k]===undefined)S.platforms[k]=true;});
 
     Object.keys(GENRES).forEach(k=>{if(S.genres[k]===undefined)S.genres[k]=true;});
@@ -4887,7 +5269,7 @@ function restoreSyncToken(){
 
 function exportBackup(){
 
-  const data={watchlist:S.watchlist,platforms:S.platforms,genres:S.genres,custom:S.custom,ts:new Date().toISOString()};
+  const data={watchlist:S.watchlist,platforms:S.platforms,genres:S.genres,custom:S.custom,favPeople:S.favPeople,ts:new Date().toISOString()};
 
   const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
 
@@ -4920,6 +5302,8 @@ function importBackup(e){
       if(d.genres)S.genres=d.genres;
 
       if(d.custom)S.custom=d.custom;
+
+      if(d.favPeople)S.favPeople=d.favPeople;
 
       Object.keys(PLAT).forEach(k=>{if(S.platforms[k]===undefined)S.platforms[k]=true;});
 
@@ -4999,6 +5383,10 @@ function persist(){
 
     localStorage.setItem('wp6_cu',JSON.stringify(S.custom));
 
+    localStorage.setItem('wp6_fp',JSON.stringify(S.favPeople));
+
+    localStorage.setItem('wp6_nt',JSON.stringify(S.notifications));
+
   }catch(e){}
 
 }
@@ -5016,6 +5404,10 @@ function hydrate(){
       const pl=localStorage.getItem(v+'_pl'); if(pl)S.platforms=JSON.parse(pl);
 
       const gl=localStorage.getItem(v+'_gl'); if(gl)S.genres=JSON.parse(gl);
+
+      const fp=localStorage.getItem(v+'_fp'); if(fp)S.favPeople=JSON.parse(fp);
+
+      const nt=localStorage.getItem(v+'_nt'); if(nt)S.notifications=JSON.parse(nt);
 
     });
 
@@ -5049,11 +5441,15 @@ function hydrate(){
 
   updateThemeToggleUI();
 
+  const notifBtnEl=$('notifBtn'); if(notifBtnEl) notifBtnEl.insertAdjacentHTML('afterbegin',BELL_SVG);
+
   hydrate();
 
   renderFbar();
 
   updateBadge();
+
+  updateNotifBadge();
 
 
 
@@ -5095,11 +5491,77 @@ function loadAuxSections(){
   }
 }
 
-// In-app "now available" check for Want to Watch titles. No push infrastructure exists (or is
+// ════════════ NOTIFICATIONS (bell/badge) ════════════
+// A persistent log the user can check anytime, rather than a one-shot toast that's easy to miss —
+// tapping the bell in the header opens the panel; the badge shows the unread count. Kept entirely
+// separate from S.watchlist itself: each entry just references the title by id so tapping it can
+// open the detail page.
+const NOTIF_CAP=50; // keep the log from growing unbounded for a long-running session
+function pushNotification(itemId,title,type,mediaType){
+  S.notifications.unshift({id:`${itemId}-${type}-${Date.now()}`,itemId,title,type,mediaType:mediaType||'movie',ts:Date.now(),read:false});
+  if(S.notifications.length>NOTIF_CAP) S.notifications.length=NOTIF_CAP;
+}
+function updateNotifBadge(){
+  const badge=$('notifBadge'); if(!badge) return;
+  const unread=S.notifications.filter(n=>!n.read).length;
+  badge.textContent=unread>9?'9+':String(unread);
+  badge.style.display=unread?'flex':'none';
+}
+function notifText(n){
+  return n.type==='upgraded'
+    ? `${n.title} — was Rent/Buy, now streaming`
+    : `${n.title} is now available to watch`;
+}
+function notifTimeAgo(ts){
+  const mins=Math.max(1,Math.round((Date.now()-ts)/60000));
+  if(mins<60) return `${mins}m ago`;
+  const hrs=Math.round(mins/60);
+  if(hrs<24) return `${hrs}h ago`;
+  return `${Math.round(hrs/24)}d ago`;
+}
+function renderNotifList(){
+  const body=$('notifbody'); if(!body) return;
+  if(!S.notifications.length){
+    body.innerHTML=`<div class="empty" style="padding:40px 16px"><div class="et">No notifications yet</div><div style="font-size:10px;color:var(--t3)">We'll let you know here when a Want to Watch title becomes available — or moves from Rent/Buy to Streaming.</div></div>`;
+    return;
+  }
+  body.innerHTML=`<div style="padding:12px 16px">`+S.notifications.map(n=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid var(--b1);cursor:pointer" onclick="closeNotifPanel();openDetail(${n.itemId},'${n.mediaType||'movie'}')">
+      <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:${n.read?'transparent':'var(--gold)'}"></div>
+      <div style="flex:1">
+        <div style="font-size:11px;font-weight:500">${notifText(n)}</div>
+        <div style="font-size:9px;color:var(--t3);margin-top:2px">${notifTimeAgo(n.ts)}</div>
+      </div>
+      <span onclick="event.stopPropagation();dismissNotification('${n.id}')" style="color:var(--t3);cursor:pointer;font-size:14px;padding:4px">✕</span>
+    </div>`).join('')+`</div>`;
+}
+function openNotifPanel(){
+  S.notifications.forEach(n=>n.read=true);
+  persist();
+  updateNotifBadge();
+  renderNotifList();
+  $('notifOverlay').classList.add('open');
+  const b=$('notifbody'); if(b) b.scrollTop=0;
+}
+function closeNotifPanel(){ $('notifOverlay').classList.remove('open'); }
+function dismissNotification(id){
+  S.notifications=S.notifications.filter(n=>n.id!==id);
+  persist();updateNotifBadge();renderNotifList();
+}
+function clearAllNotifications(){
+  S.notifications=[];
+  persist();updateNotifBadge();renderNotifList();
+}
+
+// In-app availability check for Want to Watch titles. No push infrastructure exists (or is
 // planned) for this app, so this is the honest version: it only runs while the app is open, at
 // app-start and whenever My List is opened — not on every button tap, to avoid piling more TMDB
-// requests onto the volume concern already flagged elsewhere. Each title is only ever toasted once
-// (availNotified), so re-opening My List doesn't re-announce the same title.
+// requests onto the volume concern already flagged elsewhere. Two distinct alerts, tracked via
+// each item's own availState so a real state CHANGE (not just "still available") is what fires
+// a notification: 'none'→anything is "now available" (Rent/Buy or Stream — the title was nowhere
+// to watch before); 'rentbuy'→'stream' is the upgrade alert (was Rent/Buy only, now streams too).
+// Both land in the bell/badge (see pushNotification above) rather than a one-shot toast that's
+// easy to miss while the app isn't in front of you.
 const WANT_AVAIL_CHECK_CAP=30; // bound the fan-out for anyone with a very long Want to Watch list
 let wantAvailCheckInFlight=false;
 async function checkWantAvailability(){
@@ -5108,23 +5570,39 @@ async function checkWantAvailability(){
   if(!wantItems.length) return;
   wantAvailCheckInFlight=true;
   try{
-    const newlyAvailable=[];
+    let changed=false;
     await Promise.all(wantItems.map(async w=>{
       const p=await fetchProviders(w.id,w.type).catch(()=>null);
-      if(!p||!p.any) return;
-      w.platforms=Object.keys(p.plat);
-      w.avail=p.plat;
-      if(!w.availNotified){
-        w.availNotified=true;
-        newlyAvailable.push(w);
+      if(!p) return;
+      // Only overwrite the item's own platforms/avail once real availability is actually found —
+      // same guard the original one-shot-toast version had. Not just cosmetic: a transient/odd
+      // provider-lookup response with nothing in it should never wipe out platform data a previous
+      // successful check already recorded.
+      if(p.any){
+        w.platforms=Object.keys(p.plat);
+        w.avail=p.plat;
       }
+      const labels=Object.values(p.plat);
+      const newState=(labels.includes('Stream')||labels.includes('Free'))?'stream':(labels.includes('Rent/Buy')?'rentbuy':'none');
+      // Migration for lists saved before availState existed: if the old one-shot flag says this
+      // title was already announced, trust that (no duplicate alert) rather than re-firing;
+      // otherwise treat it as never-seen, same as a brand new Want to Watch title.
+      const prevState=w.availState!==undefined?w.availState:(w.availNotified?newState:'none');
+      if(prevState==='none'&&newState!=='none'){
+        pushNotification(w.id,w.title,'available',w.type);
+        changed=true;
+        w.availNotified=true;
+      }else if(prevState==='rentbuy'&&newState==='stream'){
+        pushNotification(w.id,w.title,'upgraded',w.type);
+        changed=true;
+        w.availNotified=true;
+      }
+      w.availState=newState;
     }));
-    if(newlyAvailable.length){
+    if(changed){
       persist();
+      updateNotifBadge();
       if($('tab-watchlist').style.display!=='none') renderWatchlist();
-      const names=newlyAvailable.slice(0,2).map(w=>w.title).join(', ');
-      const extra=newlyAvailable.length>2?` +${newlyAvailable.length-2} more`:'';
-      toast(`Now available: ${names}${extra}`);
     }
   } finally {
     wantAvailCheckInFlight=false;
