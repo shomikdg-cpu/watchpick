@@ -443,11 +443,17 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .sim-scroll::-webkit-scrollbar{display:none}
 
-.scard{flex-shrink:0;width:88px;cursor:pointer;user-select:none}
+/* Shared rail-card poster size — New Arrivals, Because You Liked, and Upcoming all use this same
+   width/aspect-ratio (standardized together; previously 88px/130px, two different sizes neither
+   of which matched the other) so posters read as one consistent size across every horizontally
+   scrolling rail in the app, close to a Discover/My List grid card's own typical width. */
+:root{--railw:108px}
+
+.scard{flex-shrink:0;width:var(--railw);cursor:pointer;user-select:none}
 
 .scard:active{opacity:.7}
 
-.scard-pw{width:88px;height:132px;border-radius:var(--rs);overflow:hidden;background:var(--s2);position:relative;margin-bottom:5px}
+.scard-pw{width:var(--railw);aspect-ratio:2/3;border-radius:var(--rs);overflow:hidden;background:var(--s2);position:relative;margin-bottom:5px}
 
 .scard-pw img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
 
@@ -455,21 +461,27 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .scard-fb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;inset:0}
 
-.scard-title{font-size:9px;font-weight:500;color:var(--t2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
+/* min-height reserves the full 2-line clamp height even for a one-line title, so this block is
+   always the same size whether the title wraps or not — shared by New Arrivals, Because You
+   Liked, and Upcoming cards (all three reuse this exact class). */
+.scard-title{font-size:9px;font-weight:500;color:var(--t2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35;min-height:2.7em}
 
-.scard-year{font-size:8px;color:var(--t3);margin-top:1px}
+/* Always exactly one line (truncated with an ellipsis if it doesn't fit) — same reasoning as
+   .scard-title above: a fixed-height block regardless of content length. */
+.scard-year{font-size:8px;color:var(--t3);margin-top:1px;line-height:1.3;min-height:1.3em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.byl-card{flex-shrink:0;width:130px;cursor:pointer;user-select:none}
+.byl-card{flex-shrink:0;width:var(--railw);cursor:pointer;user-select:none}
 .byl-card:active{opacity:.7}
-.byl-pw{width:130px;height:195px;border-radius:var(--rs);overflow:hidden;background:var(--s2);position:relative;margin-bottom:5px}
+.byl-pw{width:var(--railw);aspect-ratio:2/3;border-radius:var(--rs);overflow:hidden;background:var(--s2);position:relative;margin-bottom:5px}
 .byl-pw img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
 .byl-pw img.loaded{opacity:1}
 /* A visible "why" caption is the whole point of this row (credibility over a black-box
-   recommendation) — shown in full, not clamped, so the actual reasoning is always readable
-   before the quick-action buttons underneath it. Cards in the row use align-items:stretch
-   (see .sim-scroll), so a longer reason just makes that one card taller; shorter neighbors
-   simply carry a little blank space below their buttons. */
-.byl-reason{font-size:8px;color:var(--t3);margin-top:3px;line-height:1.3}
+   recommendation), but it's now clamped to 2 lines WITH that same space reserved via min-height —
+   so every card's Want/Liked/Seen/Not-Interested row sits at the exact same vertical position
+   regardless of how long that card's own reason text happens to be, in both this rail and
+   Upcoming (they share this identical card template). A longer reason truncates with an ellipsis
+   instead of pushing the buttons down. */
+.byl-reason{font-size:8px;color:var(--t3);margin-top:3px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em}
 
 .person-hero{display:flex;gap:14px;padding:50px 16px 16px;align-items:flex-end}
 
@@ -860,9 +872,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       </span></div><div class="gdesc">Every card has its own quick-action row &mdash; bookmark (Want), star (Liked), check (Seen), eye-slash (Not Interested), right from Discover with no need to open the detail page. Hover any icon on desktop, or long-press it on a touchscreen, to see what it means.</div></div>
       <div class="gh2">My List</div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Shows: Want to Watch</span></div><div class="gdesc">Want to Watch is always front and center here, with its own Sort (Recently Added, Top Rated, Newest, A&ndash;Z) &mdash; it never collapses. Liked and Seen each get a small chip beside the header, showing a count only when that bucket has titles; tap one to expand its grid right above the Want to Watch list, and tap "Want to Watch" itself to collapse both back down in one tap. Not Interested isn't listed anywhere &mdash; it just affects what Discover shows you (see Tag Reference).</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">Sync</span></div><div class="gdesc">Save &uarr; backs your list up online. Load &darr; brings it down on any device.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">Export</span></div><div class="gdesc">Downloads a backup file of your list &mdash; save it to Google Drive or anywhere safe.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">Import</span></div><div class="gdesc">Restores your list from that backup file.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Sync</span></div><div class="gdesc">Save &uarr; backs your list up online. Load &darr; brings it down on any device, using the same passphrase.</div></div>
       <div class="gh2">Platforms &amp; Genres</div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Appearance</span></div><div class="gdesc">Dark (default) or Light theme &mdash; switch here, or with the sun/moon icon in the header. Your choice is remembered on this device.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Platforms</span></div><div class="gdesc">Toggle streaming services on/off. Only enabled platforms appear in Discover.</div></div>
@@ -937,7 +947,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="gstep"><div class="gstep-n">1</div><div class="gstep-body"><div class="gstep-title">Choose a passphrase</div><div class="gstep-desc">Memorable &mdash; e.g. your-name-films-2026. No email or sign-up needed.</div></div></div>
       <div class="gstep"><div class="gstep-n">2</div><div class="gstep-body"><div class="gstep-title">Save &uarr; regularly</div><div class="gstep-desc">Tap Save &uarr; after any marking session. Backs up your full list online.</div></div></div>
       <div class="gstep"><div class="gstep-n">3</div><div class="gstep-body"><div class="gstep-title">Load &darr; on new device</div><div class="gstep-desc">My List &rarr; enter passphrase &rarr; Load &darr;. Full list restored instantly.</div></div></div>
-      <div class="gnote">Passphrase is case-sensitive (capital and lowercase letters count as different). No recovery if forgotten. You can also use Export in My List to save a backup file to Google Drive.</div>
+      <div class="gnote">Passphrase is case-sensitive (capital and lowercase letters count as different). No recovery if forgotten — pick something memorable.</div>
     </div>
     <div class="gsect" id="gs9">
       <div class="gh1">9 &middot; Tips</div>
@@ -1106,15 +1116,16 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
   <!-- SYNC PANEL -->
 
-  <div id="syncpanel" style="background:var(--s2);border:.5px solid var(--b2);border-left:3px solid var(--gold);border-radius:var(--r);padding:12px 12px 12px 14px;margin-bottom:16px">
+  <div id="syncpanel" style="background:var(--s2);border:.5px solid var(--b2);border-left:3px solid var(--gold);border-radius:var(--r);padding:10px 10px 10px 12px;margin-bottom:14px">
 
-    <div style="font-size:11px;font-weight:600;color:var(--t1);margin-bottom:8px">Cloud Sync</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <span style="font-size:11px;font-weight:600;color:var(--t1)">Cloud Sync</span>
+      <span style="font-size:9px;color:var(--t3)">— same passphrase, any device</span>
+    </div>
 
-    <div style="font-size:10px;color:var(--t2);margin-bottom:8px">Enter a passphrase to sync your list across devices. Use the same phrase on any device to access your list.</div>
+    <div style="display:flex;gap:6px;margin-bottom:6px">
 
-    <div style="display:flex;gap:6px;margin-bottom:8px">
-
-      <input class="sinput" type="text" id="synctoken" placeholder="Your passphrase (e.g. shomik-films)" style="flex:1;padding:8px 12px;font-size:12px">
+      <input class="sinput" type="text" id="synctoken" placeholder="Your passphrase (e.g. shomik-films)" style="flex:1;padding:7px 12px;font-size:12px">
 
       <button onclick="syncSave()" style="background:var(--gold);color:#0a0a0a;border:none;border-radius:var(--rs);padding:0 12px;font-weight:600;cursor:pointer;font-size:11px;white-space:nowrap">Save ↑</button>
 
@@ -1124,17 +1135,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
     <div id="syncstatus" style="font-size:10px;color:var(--t3)">Not synced — enter passphrase and tap Save or Load</div>
 
-    <div style="margin-top:10px;padding-top:10px;border-top:.5px solid var(--b1);display:flex;gap:6px">
-
-      <button onclick="exportBackup()" style="flex:1;padding:7px;border-radius:var(--rs);border:.5px solid var(--b2);background:transparent;color:var(--t2);font-size:10px;font-weight:500;cursor:pointer">Export JSON</button>
-
-      <button onclick="triggerImport()" style="flex:1;padding:7px;border-radius:var(--rs);border:.5px solid var(--b2);background:transparent;color:var(--t2);font-size:10px;font-weight:500;cursor:pointer">Import JSON</button>
-
-    </div>
-
   </div>
-
-  <input type="file" id="importfile" accept=".json" style="display:none" onchange="importBackup(event)">
 
   <div id="wcontent"></div>
 
@@ -3429,7 +3430,7 @@ const TOUR_FULL=[
   {tab:'discover', sel:'#curated-sect', t:'Your Curation', b:'The feed built for you — Sort dropdown and Refresh sit right above it. The Filters button next to Search adds Genres, Language, Sort and Availability filters without leaving Discover.'},
   {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Bookmark (Want), star (Liked), check (Seen), and eye-slash (Not Interested) — right on the poster. Hover an icon on desktop, or long-press on a phone, to see what it means. Liked, Seen, and Not Interested all quietly remove a title from Discover; Liked and Seen can be undone from their chip in My List, while Not Interested needs a fresh search to bring back.'},
   {tab:'watchlist', sel:'#wcontent', t:'My List', b:'Want to Watch is always front and center, with its own sort. Tap the Liked / Seen chips beside the header to peek at those too — Not Interested isn’t listed anywhere; it just shapes what Discover shows you.'},
-  {tab:'watchlist', sel:'#syncpanel', t:'Cloud Sync', b:'Set a passphrase here to back your list up online — use the same phrase on any device to load it. Export/Import also saves a backup file you can keep yourself.'},
+  {tab:'watchlist', sel:'#syncpanel', t:'Cloud Sync', b:'Set a passphrase here to back your list up online — use the same phrase on any device to load it.'},
   {tab:'settings', sel:'#ptogs', t:'Platform', b:'Turn streaming services on or off, or pin a specific custom title so it always shows up. Genres are managed from the Filters sheet on Discover, where you actually pick them.'},
   {tab:'discover', sel:'#cgrid .card', t:'The Title Detail Page', b:'Tap any card for the full page — where to watch, trailers, IMDb and Letterboxd links, cast and crew (tap any name for their filmography), and a Did You Know trivia section when there’s something notable.'},
   {tab:null, sel:'#guideBtn', t:'That’s everything', b:'You can reopen this tour anytime from the Guide button in the header.'}
@@ -4978,31 +4979,40 @@ function renderWatchlist(){
   const likedItems=[...gr.liked].sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
   const seenItems=[...gr.seen].sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
 
-  // Toggle chips sit in the Want to Watch header row itself (spare space to the right of the
-  // title/count) rather than as their own separate section headers further down — tapping one
-  // expands its grid immediately below the header, above the Want to Watch grid. Filters gets the
-  // same treatment, with an on-state whenever any filter is actually narrowing the list.
+  // Toggle chips sit just below the Want to Watch title, on their own full-width row, rather than
+  // crammed to the right of the title on one shared line — with four possible chips now
+  // (Filters, Favourites, Liked, Seen) that would get cramped and wrap unpredictably on a phone
+  // width. Their own row wraps cleanly regardless of how many are present. Order is fixed:
+  // Filters, Favourites, Liked, Seen — Filters first since it acts on the grid directly below,
+  // then the three "peek at a set-aside bucket" chips in that sequence. Tapping one expands its
+  // grid immediately below the header, above the Want to Watch grid.
   const filtersChip=wantUnfiltered.length?`<div class="fpill ${wantFiltersOpen||wantFiltersActive()?'on':''}" style="font-size:9px;padding:3px 10px" onclick="event.stopPropagation();toggleWantFiltersPanel()" tabindex="0" role="button" aria-expanded="${wantFiltersOpen}">Filters${wantFiltersActive()?` (${wantItems.length}/${wantUnfiltered.length})`:''}</div>`:'';
   const chipsHTML=filtersChip
+    +wlChipHTML('Favourites',favPeopleItems,favPeopleSectionOpen,'toggleFavPeopleSection')
     +wlChipHTML('Liked',likedItems,likedSectionOpen,'toggleLikedSection')
-    +wlChipHTML('Seen',seenItems,seenSectionOpen,'toggleSeenSection')
-    +wlChipHTML('Favourites',favPeopleItems,favPeopleSectionOpen,'toggleFavPeopleSection');
-  const chipRow=chipsHTML?`<div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">${chipsHTML}</div>`:'';
+    +wlChipHTML('Seen',seenItems,seenSectionOpen,'toggleSeenSection');
+  const chipRow=chipsHTML?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px">${chipsHTML}</div>`:'';
 
   const inlineBlocks=(wantFiltersOpen&&wantUnfiltered.length?wantFilterPanelHTML(wantUnfiltered):'')
+    +favPeopleInlineBlockHTML(favPeopleItems,favPeopleSectionOpen)
     +wlInlineBlockHTML('Liked',likedItems,likedSectionOpen)
-    +wlInlineBlockHTML('Seen',seenItems,seenSectionOpen)
-    +favPeopleInlineBlockHTML(favPeopleItems,favPeopleSectionOpen);
+    +wlInlineBlockHTML('Seen',seenItems,seenSectionOpen);
 
   const wantBlockHTML=wantItems.length
     ? `<div class="wsect">
-        <div class="whead"><span style="cursor:pointer" onclick="showWantOnly()" tabindex="0" role="button">Want to Watch</span><span class="wcount">${wantItems.length}</span>${chipRow}</div>
+        <div class="whead" style="flex-direction:column;align-items:stretch">
+          <div style="display:flex;align-items:center;gap:5px;cursor:pointer" onclick="showWantOnly()" tabindex="0" role="button"><span>Want to Watch</span><span class="wcount">${wantItems.length}</span></div>
+          ${chipRow}
+        </div>
         ${inlineBlocks}
         ${sortBar}
         <div class="grid">${wantItems.map(watchlistCardHTML).join('')}</div>
       </div>`
     : `<div class="wsect">
-        <div class="whead"><span style="cursor:pointer" onclick="showWantOnly()" tabindex="0" role="button">Want to Watch</span><span class="wcount">0</span>${chipRow}</div>
+        <div class="whead" style="flex-direction:column;align-items:stretch">
+          <div style="display:flex;align-items:center;gap:5px;cursor:pointer" onclick="showWantOnly()" tabindex="0" role="button"><span>Want to Watch</span><span class="wcount">0</span></div>
+          ${chipRow}
+        </div>
         ${inlineBlocks}
         <div class="empty" style="padding:16px 0"><div class="et">${wantFiltersActive()&&wantUnfiltered.length?'No titles match these filters':'Nothing in your watch queue'}</div><div style="font-size:10px;color:var(--t3)">${wantFiltersActive()&&wantUnfiltered.length?'Try Reset in the Filters panel above':'Mark titles Want to Watch from the Discover tab'}</div></div>
       </div>`;
@@ -5191,11 +5201,9 @@ async function syncSave(){
 
   }catch(e){
 
-    // Backend not yet deployed — fall back to export
+    toast('Backend not reachable right now — try again in a moment');
 
-    toast('Backend not running — use Export JSON instead');
-
-    if(status) status.textContent='Backend offline — use Export JSON below';
+    if(status) status.textContent='Backend offline — try again in a moment';
 
   }
 
@@ -5247,9 +5255,9 @@ async function syncLoad(){
 
   }catch(e){
 
-    toast('Backend not running — use Import JSON instead');
+    toast('Backend not reachable right now — try again in a moment');
 
-    if(status) status.textContent='Backend offline — use Import JSON below';
+    if(status) status.textContent='Backend offline — try again in a moment';
 
   }
 
@@ -5273,63 +5281,9 @@ function restoreSyncToken(){
 
 
 
-function exportBackup(){
-
-  const data={watchlist:S.watchlist,platforms:S.platforms,genres:S.genres,custom:S.custom,favPeople:S.favPeople,ts:new Date().toISOString()};
-
-  const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-
-  const u=URL.createObjectURL(b); const a=document.createElement('a');
-
-  a.href=u;a.download='watchpick-backup.json';a.click();URL.revokeObjectURL(u);
-
-  toast('✓ Backup downloaded');
-
-}
-
-function triggerImport(){$('importfile').click();}
-
-function importBackup(e){
-
-  const f=e.target.files[0]; if(!f)return;
-
-  const r=new FileReader();
-
-  r.onload=ev=>{
-
-    try{
-
-      const d=JSON.parse(ev.target.result);
-
-      if(d.watchlist)S.watchlist=d.watchlist;
-
-      if(d.platforms)S.platforms=d.platforms;
-
-      if(d.genres)S.genres=d.genres;
-
-      if(d.custom)S.custom=d.custom;
-
-      if(d.favPeople)S.favPeople=d.favPeople;
-
-      Object.keys(PLAT).forEach(k=>{if(S.platforms[k]===undefined)S.platforms[k]=true;});
-
-      Object.keys(GENRES).forEach(k=>{if(S.genres[k]===undefined)S.genres[k]=true;});
-
-      S.activeP=new Set(Object.entries(S.platforms).filter(([,v])=>v).map(([k])=>k));
-
-      S.activeG=new Set(Object.entries(S.genres).filter(([,v])=>v).map(([k])=>k));
-
-      persist();updateBadge();renderWatchlist();renderSettings();renderFbar();
-
-      toast('✓ Backup restored');
-
-    }catch(err){toast('Invalid file');}
-
-  };
-
-  r.readAsText(f); e.target.value='';
-
-}
+// Export/Import JSON was removed from the My List UI (see syncpanel above) — Cloud Sync via
+// passphrase is the one cross-device mechanism now that the app is a real hosted deployment,
+// and the manual JSON download/restore buttons were just adding visual bulk on top of it.
 
 
 
