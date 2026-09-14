@@ -629,7 +629,10 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .wfeat-text b{color:var(--t1);font-size:11px}
 .welcome-btn{width:100%;padding:14px;border-radius:var(--r);background:var(--gold);color:#0a0a0a;font-size:13px;font-weight:700;border:none;cursor:pointer;letter-spacing:.3px}
 .welcome-skip{width:100%;padding:8px;background:transparent;border:none;color:var(--t3);font-size:10px;cursor:pointer;margin-top:6px}
-.spot-block{position:fixed;inset:0;z-index:440;background:transparent;display:none}
+.spot-block{position:fixed;inset:0;z-index:440;background:transparent;display:none;pointer-events:none}
+.tour-resume{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:443;background:var(--gold);color:#0a0a0a;font-size:11px;font-weight:700;letter-spacing:.3px;padding:10px 14px 10px 16px;border-radius:var(--pill);box-shadow:0 8px 28px rgba(0,0,0,.55);display:none;align-items:center;gap:10px;cursor:pointer;user-select:none;max-width:calc(100vw - 32px)}
+.tour-resume-x{font-size:14px;font-weight:400;opacity:.65;line-height:1;padding:2px 2px 2px 6px;border-left:1px solid rgba(0,0,0,.25)}
+.tour-resume-x:hover{opacity:1}
 .spot-hole{position:fixed;z-index:441;border-radius:var(--r);box-shadow:0 0 0 9999px rgba(0,0,0,.78);pointer-events:none;border:2px solid var(--gold);display:none;transition:all .25s ease}
 .spot-callout{position:fixed;z-index:442;background:var(--s1);border:.5px solid var(--b2);border-radius:var(--r);padding:16px;width:min(320px, calc(100vw - 32px));box-shadow:0 8px 32px rgba(0,0,0,.6);display:none;transition:top .25s ease,left .25s ease}
 .tour-dots{display:flex;gap:5px;margin-bottom:14px}
@@ -812,6 +815,10 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   </div>
   <button class="tour-skip" onclick="closeTour()">Skip tour</button>
 </div>
+<div class="tour-resume" id="tourResume" onclick="resumeTourStep()">
+  <span>Tour paused — tap to continue</span>
+  <span class="tour-resume-x" onclick="event.stopPropagation();closeTour()">&#x2715;</span>
+</div>
 
 <div class="guide-overlay" id="notifOverlay">
   <div class="guide-hdr">
@@ -924,6 +931,16 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span class="cplt plt-apple" style="position:static">Apple TV+</span></div><div class="gdesc"><a class="glink" href="https://tv.apple.com" target="_blank">Apple TV+ &rarr;</a></div></div>
       <div class="grow"><div class="gtag"><span class="cplt plt-sonyliv" style="position:static">SonyLIV</span></div><div class="gdesc"><a class="glink" href="https://www.sonyliv.com" target="_blank">SonyLIV India &rarr;</a></div></div>
       <div class="grow"><div class="gtag"><span class="cplt plt-zee5" style="position:static">ZEE5</span></div><div class="gdesc"><a class="glink" href="https://www.zee5.com" target="_blank">ZEE5 India &rarr;</a></div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-sunnxt" style="position:static">Sun NXT</span></div><div class="gdesc"><a class="glink" href="https://www.sunnxt.com" target="_blank">Sun NXT &rarr;</a> &mdash; Tamil, Telugu, Malayalam and Kannada catalog</div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-hoichoi" style="position:static">Hoichoi</span></div><div class="gdesc"><a class="glink" href="https://hoichoi.tv" target="_blank">Hoichoi &rarr;</a> &mdash; Bengali films and series</div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-aha" style="position:static">aha</span></div><div class="gdesc"><a class="glink" href="https://www.aha.video" target="_blank">aha &rarr;</a> &mdash; Telugu catalog</div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-mxplayer" style="position:static">MX Player</span></div><div class="gdesc"><a class="glink" href="https://www.mxplayer.in" target="_blank">MX Player &rarr;</a></div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-lionsgateplay" style="position:static">Lionsgate Play</span></div><div class="gdesc"><a class="glink" href="https://www.lionsgateplay.com" target="_blank">Lionsgate Play &rarr;</a></div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-discoveryplus" style="position:static">Discovery+</span></div><div class="gdesc"><a class="glink" href="https://www.discoveryplus.in" target="_blank">Discovery+ India &rarr;</a></div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-epicon" style="position:static">EPIC ON</span></div><div class="gdesc"><a class="glink" href="https://www.epicon.in" target="_blank">EPIC ON &rarr;</a> &mdash; Indian history and mythology</div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-vimoviesandtv" style="position:static">Vi movies and tv</span></div><div class="gdesc"><a class="glink" href="https://www.myvi.in/vi-movies-and-tv" target="_blank">Vi movies and tv &rarr;</a> &mdash; a 20-app bundle from Vi/Vodafone Idea, not a catalog with its own title pages, so this links to the bundle's info page rather than a search</div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-manoramamax" style="position:static">ManoramaMax</span></div><div class="gdesc"><a class="glink" href="https://www.manoramamax.com" target="_blank">ManoramaMax &rarr;</a> &mdash; Malayalam catalog</div></div>
+      <div class="grow"><div class="gtag"><span class="cplt plt-nfdc" style="position:static">NFDC</span></div><div class="gdesc">"Cinemas of India" &mdash; an NFDC add-on channel inside Prime Video, not a separate app, so this links straight to <a class="glink" href="https://www.primevideo.com/-/en/channel/3964c37b-c97c-4e90-ba16-197e9daa7fb6" target="_blank">that channel on Prime Video &rarr;</a></div></div>
       <div class="gh2">Availability tags</div>
       <div class="grow"><div class="gtag"><span class="cavail av-stream" style="position:static">Stream</span></div><div class="gdesc">Included with subscription &mdash; no extra cost</div></div>
       <div class="grow"><div class="gtag"><span class="cavail av-rent" style="position:static">Rent/Buy</span></div><div class="gdesc">Paid rental or purchase only</div></div>
@@ -955,6 +972,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="gstep"><div class="gstep-n">2</div><div class="gstep-body"><div class="gstep-title">Save &uarr; regularly</div><div class="gstep-desc">Tap Save &uarr; after any marking session. Backs up your full list online.</div></div></div>
       <div class="gstep"><div class="gstep-n">3</div><div class="gstep-body"><div class="gstep-title">Load &darr; on new device</div><div class="gstep-desc">My List &rarr; enter passphrase &rarr; Load &darr;. Full list restored instantly.</div></div></div>
       <div class="gnote">Passphrase is case-sensitive (capital and lowercase letters count as different). No recovery if forgotten — pick something memorable.</div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Collision protection</span></div><div class="gdesc">Anyone using the exact same passphrase would otherwise share the same online record. WatchPick now checks the passphrase before every Save the first time it's used on a device: if it already holds a different list, you'll get a warning with the title count and last-saved time, so you can Cancel and pick another passphrase (or Load &darr; that list instead) rather than accidentally overwriting someone else's.</div></div>
     </div>
     <div class="gsect" id="gs9">
       <div class="gh1">9 &middot; Tips</div>
@@ -3416,7 +3434,10 @@ function dismissWelcome(skip){
   }
 }
 
-// ════════════ GUIDED TOUR (live spotlight) ════════════
+// ════════════ GUIDED TOUR (live, interactive spotlight) ════════════
+// The overlay behind the spotlight never intercepts clicks (.spot-block is pointer-events:none),
+// so the highlighted control — and the rest of the app — stays fully usable while a step is open;
+// see tourGuard below for how it handles the visitor navigating away mid-step.
 // tab: which nav tab must be active for this step's target to exist ('discover'|'watchlist'|'settings'|null=leave as-is)
 // sel: CSS selector of the real element to highlight
 const TOUR_QUICK=[
@@ -3443,22 +3464,65 @@ const TOUR_FULL=[
   {tab:null, sel:'#guideBtn', t:'That’s everything', b:'You can reopen this tour anytime from the Guide button in the header.'}
 ];
 
-let tourSteps=[], tourIdx=0, tourReposition=null;
+let tourSteps=[], tourIdx=0, tourReposition=null, tourNavigating=false;
 function tourWait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+// The tour no longer blocks the page underneath it (see .spot-block, pointer-events:none) —
+// you can tap, scroll, or type in the highlighted section while the callout is up, so the tour
+// is a "look at this, now try it" guide instead of a slideshow. That means a step's target can
+// walk out from under the spotlight at any time: the visitor switches tabs themselves, opens a
+// title's detail page, opens Filters, opens Notifications, opens the Guide panel, etc. tourGuard
+// polls for exactly that and pauses the visuals (without losing tour position) rather than
+// leaving a stale gold ring floating over the wrong screen.
+let tourGuardTimer=null;
+function isAnyBlockingOverlayOpen(){
+  return !!(document.getElementById('overlay')?.classList.contains('open') ||
+    document.getElementById('legendOverlay')?.classList.contains('open') ||
+    document.getElementById('notifOverlay')?.classList.contains('open') ||
+    document.getElementById('filterSheet')?.classList.contains('open'));
+}
+function pauseTourVisuals(){
+  $('spotHole').style.display='none';
+  $('spotCallout').style.display='none';
+  $('tourResume').style.display='flex';
+}
+function resumeTourStep(){
+  $('tourResume').style.display='none';
+  goToTourStep(tourIdx);
+}
+function startTourGuard(){
+  stopTourGuard();
+  tourGuardTimer=setInterval(()=>{
+    if(!tourSteps.length || tourNavigating) return;
+    if($('tourResume').style.display==='flex') return; // already paused — wait for an explicit tap to resume
+    const s=tourSteps[tourIdx];
+    const curTab=document.querySelector('.ntab.on')?.dataset.tab;
+    const tabOk=!s.tab||s.tab===curTab;
+    if(!tabOk||isAnyBlockingOverlayOpen()) pauseTourVisuals();
+  },400);
+}
+function stopTourGuard(){
+  if(tourGuardTimer){ clearInterval(tourGuardTimer); tourGuardTimer=null; }
+}
 
 function openTour(steps){
   tourSteps=steps; tourIdx=0;
   $('spotBlock').style.display='block';
   $('spotHole').style.display='block';
   $('spotCallout').style.display='block';
+  $('tourResume').style.display='none';
+  startTourGuard();
   goToTourStep(0);
 }
 
 async function goToTourStep(i){
   tourIdx=i;
   const s=tourSteps[i];
+  $('tourResume').style.display='none';
+  $('spotHole').style.display='block';
+  $('spotCallout').style.display='block';
   const curTab=document.querySelector('.ntab.on')?.dataset.tab;
-  if(s.tab && curTab!==s.tab){ showTab(s.tab); await tourWait(200); }
+  if(s.tab && curTab!==s.tab){ tourNavigating=true; showTab(s.tab); tourNavigating=false; await tourWait(200); }
 
   let el=null, tries=0;
   while(!el && tries<10){
@@ -3533,6 +3597,8 @@ function closeTour(){
   $('spotBlock').style.display='none';
   $('spotHole').style.display='none';
   $('spotCallout').style.display='none';
+  $('tourResume').style.display='none';
+  stopTourGuard();
   if(tourReposition){ window.removeEventListener('resize',tourReposition); tourReposition=null; }
 }
 
@@ -5174,6 +5240,65 @@ function getSyncToken(){
 
 
 
+// ── Passphrase-collision guard ──────────────────────────────────────────
+// Two people who happen to type the same passphrase would otherwise land on
+// the exact same cloud record, and whoever Saves last silently overwrites
+// the other's list. These helpers track which passphrase(s) THIS device has
+// already verified as safely "its own" (via a successful Load, or a Save
+// the user explicitly confirmed), so Save can peek at the server first and
+// warn before clobbering someone else's data — checked the first time a
+// passphrase is used on this device, and every time after that the remote
+// data doesn't match what's about to be saved.
+
+function isTokenConfirmed(token){
+
+  try{ return (JSON.parse(localStorage.getItem('wp_sync_confirmed')||'[]')).includes(token); }catch(e){ return false; }
+
+}
+
+function markTokenConfirmed(token){
+
+  try{
+
+    const list=JSON.parse(localStorage.getItem('wp_sync_confirmed')||'[]');
+
+    if(!list.includes(token)){ list.push(token); localStorage.setItem('wp_sync_confirmed',JSON.stringify(list.slice(-10))); }
+
+  }catch(e){}
+
+}
+
+// Quiet GET used only to peek at what's already stored under a passphrase before Save
+// would overwrite it. Never toasts/errors on its own — the caller decides what to do.
+
+async function peekSync(token){
+
+  try{
+
+    const r=await fetch(`${API}?token=${encodeURIComponent(token)}`);
+
+    const d=await r.json();
+
+    return (d && !d.error) ? d : null;
+
+  }catch(e){ return null; }
+
+}
+
+function idSet(list){ return new Set((list||[]).map(x=>x.id)); }
+
+function setsDiffer(a,b){
+
+  if(a.size!==b.size) return true;
+
+  for(const x of a) if(!b.has(x)) return true;
+
+  return false;
+
+}
+
+
+
 async function syncSave(){
 
   const token=getSyncToken();
@@ -5181,6 +5306,38 @@ async function syncSave(){
   if(!token){toast('Enter a passphrase first');return;}
 
   const status=$('syncstatus');
+
+  if(!isTokenConfirmed(token)){
+
+    if(status) status.textContent='Checking passphrase…';
+
+    const existing=await peekSync(token);
+
+    if(existing && existing.watchlist && existing.watchlist.length){
+
+      const remoteIds=idSet(existing.watchlist), localIds=idSet(S.watchlist);
+
+      if(setsDiffer(remoteIds,localIds)){
+
+        const when=existing.ts?new Date(existing.ts).toLocaleString('en-IN'):'an earlier date';
+
+        const proceed=confirm(`A list already exists for this passphrase (${existing.watchlist.length} titles, last saved ${when}).\n\nThis doesn't match what's on this device — someone else may already be using this passphrase.\n\nTap OK to overwrite it with this device's list, or Cancel to pick a different passphrase (or tap Load ↓ instead to bring down the existing list).`);
+
+        if(!proceed){
+
+          if(status) status.textContent='Save cancelled — try a different passphrase, or tap Load ↓';
+
+          return;
+
+        }
+
+      }
+
+    }
+
+    markTokenConfirmed(token);
+
+  }
 
   if(status) status.textContent='Saving…';
 
@@ -5255,6 +5412,8 @@ async function syncLoad(){
     S.activeG=new Set(Object.entries(S.genres).filter(([,v])=>v).map(([k])=>k));
 
     persist(); updateBadge(); renderWatchlist(); renderSettings(); renderFbar();
+
+    markTokenConfirmed(token);
 
     toast(`✓ Loaded ${S.watchlist.length} titles from cloud`);
 
