@@ -470,18 +470,25 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
    .scard-title above: a fixed-height block regardless of content length. */
 .scard-year{font-size:8px;color:var(--t3);margin-top:1px;line-height:1.3;min-height:1.3em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.byl-card{flex-shrink:0;width:var(--railw);cursor:pointer;user-select:none}
+/* A flex column, not just a block: .sim-scroll (the row) already stretches every card to match
+   the tallest sibling's height (flex's default align-items:stretch), and now that this card is a
+   column itself, that extra height is real space inside it — which .cbtns below claims via
+   margin-top:auto. So the reason text is always shown in full (never clamped/truncated), and the
+   button row still lines up at a consistent height across every card in the rail: on a card whose
+   own content is shorter than the tallest one, blank space opens up above the buttons instead of
+   the text being cut off. */
+.byl-card{flex-shrink:0;width:var(--railw);cursor:pointer;user-select:none;display:flex;flex-direction:column}
 .byl-card:active{opacity:.7}
 .byl-pw{width:var(--railw);aspect-ratio:2/3;border-radius:var(--rs);overflow:hidden;background:var(--s2);position:relative;margin-bottom:5px}
 .byl-pw img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;transition:opacity .3s;opacity:0}
 .byl-pw img.loaded{opacity:1}
 /* A visible "why" caption is the whole point of this row (credibility over a black-box
-   recommendation), but it's now clamped to 2 lines WITH that same space reserved via min-height —
-   so every card's Want/Liked/Seen/Not-Interested row sits at the exact same vertical position
-   regardless of how long that card's own reason text happens to be, in both this rail and
-   Upcoming (they share this identical card template). A longer reason truncates with an ellipsis
-   instead of pushing the buttons down. */
-.byl-reason{font-size:8px;color:var(--t3);margin-top:3px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em}
+   recommendation) — always shown in full, never truncated. Because .byl-card is a flex column and
+   its row (.sim-scroll) stretches every card to the tallest sibling's height, .cbtns' margin-top:auto
+   below pushes the button row down to a consistent position across the rail regardless of how long
+   this text is, in both this rail and Upcoming (they share this identical card template). */
+.byl-reason{font-size:8px;color:var(--t3);margin-top:3px;line-height:1.3}
+.byl-card .cbtns{margin-top:auto}
 
 .person-hero{display:flex;gap:14px;padding:50px 16px 16px;align-items:flex-end}
 
