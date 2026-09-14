@@ -2432,15 +2432,21 @@ function renderBYLCardList(){
   const scroll=$('byl-scroll');
   if(!scroll) return;
   // setStatus() calls this on EVERY Like/Want/Seen/Not-Interested tap anywhere in the app (not just
-  // on a BYL card itself), just to reflect a button-highlight change or drop a now-seen card. Only
-  // the actual list of cards changes, not which page/scroll-position the user was looking at — so
-  // rebuilding the innerHTML here must not silently snap the rail back to its start. Capture and
+  // on a BYL card itself), just to reflect a button-highlight change or drop a now-actioned card.
+  // Only the actual list of cards changes, not which page/scroll-position the user was looking at —
+  // so rebuilding the innerHTML here must not silently snap the rail back to its start. Capture and
   // restore the horizontal scroll position across the rebuild (this is what most looked like "it
   // refreshes back to Page 1 every time I Like or Want something" — nothing was actually re-fetched
   // or re-paged, the row just always visually reset to the left on every single re-render).
+  //
+  // ALL FOUR quick actions drop a card here — Want to Watch included: once you've actioned a
+  // recommendation in any way, it's no longer something this rail needs to keep suggesting (Want
+  // to Watch already has it queued in My List, so it doesn't need to also keep occupying a slot
+  // here). This was a deliberate change from an earlier version where Want alone stayed visible —
+  // Shomik asked for Want to drop out too, same as Liked/Seen/Not Interested already did.
   const prevScrollLeft=scroll.scrollLeft;
-  const seen=seenIds();
-  const visible=bylRenderedItems.filter(i=>!seen.has(i.id));
+  const actioned=new Set(S.watchlist.map(w=>w.id));
+  const visible=bylRenderedItems.filter(i=>!actioned.has(i.id));
   if(!visible.length){
     scroll.innerHTML=`<div style="font-size:10px;color:var(--t3);font-style:italic;padding:6px 0">No related picks found from who you've liked right now.</div>`;
     return;
