@@ -3832,17 +3832,31 @@ function fitTargetAboveSheet(el){
   const callout=$('spotCallout');
   const r0=el.getBoundingClientRect();
 
+  // The Discover tab's search/filter/media-toggle bar (.discover-sticky-hdr) stays pinned to the
+  // top of the scroll area (position:sticky, z-index 50) over whatever's scrolled underneath it.
+  // Section-level steps (Masters of Cinema, Because You Liked, etc.) target the WHOLE section,
+  // including its own top-of-section label — without reserving this bar's height, a target could
+  // get centered or top-aligned right into the zone the bar already covers, so the target's own
+  // header sits invisibly behind it while only the content further down (e.g. the thumbnails below
+  // "Masters of Cinema") is actually visible. Reported: the tour "takes you to the thumbnails"
+  // without ever showing the section header it's supposedly highlighting. Reserving the bar's
+  // height here — same idea as the bottom sheet's reserved space — keeps every section's own
+  // header inside the visible area, never tucked under it.
+  const stickyHdr=document.querySelector('.discover-sticky-hdr');
+  const topReserve=(stickyHdr && stickyHdr.offsetParent!==null && getComputedStyle(stickyHdr).position==='sticky' && !stickyHdr.contains(el))
+    ? Math.max(0,stickyHdr.getBoundingClientRect().bottom) : 0;
+
   if(!calloutUserExpanded){
     const wasCollapsed=callout.classList.contains('collapsed');
     if(wasCollapsed) callout.classList.remove('collapsed'); // measure the full (expanded) size first
     const fullSheetH=callout.offsetHeight;
-    const fitsExpanded=r0.height<=(window.innerHeight-fullSheetH)-24;
+    const fitsExpanded=r0.height<=(window.innerHeight-fullSheetH-topReserve)-24;
     callout.classList.toggle('collapsed', !fitsExpanded);
   }
 
   const sheetH=callout.offsetHeight||0;
-  const availH=window.innerHeight-sheetH;
-  const targetTop=r0.height<=availH-24 ? (availH-r0.height)/2 : 16;
+  const availH=window.innerHeight-sheetH-topReserve;
+  const targetTop=topReserve+(r0.height<=availH-24 ? (availH-r0.height)/2 : 16);
   const delta=r0.top-targetTop;
   const scrollParent=findScrollParent(el);
   const spIsWindow=scrollParent===document.scrollingElement||scrollParent===document.documentElement;
