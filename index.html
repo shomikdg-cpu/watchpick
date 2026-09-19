@@ -637,17 +637,37 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .tour-resume-x{font-size:14px;font-weight:400;opacity:.65;line-height:1;padding:2px 2px 2px 6px;border-left:1px solid rgba(0,0,0,.25)}
 .tour-resume-x:hover{opacity:1}
 .spot-hole{position:fixed;z-index:441;border-radius:var(--r);box-shadow:0 0 0 9999px rgba(0,0,0,.78);pointer-events:none;border:2px solid var(--gold);display:none;transition:all .25s ease}
-.spot-callout{position:fixed;z-index:442;background:var(--s1);border:.5px solid var(--b2);border-radius:var(--r);padding:16px;width:min(320px, calc(100vw - 32px));box-shadow:0 8px 32px rgba(0,0,0,.6);display:none;transition:top .25s ease,left .25s ease}
-.tour-dots{display:flex;gap:5px;margin-bottom:14px}
+/* Docked bottom sheet, not a floating card that repositions above/below the target — a callout
+   that moves to wherever "fits" can end up taller than the gap around the target (long steps like
+   Because You Liked / Masters of Cinema), which then physically overlaps and covers the very
+   section it's explaining. Anchoring it to the bottom at a capped height removes that failure mode
+   entirely: the sheet's position and max size never depend on the target, so it can never cover it —
+   the target instead scrolls into the space that's left above the sheet (see goToTourStep). Long
+   text scrolls inside .spot-callout-body rather than growing the sheet without bound. */
+.spot-callout{position:fixed;left:0;right:0;bottom:0;z-index:442;background:var(--s1);border-top:.5px solid var(--b2);border-radius:16px 16px 0 0;box-shadow:0 -10px 32px rgba(0,0,0,.55);display:none;flex-direction:column;max-height:46vh;padding-top:12px;transition:none}
+.spot-callout-head{padding:0 18px 6px;flex:0 0 auto}
+/* Auto-applied by fitTargetAboveSheet() when the highlighted section is tall enough that even a
+   top-aligned fit would leave part of it sitting behind a full-size sheet (a busy Your Curation
+   grid, a long Because You Liked row, etc.) — collapsing to just this head + the footer nav frees
+   most of the screen for the hole instead. The description is one tap away, not gone. */
+.spot-callout.collapsed .spot-callout-body{display:none}
+.spot-callout.collapsed .spot-callout-head{cursor:pointer}
+.tour-expand-hint{display:none;font-size:10px;color:var(--t3);margin-top:2px}
+.spot-callout.collapsed .tour-expand-hint{display:block}
+.spot-callout-body{flex:1 1 auto;overflow-y:auto;padding:0 18px;-webkit-overflow-scrolling:touch;min-height:0}
+.spot-callout-footer{flex:0 0 auto;padding:10px 18px calc(12px + env(safe-area-inset-bottom));border-top:.5px solid var(--b2);margin-top:8px}
+.tour-dots{display:flex;gap:5px;margin-bottom:10px}
 .tour-dot{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:all .15s}
 .tour-dot.on{background:var(--gold);width:14px;border-radius:3px}
 .tour-count{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.tour-title{font-size:16px;font-weight:700;color:var(--t1);margin-bottom:8px;font-family:'Playfair Display',serif}
-.tour-text{font-size:12px;color:var(--t2);line-height:1.55;margin-bottom:20px}
+.tour-title{font-size:16px;font-weight:700;color:var(--t1);margin-bottom:2px;font-family:'Playfair Display',serif}
+.tour-text{font-size:12px;color:var(--t2);line-height:1.55;padding:8px 0 14px}
 .tour-nav{display:flex;gap:8px}
 .tour-back{padding:12px 16px;border-radius:var(--r);background:transparent;border:.5px solid var(--b2);color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;user-select:none}
 .tour-next{flex:1;padding:12px;border-radius:var(--r);background:var(--gold);color:#0a0a0a;font-size:13px;font-weight:700;border:none;cursor:pointer}
-.tour-skip{width:100%;padding:8px;background:transparent;border:none;color:var(--t3);font-size:10px;cursor:pointer;margin-top:8px}
+.tour-links-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.tour-goto{padding:6px 2px;background:transparent;border:none;color:var(--gold);font-size:10.5px;font-weight:700;cursor:pointer;letter-spacing:.2px}
+.tour-skip{padding:6px 2px;background:transparent;border:none;color:var(--t3);font-size:10px;cursor:pointer}
 .tour-launch{margin:0 0 14px;padding:11px;border-radius:var(--rs);background:var(--gold2);border:.5px solid var(--gold);color:var(--gold);font-size:11px;font-weight:700;text-align:center;cursor:pointer;flex-shrink:0}
 .guide-overlay.open{display:flex}
 .guide-hdr{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--b2);flex-shrink:0;background:var(--s1)}
@@ -670,6 +690,9 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .gdesc{font-size:11px;color:var(--t2);line-height:1.55;flex:1}
 .glink{color:var(--gold);text-decoration:none;font-weight:500}
 .glink:active{opacity:.7}
+.gtour-jump{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:20px;background:var(--gold2);border:.5px solid var(--gold);color:var(--gold);font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap;vertical-align:middle}
+.gtour-jump:active{opacity:.7}
+.gh1 .gtour-jump{font-size:10px;padding:3px 9px}
 .gnote{background:var(--s2);border:.5px solid var(--b2);border-radius:var(--rs);padding:9px 12px;font-size:11px;color:var(--t3);line-height:1.6;margin:8px 0;border-left:2px solid var(--gold)}
 .gstep{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
 .gstep-n{width:22px;height:22px;border-radius:50%;background:var(--gold);color:#0a0a0a;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
@@ -808,15 +831,25 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 <div class="spot-block" id="spotBlock"></div>
 <div class="spot-hole" id="spotHole"></div>
 <div class="spot-callout" id="spotCallout">
-  <div class="tour-dots" id="spotDots"></div>
-  <div class="tour-count" id="spotCount"></div>
-  <div class="tour-title" id="spotTitle"></div>
-  <div class="tour-text" id="spotText"></div>
-  <div class="tour-nav">
-    <div class="tour-back" id="spotBack" onclick="tourBack()">Back</div>
-    <button class="tour-next" id="spotNext" onclick="tourNext()">Next →</button>
+  <div class="spot-callout-head" id="spotHead" onclick="toggleCalloutCollapse()">
+    <div class="tour-dots" id="spotDots"></div>
+    <div class="tour-count" id="spotCount"></div>
+    <div class="tour-title" id="spotTitle"></div>
+    <div class="tour-expand-hint">Tap for details &#8964;</div>
   </div>
-  <button class="tour-skip" onclick="closeTour()">Skip tour</button>
+  <div class="spot-callout-body">
+    <div class="tour-text" id="spotText"></div>
+  </div>
+  <div class="spot-callout-footer">
+    <div class="tour-nav">
+      <div class="tour-back" id="spotBack" onclick="tourBack()">Back</div>
+      <button class="tour-next" id="spotNext" onclick="tourNext()">Next →</button>
+    </div>
+    <div class="tour-links-row">
+      <button class="tour-goto" onclick="tourExplore()">Go to section &darr;</button>
+      <button class="tour-skip" onclick="closeTour()">Skip tour</button>
+    </div>
+  </div>
 </div>
 <div class="tour-resume" id="tourResume" onclick="resumeTourStep()">
   <span>Tour paused — tap to continue</span>
@@ -873,12 +906,15 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
     <div class="gsect" id="gs3">
       <div class="gh1">3 &middot; The Three Tabs</div>
       <div class="gh2">Discover</div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Search</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography. Tap the mic icon to search by speaking instead of typing.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Films / Both / Series</span></div><div class="gdesc">Toggle above the search bar &mdash; narrow Discover to movies only, TV series only, or both together. In Both, every card in Your Curation carries a small "Film" or "Series" tag next to its year so a mixed feed stays easy to scan &mdash; the tag drops away in Films-only or Series-only mode since it'd just repeat what the toggle already tells you.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Always visible, no tapping required &mdash; the theme tags and the Contemplative theme's portraits show right away. Tap another theme to switch to its portraits, then tap any thumbnail to open that person's full India-available filmography.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Liked</span></div><div class="gdesc"><strong>Because You Liked</strong> &mdash; built from crew and cast overlap with your own Liked and Want to Watch titles, not an opaque algorithm: every card names exactly who connects it back ("because you liked X &mdash; also directed by Y" or "also stars Y"), so you can judge the recommendation for yourself instead of just trusting it. Right below Masters of Cinema. Before you've Liked or Want-to-Watch'd anything, this section shows a short note instead of a grid &mdash; it fills in automatically the moment you mark your first title.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">Soon</span></div><div class="gdesc"><strong>Upcoming From Who You Liked</strong> &mdash; same idea as Because You Liked, but looking forward: directors, writers, and actors from your Liked/Want to Watch titles who have something with a real, dated release still to come. Each card shows the release month and names exactly who connects it back, same as Because You Liked. Only counts titles with an actual announced date &mdash; "in production" with no date yet isn't shown. Right below Because You Liked; same empty-state note until you've Liked or Want-to-Watch'd something.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New on Streaming</strong> &mdash; films added to Indian streaming in the last 60 days. Right below Upcoming, above Your Curation &mdash; loads on its own, with its own Refresh button. Every card has the same Want / Liked / Seen / Not Interested quick actions as Discover, right on the poster. Once you've marked something Liked, Seen, or Not Interested, it won't keep reappearing here as if it were still new &mdash; Want to Watch is the one status that stays visible, same as it does in Your Curation. If you want recency inside your main feed instead, use the Newest or Newest + Rated sort in Your Curation below.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Search</span></div><div class="gdesc"><strong>Search bar</strong> &mdash; title, director, or actor. Gold person card appears for people &mdash; tap for their India filmography. Tap the mic icon to search by speaking instead of typing. <span class="gtour-jump" onclick="jumpToTourFromGuide('#sinput')">Show me &rarr;</span></div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Alerts</span></div><div class="gdesc"><strong>Notification bell</strong>, top of the Discover header &mdash; WatchPick quietly checks your Want to Watch list in the background and lets you know here, not as a one-shot popup, the moment one of them becomes newly available to stream or rent, or upgrades from Rent/Buy to included-with-subscription. The badge shows how many alerts you haven't read yet; tap the bell any time to open the panel, and Clear all resets it. <span class="gtour-jump" onclick="jumpToTourFromGuide('#notifBtn')">Show me &rarr;</span></div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Filters</span></div><div class="gdesc">Tap Filters, next to Search, to open Genres, Language, Sort, and Availability &mdash; narrows whatever feed you're looking at without leaving Discover. See <a class="glink" onclick="scrollGuide('gs4')">The Filter Bar &rarr;</a> for the full breakdown. <span class="gtour-jump" onclick="jumpToTourFromGuide('.filt-btn')">Show me &rarr;</span></div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Films / Both / Series</span></div><div class="gdesc">Toggle above the search bar &mdash; narrow Discover to movies only, TV series only, or both together. In Both, every card in Your Curation carries a small "Film" or "Series" tag next to its year so a mixed feed stays easy to scan &mdash; the tag drops away in Films-only or Series-only mode since it'd just repeat what the toggle already tells you. <span class="gtour-jump" onclick="jumpToTourFromGuide('#mediaToggleRow')">Show me &rarr;</span></div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Always visible, no tapping required &mdash; the theme tags and the Contemplative theme's portraits show right away. Tap another theme to switch to its portraits, then tap any thumbnail to open that person's full India-available filmography, where you can tap &#9734; Favourite to make them a seed for Because You Liked too (see <a class="glink" onclick="scrollGuide('gs7')">Search &rarr;</a> for more on Favouriting). <span class="gtour-jump" onclick="jumpToTourFromGuide('#masters-sect')">Show me &rarr;</span></div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Liked</span></div><div class="gdesc"><strong>Because You Liked</strong> &mdash; built from crew and cast overlap with your own Liked and Want to Watch titles, not an opaque algorithm: every card names exactly who connects it back ("because you liked X &mdash; also directed by Y" or "also stars Y"), so you can judge the recommendation for yourself instead of just trusting it. Right below Masters of Cinema. Before you've Liked or Want-to-Watch'd anything, this section shows a short note instead of a grid &mdash; it fills in automatically the moment you mark your first title. Favourited cast/crew (see Masters, above) feed this too, even before you've liked a specific film of theirs. <span class="gtour-jump" onclick="jumpToTourFromGuide('#byl-sect')">Show me &rarr;</span></div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Soon</span></div><div class="gdesc"><strong>Upcoming From Who You Liked</strong> &mdash; same idea as Because You Liked, but looking forward: directors, writers, and actors from your Liked/Want to Watch titles who have something with a real, dated release still to come. Each card shows the release month and names exactly who connects it back, same as Because You Liked. Only counts titles with an actual announced date &mdash; "in production" with no date yet isn't shown. Right below Because You Liked; same empty-state note until you've Liked or Want-to-Watch'd something. <span class="gtour-jump" onclick="jumpToTourFromGuide('#upcoming-sect')">Show me &rarr;</span></div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New on Streaming</strong> &mdash; films added to Indian streaming in the last 60 days. Right below Upcoming, above Your Curation &mdash; loads on its own, with its own Refresh button. Every card has the same Want / Liked / Seen / Not Interested quick actions as Discover, right on the poster. Once you've marked something Liked, Seen, or Not Interested, it won't keep reappearing here as if it were still new &mdash; Want to Watch is the one status that stays visible, same as it does in Your Curation. If you want recency inside your main feed instead, use the Newest or Newest + Rated sort in Your Curation below. <span class="gtour-jump" onclick="jumpToTourFromGuide('#newarrivals-sect')">Show me &rarr;</span></div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">Curation</span></div><div class="gdesc"><strong>Your Curation</strong> &mdash; the main feed, built from your Settings genres/platforms plus anything Filters narrows it to further. The Sort dropdown right above the grid picks the order &mdash; Mix, Rating (the default), Year Newest, Year Oldest, Newest + Rated, or Title A&ndash;Z &mdash; the same list Filters' own Sort offers, just one tap away instead of opening the sheet. Refresh sits beside it for a fresh batch under your current filters, and Load Page &darr; at the bottom brings in more without starting over. <span class="gtour-jump" onclick="jumpToTourFromGuide('#curated-sect')">Show me &rarr;</span></div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Refresh</span></div><div class="gdesc">Fresh batch for your current filters.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Load Page &darr;</span></div><div class="gdesc">Next page of results &mdash; genuinely new titles.</div></div>
       <div class="grow"><div class="gtag"><span style="display:inline-flex;gap:6px;align-items:center">
@@ -886,9 +922,10 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
         <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--gold)" stroke="none"><path d="M12 2.5l2.97 6.53 7.03.86-5.2 5 1.38 7.1L12 18.6l-6.18 3.4 1.38-7.1-5.2-5 7.03-.86z"/></svg>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--t2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff9090" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.55M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-      </span></div><div class="gdesc">Every card has its own quick-action row &mdash; bookmark (Want), star (Liked), check (Seen), eye-slash (Not Interested), right from Discover with no need to open the detail page. Hover any icon on desktop, or long-press it on a touchscreen, to see what it means.</div></div>
+      </span></div><div class="gdesc">Every card has its own quick-action row &mdash; bookmark (Want), star (Liked), check (Seen), eye-slash (Not Interested), right from Discover with no need to open the detail page. Hover any icon on desktop, or long-press it on a touchscreen, to see what it means. Every poster also carries two more signals at a glance &mdash; see Availability tags in <a class="glink" onclick="scrollGuide('gs6')">Tag Reference &rarr;</a>. <span class="gtour-jump" onclick="jumpToTourFromGuide('#cgrid .cbtns')">Show me &rarr;</span></div></div>
       <div class="gh2">My List</div>
-      <div class="grow"><div class="gtag"><span style="font-size:11px">Shows: Want to Watch</span></div><div class="gdesc">Want to Watch is always front and center here, with its own Sort (Recently Added, Top Rated, Newest, A&ndash;Z) &mdash; it never collapses. Liked and Seen each get a small chip beside the header, showing a count only when that bucket has titles; tap one to expand its grid right above the Want to Watch list, and tap "Want to Watch" itself to collapse both back down in one tap. Not Interested isn't listed anywhere &mdash; it just affects what Discover shows you (see Tag Reference).</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Shows: Want to Watch</span></div><div class="gdesc">Want to Watch is always front and center here, with its own Sort (Recently Added, Top Rated, Newest, A&ndash;Z) &mdash; it never collapses. Liked and Seen each get a small chip beside the header, showing a count only when that bucket has titles; tap one to expand its grid right above the Want to Watch list, and tap "Want to Watch" itself to collapse both back down in one tap. Not Interested isn't listed anywhere &mdash; it just affects what Discover shows you (see Tag Reference). <span class="gtour-jump" onclick="jumpToTourFromGuide('#wcontent')">Show me &rarr;</span></div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px">Favourites</span></div><div class="gdesc">A fourth chip beside Liked and Seen, listing everyone you've Favourited from a filmography page (&#9734; on a director, writer, actor, or cinematographer's own page &mdash; see Masters, above). Tap the chip to expand the list right there; unlike Liked/Seen this isn't about a title you've watched, it's people whose work you want WatchPick to keep surfacing in Because You Liked.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Sync</span></div><div class="gdesc">Save &uarr; backs your list up online. Load &darr; brings it down on any device, using the same passphrase.</div></div>
       <div class="gh2">Platforms &amp; Genres</div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Appearance</span></div><div class="gdesc">Dark (default) or Light theme &mdash; switch here, or with the sun/moon icon in the header. Your choice is remembered on this device.</div></div>
@@ -897,7 +934,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span style="font-size:11px">+ Custom</span></div><div class="gdesc">Pin any specific film to your Discover feed.</div></div>
     </div>
     <div class="gsect" id="gs4">
-      <div class="gh1">4 &middot; The Filter Bar</div>
+      <div class="gh1">4 &middot; The Filter Bar <span class="gtour-jump" onclick="jumpToTourFromGuide('.filt-btn')">Show me &rarr;</span></div>
       <p class="gbody">Tap Filters next to the search box to open Genres, Language, Sort and Availability &mdash; instant filters without going into Settings.</p>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Film Genres</span></div><div class="gdesc">All / None + a button for every genre you've turned on in Settings. Tap one to switch it on or off &mdash; gold means active. Shown whenever you're browsing Films or Both.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Series Genres</span></div><div class="gdesc">Its own All / None + a button per TV genre. Only appears when you're browsing Series or Both &mdash; these genres aren't in Settings, this is the only place to choose them. Genres that mean the same thing on both sides (Action, Comedy, Crime, Sci-Fi, and a few others) stay in sync automatically when you tap a Film Genre, so Series doesn't keep showing everything while Films is narrowed down. Genres unique to Film (Philosophy, World Cinema, Superhero and the like) don't have a Series match &mdash; adjust Series Genres here separately for those.</div></div>
@@ -909,7 +946,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="gnote">Newest + Rated: fetches by year descending, then sorts by rating within each year &mdash; best for recent acclaimed films.</div>
     </div>
     <div class="gsect" id="gs5">
-      <div class="gh1">5 &middot; Title Detail Page</div>
+      <div class="gh1">5 &middot; Title Detail Page <span class="gtour-jump" onclick="jumpToTourFromGuide('#cgrid .card')">Show me &rarr;</span></div>
       <p class="gbody">Tap any card to open the full detail view.</p>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Info row</span></div><div class="gdesc">&#10003; Available in India &middot; Year &middot; &#9733; Rating &middot; Number of votes &middot; Runtime &middot; Language &middot; Age rating &middot; Genres.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Actions</span></div><div class="gdesc">Want to Watch &middot; &#9733; Liked &middot; &#10003; Seen &middot; Not Interested. Tap the same one again to undo. Liked, Seen, and Not Interested all remove the title from Discover (see Tag Reference for how to bring each one back).</div></div>
@@ -944,7 +981,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span class="cplt plt-vimoviesandtv" style="position:static">Vi movies and tv</span></div><div class="gdesc"><a class="glink" href="https://www.myvi.in/vi-movies-and-tv" target="_blank">Vi movies and tv &rarr;</a> &mdash; a 20-app bundle from Vi/Vodafone Idea, not a catalog with its own title pages, so this links to the bundle's info page rather than a search</div></div>
       <div class="grow"><div class="gtag"><span class="cplt plt-manoramamax" style="position:static">ManoramaMax</span></div><div class="gdesc"><a class="glink" href="https://www.manoramamax.com" target="_blank">ManoramaMax &rarr;</a> &mdash; Malayalam catalog</div></div>
       <div class="grow"><div class="gtag"><span class="cplt plt-nfdc" style="position:static">NFDC</span></div><div class="gdesc">"Cinemas of India" &mdash; an NFDC add-on channel inside Prime Video, not a separate app, so this links straight to <a class="glink" href="https://www.primevideo.com/-/en/channel/3964c37b-c97c-4e90-ba16-197e9daa7fb6" target="_blank">that channel on Prime Video &rarr;</a></div></div>
-      <div class="gh2">Availability tags</div>
+      <div class="gh2">Availability tags <span class="gtour-jump" onclick="jumpToTourFromGuide('#cgrid .pw')">Show me &rarr;</span></div>
       <div class="grow"><div class="gtag"><span class="cavail av-stream" style="position:static">Stream</span></div><div class="gdesc">Included with subscription &mdash; no extra cost</div></div>
       <div class="grow"><div class="gtag"><span class="cavail av-rent" style="position:static">Rent/Buy</span></div><div class="gdesc">Paid rental or purchase only</div></div>
       <div class="grow"><div class="gtag"><span class="cavail av-none" style="position:static">Not in IN</span></div><div class="gdesc">Not currently streaming in India &mdash; shown in search only</div></div>
@@ -962,15 +999,16 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span class="dpill cert" style="font-size:8px">U/A</span></div><div class="gdesc">Age rating from India's official film certification board, when available</div></div>
     </div>
     <div class="gsect" id="gs7">
-      <div class="gh1">7 &middot; Search</div>
+      <div class="gh1">7 &middot; Search <span class="gtour-jump" onclick="jumpToTourFromGuide('#sinput')">Show me &rarr;</span></div>
       <p class="gbody">Type any title, director, actor, or crew member in the search bar on Discover.</p>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Film results</span></div><div class="gdesc">Cards with India availability, platform badges, Stream/Rent tags.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">Gold card</span></div><div class="gdesc">Shown when your search matches a person, not a title &mdash; tap to open their India filmography.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:11px">Filmography</span></div><div class="gdesc">"Streaming in India" (full brightness) and "Other notable work" (dimmed), each with its own Sort: Streaming First, Top Rated, Newest. Back button returns to search.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:11px;color:var(--gold)">&#9734; Favourite</span></div><div class="gdesc">On any director, writer, actor, or cinematographer's own filmography page &mdash; a separate action from Liking one of their films. Favouriting them makes their other work a seed for Because You Liked too, even before you've liked anything of theirs specifically. Everyone you've Favourited is listed under its own chip in My List, alongside Liked and Seen.</div></div>
       <div class="gnote">Search is not filtered by your genre or platform settings &mdash; shows all results with India availability checked.</div>
     </div>
     <div class="gsect" id="gs8">
-      <div class="gh1">8 &middot; Cloud Sync</div>
+      <div class="gh1">8 &middot; Cloud Sync <span class="gtour-jump" onclick="jumpToTourFromGuide('#syncpanel')">Show me &rarr;</span></div>
       <p class="gbody">Your list is saved right on your phone, and backed up online too. The online copy survives everything &mdash; even clearing your phone's data or switching devices.</p>
       <div class="gstep"><div class="gstep-n">1</div><div class="gstep-body"><div class="gstep-title">Choose a passphrase</div><div class="gstep-desc">Memorable &mdash; e.g. your-name-films-2026. No email or sign-up needed.</div></div></div>
       <div class="gstep"><div class="gstep-n">2</div><div class="gstep-body"><div class="gstep-title">Save &uarr; regularly</div><div class="gstep-desc">Tap Save &uarr; after any marking session. Backs up your full list online.</div></div></div>
@@ -3512,14 +3550,17 @@ const TOUR_QUICK=[
 const TOUR_FULL=[
   {tab:null, sel:'.logo', t:'What is WatchPick', b:'A personal cinema discovery app for India — films and shows filtered by real taste categories, with availability verified across 18 streaming platforms.'},
   {tab:'discover', sel:'#sinput', t:'Search & Voice', b:'Type a title, director, or actor. A gold card means your search matched a person — tap it for their full India filmography. Tap the mic icon to search by speaking instead.'},
+  {tab:'discover', sel:'.filt-btn', t:'Filters', b:'Tap Filters, next to Search, to open Genres, Language, Sort, and Availability — narrows whatever feed you\'re looking at without leaving Discover. Language groups by India and International and lets you pick more than one at once, even across both groups. Sort here is the same list you\'ll see again above Your Curation: Top Rated, Mix, Newest, Oldest, Newest + Rated, and A–Z. Reset, top-right of the sheet, clears everything back to default in one tap.'},
   {tab:'discover', sel:'#mediaToggleRow', t:'Films / Both / Series', b:'This toggle narrows Discover to movies only, TV only, or both together. In Both mode, a small Film/Series tag appears on every card in Your Curation so the mixed feed is easy to scan at a glance.'},
-  {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Always visible, no tapping required — the Contemplative theme\'s portraits show right away. Tap another theme to switch to its portraits, and tap a thumbnail to open that person\'s full filmography.'},
+  {tab:'discover', sel:'#masters-sect', t:'Masters of Cinema', b:'A curated row of directors, writers and cinematographers grouped by taste — Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Always visible, no tapping required — the Contemplative theme\'s portraits show right away. Tap another theme to switch to its portraits, and tap a thumbnail to open that person\'s full filmography. On their page, tap ☆ Favourite to make them a seed for Because You Liked too — even before you\'ve liked a specific film of theirs.'},
   {tab:'discover', sel:'#byl-sect', t:'Because You Liked', b:'Built from crew and cast overlap with your own Liked and Want to Watch titles, not a black-box algorithm — every card names exactly who connects it back ("because you liked X — also directed by Y"), so you can judge the recommendation yourself. Tap Refresh to page through more picks the same way; once you\'ve seen everything, it widens its search further into your list instead of just repeating. Liking something new jumps back to the freshest page first. Before you\'ve Liked or Want-to-Watch\'d anything, this shows a short note in place of the grid — it fills in the moment you mark your first title.'},
   {tab:'discover', sel:'#upcoming-sect', t:'Upcoming From Who You Liked', b:'The same crew/cast connections as Because You Liked, but for what hasn\'t come out yet — a dated, real upcoming release from a director, writer, or actor behind something you Liked or Want to Watch. Right below Because You Liked, with the same empty-state note until you\'ve Liked or Want-to-Watch\'d something.'},
   {tab:'discover', sel:'#newarrivals-sect', t:'New on Streaming', b:'Films added to Indian streaming in the last 60 days. Right below Upcoming, above Your Curation — loads on its own, with its own Refresh.'},
-  {tab:'discover', sel:'#curated-sect', t:'Your Curation', b:'The feed built for you — Sort dropdown and Refresh sit right above it. The Filters button next to Search adds Genres, Language, Sort and Availability filters without leaving Discover.'},
+  {tab:'discover', sel:'#curated-sect', t:'Your Curation', b:'The feed built for you. The Sort dropdown right above the grid picks the order — Mix, Rating (the default), Year Newest, Year Oldest, Newest + Rated, or Title A–Z — the same list Filters offers, just one tap away instead of opening the sheet. Refresh sits beside it for a fresh batch under your current filters, and Load Page ↓ at the bottom brings in more without starting over.'},
   {tab:'discover', sel:'#cgrid .cbtns', t:'Quick actions on every card', b:'Bookmark (Want), star (Liked), check (Seen), and eye-slash (Not Interested) — right on the poster. Hover an icon on desktop, or long-press on a phone, to see what it means. Liked, Seen, and Not Interested all quietly remove a title from Discover; Liked and Seen can be undone from their chip in My List, while Not Interested needs a fresh search to bring back.'},
+  {tab:'discover', sel:'#cgrid .pw', t:'Availability badges', b:'Two signals sit right on every poster: the platform badge (top-left) shows where it\'s streaming, and the Stream or Rent/Buy tag (bottom-right) shows whether it\'s included with that subscription or a separate rental/purchase. On a title\'s own detail page, a third, gold "Recently added" badge can appear instead — that means its release is very new and India availability data hasn\'t fully caught up yet, with a direct link to check that platform yourself.'},
   {tab:'watchlist', sel:'#wcontent', t:'My List', b:'Want to Watch is always front and center, with its own sort. Tap the Liked / Seen chips beside the header to peek at those too — Not Interested isn’t listed anywhere; it just shapes what Discover shows you.'},
+  {tab:null, sel:'#notifBtn', t:'Availability alerts', b:'WatchPick quietly checks your Want to Watch list in the background and taps you on the shoulder here — not as a one-shot popup — the moment one of them becomes newly available to stream or rent, or upgrades from Rent/Buy to included-with-subscription. The badge shows how many alerts you haven\'t read yet; tap the bell any time to see them.'},
   {tab:'watchlist', sel:'#syncpanel', t:'Cloud Sync', b:'Set a passphrase here to back your list up online — use the same phrase on any device to load it.'},
   {tab:'settings', sel:'#ptogs', t:'Platform', b:'Turn streaming services on or off, or pin a specific custom title so it always shows up. Genres are managed from the Filters sheet on Discover, where you actually pick them.'},
   {tab:'discover', sel:'#cgrid .card', t:'The Title Detail Page', b:'Tap any card for the full page — where to watch, trailers, IMDb and Letterboxd links, cast and crew (tap any name for their filmography), and a Did You Know trivia section when there’s something notable.'},
@@ -3527,6 +3568,22 @@ const TOUR_FULL=[
 ];
 
 let tourSteps=[], tourIdx=0, tourReposition=null, tourNavigating=false, tourResizeObserver=null;
+// Records where fitTargetAboveSheet last placed the scroll for the current target, so tourGuard can
+// tell "content loaded above the target and silently pushed it down" (self-heal, no pause needed)
+// apart from "the visitor actually scrolled away by hand" (pause, same as always) — see the guard's
+// off-screen check below for why this distinction matters.
+let tourLastFit=null;
+// Why the pause happened, read once by resumeTourStep() then cleared — decides what "Resume" does:
+//   'overlay' — the step's own target was acted on directly (a card/button that opened a detail
+//               page, a person's filmography, Filters, etc.) while the tour was actively showing
+//               it, with nothing paused yet. That's the visitor DOING what the step described, so
+//               Resume treats it as completed and moves on to the next step.
+//   'tab'     — the visitor switched tabs themselves, or scrolled the target out of view, without
+//               otherwise interacting with it — they wandered off mid-explanation, not through it.
+//   'explore' — they deliberately tapped "Go to section" to go try things out. Resume brings them
+//               back to the SAME step (the section they left), never skips ahead, exactly like
+//               'tab' — kept as a separate tag only so it reads clearly in the two functions below.
+let tourPauseReason=null;
 function tourWait(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
 // The tour no longer blocks the page underneath it (see .spot-block, pointer-events:none) —
@@ -3537,20 +3594,56 @@ function tourWait(ms){ return new Promise(r=>setTimeout(r,ms)); }
 // polls for exactly that and pauses the visuals (without losing tour position) rather than
 // leaving a stale gold ring floating over the wrong screen.
 let tourGuardTimer=null;
+// The app scrolls inside each tab's own .scroll container (#tab-discover etc.), not the window —
+// window.scrollBy silently does nothing here, which is why positioning a step's target had to go
+// through el.scrollIntoView() rather than a raw window scroll. Used by goToTourStep to move the
+// target by an exact pixel delta (to sit above the docked callout) rather than scrollIntoView's
+// fixed start/center/end alignment, which has no notion of "leave room for the sheet at the bottom".
+function findScrollParent(el){
+  let node=el.parentElement;
+  while(node && node!==document.body){
+    const cs=getComputedStyle(node);
+    if((cs.overflowY==='auto'||cs.overflowY==='scroll') && node.scrollHeight>node.clientHeight) return node;
+    node=node.parentElement;
+  }
+  return document.scrollingElement||document.documentElement;
+}
 function isAnyBlockingOverlayOpen(){
   return !!(document.getElementById('overlay')?.classList.contains('open') ||
     document.getElementById('legendOverlay')?.classList.contains('open') ||
     document.getElementById('notifOverlay')?.classList.contains('open') ||
     document.getElementById('filterSheet')?.classList.contains('open'));
 }
-function pauseTourVisuals(){
+function pauseTourVisuals(reason){
+  tourPauseReason=reason||'tab';
   $('spotHole').style.display='none';
   $('spotCallout').style.display='none';
   $('tourResume').style.display='flex';
 }
+// Deliberate "let me go try this myself" exit, wired to the callout's own Go to section button —
+// unlike a tourGuard-triggered pause this is never treated as "step completed" on resume, even if
+// the visitor goes on to open a detail page while exploring: tourGuard's own early-return (below)
+// keeps tourPauseReason at 'explore' once it's set, since it only fires when going from
+// active→paused, and this call already made that transition.
+function tourExplore(){ pauseTourVisuals('explore'); }
 function resumeTourStep(){
   $('tourResume').style.display='none';
-  goToTourStep(tourIdx);
+  const reason=tourPauseReason; tourPauseReason=null;
+  // If they're still inside a detail/person page, Filters, etc. when they tap Resume, back out of
+  // it first — resuming while an overlay still covers the app would otherwise position the
+  // spotlight against a target that's there in the DOM but hidden behind that overlay, which reads
+  // as the tour randomly dimming the wrong screen.
+  if(isAnyBlockingOverlayOpen()){
+    if(document.getElementById('overlay')?.classList.contains('open') && typeof closeDetail==='function') closeDetail();
+    if(document.getElementById('filterSheet')?.classList.contains('open') && typeof closeFilterSheet==='function') closeFilterSheet();
+    if(document.getElementById('notifOverlay')?.classList.contains('open')) document.getElementById('notifOverlay').classList.remove('open');
+    if(document.getElementById('legendOverlay')?.classList.contains('open')) document.getElementById('legendOverlay').classList.remove('open');
+  }
+  if(reason==='overlay'){
+    if(tourIdx<tourSteps.length-1) goToTourStep(tourIdx+1); else closeTour();
+  } else {
+    goToTourStep(tourIdx);
+  }
 }
 function startTourGuard(){
   stopTourGuard();
@@ -3560,21 +3653,60 @@ function startTourGuard(){
     const s=tourSteps[tourIdx];
     const curTab=document.querySelector('.ntab.on')?.dataset.tab;
     const tabOk=!s.tab||s.tab===curTab;
-    if(!tabOk||isAnyBlockingOverlayOpen()) pauseTourVisuals();
+    if(!tabOk){ pauseTourVisuals('tab'); return; }
+    if(isAnyBlockingOverlayOpen()){ pauseTourVisuals('overlay'); return; }
+    // Target scrolled mostly out of view under its own steam (not via "Go to section") — same
+    // failure mode a frozen, un-resizing hole used to cause, just from manual scrolling instead of
+    // async content growth. Pausing here (rather than leaving a hole with nothing visible inside it,
+    // dimming the entire screen) is what "does not hide sections" needs to also cover free scrolling.
+    const el=document.querySelector(s.sel);
+    if(el){
+      const sheetH=$('spotCallout').offsetHeight||0;
+      const r=el.getBoundingClientRect();
+      if(r.bottom<24 || r.top>window.innerHeight-sheetH-24){
+        // Off-screen has two very different causes: the visitor scrolled away by hand (pause, same
+        // as always — don't fight them), or a section ABOVE the target (Masters of Cinema portraits,
+        // Upcoming, New Arrivals) finished an async load and pushed it down without the target's own
+        // box changing size — the ResizeObserver on the target itself can't catch that, since it only
+        // fires on the target's OWN box, not a sibling's. Tell them apart using the scrollTop/
+        // scrollHeight snapshot fitTargetAboveSheet took: if the container grew taller since then but
+        // the visitor's own scroll position hasn't moved, nobody scrolled anywhere — re-fit quietly
+        // instead of pausing. Most likely to matter right after jumping straight to a step from the
+        // Guide, before earlier async sections have finished loading.
+        const sp=findScrollParent(el);
+        const spIsWindow=sp===document.scrollingElement||sp===document.documentElement;
+        const spScrollTop=spIsWindow?(window.scrollY||document.documentElement.scrollTop):sp.scrollTop;
+        const spScrollHeight=spIsWindow?document.documentElement.scrollHeight:sp.scrollHeight;
+        const contentGrewNotUserScroll=tourLastFit && tourLastFit.el===el
+          && spScrollHeight!==tourLastFit.scrollHeight && spScrollTop===tourLastFit.scrollTop;
+        if(contentGrewNotUserScroll){ fitTargetAboveSheet(el); positionSpotlight(el); }
+        else pauseTourVisuals('tab');
+      }
+    }
   },400);
 }
 function stopTourGuard(){
   if(tourGuardTimer){ clearInterval(tourGuardTimer); tourGuardTimer=null; }
 }
 
-function openTour(steps){
-  tourSteps=steps; tourIdx=0;
+function openTour(steps, startIdx){
+  tourSteps=steps; tourIdx=0; tourPauseReason=null;
   $('spotBlock').style.display='block';
   $('spotHole').style.display='block';
-  $('spotCallout').style.display='block';
+  $('spotCallout').style.display='flex';
   $('tourResume').style.display='none';
   startTourGuard();
-  goToTourStep(0);
+  goToTourStep(startIdx>0 && startIdx<steps.length ? startIdx : 0);
+}
+
+// Lets a Guide entry drop the visitor straight into the matching Tour step instead of making them
+// find it themselves — e.g. tapping "Show me" next to the Filters entry opens the Tour already on
+// the Filters step, rather than at the very start. Falls back to starting the full tour from step 0
+// if the selector isn't found (keeps this resilient to future step reordering rather than breaking).
+function jumpToTourFromGuide(sel){
+  closeLegend();
+  const idx=TOUR_FULL.findIndex(s=>s.sel===sel);
+  openTour(TOUR_FULL, idx>=0?idx:0);
 }
 
 async function goToTourStep(i){
@@ -3582,27 +3714,49 @@ async function goToTourStep(i){
   const s=tourSteps[i];
   $('tourResume').style.display='none';
   $('spotHole').style.display='block';
-  $('spotCallout').style.display='block';
+  $('spotCallout').style.display='flex';
+  calloutUserExpanded=false; // each step starts from its own auto collapse/expand decision
   const curTab=document.querySelector('.ntab.on')?.dataset.tab;
   if(s.tab && curTab!==s.tab){ tourNavigating=true; showTab(s.tab); tourNavigating=false; await tourWait(200); }
 
-  let el=null, tries=0;
-  while(!el && tries<10){
+  // Steps that point at a real card in Your Curation (Quick actions, Availability badges, the
+  // Title Detail Page step) silently vanished from the tour whenever the feed happened to be
+  // empty right then — first load hadn't settled yet, or the visitor's current filters matched
+  // nothing. That read as the tour randomly "skipping a step" (reported: 12/14 jumping straight to
+  // 14/14, with 13/14 never appearing). Rather than accept an empty grid as final, try one
+  // awaited refresh of the feed itself before giving up — the same Refresh the Curation section's
+  // own button triggers — then keep retrying; a genuinely empty result (every filter combined
+  // narrows to zero) still skips gracefully after that, same as before.
+  let el=null, tries=0, refreshedOnce=false;
+  while(!el && tries<14){
     el=document.querySelector(s.sel);
-    if(!el){ await tourWait(150); tries++; }
+    if(!el){
+      if(!refreshedOnce && s.sel.startsWith('#cgrid') && (!S.results||!S.results.length)){
+        refreshedOnce=true;
+        try{ await refreshDiscover(); }catch(e){}
+      } else {
+        await tourWait(150);
+      }
+      tries++;
+    }
   }
   if(!el){
-    // couldn't find this step's target (e.g. empty grid) — skip it gracefully
+    // couldn't find this step's target even after a refresh attempt (e.g. filters that currently
+    // match nothing) — skip it gracefully rather than getting stuck
     if(i<tourSteps.length-1) return goToTourStep(i+1);
     return closeTour();
   }
 
-  el.scrollIntoView({block:'center',inline:'center',behavior:'instant'});
+  // Fill in the callout's real content BEFORE measuring or scrolling — the sheet's height depends
+  // on this step's text (a short step vs. Because You Liked's long one), and scrolling needs that
+  // final height to know how much room is actually left above the sheet for the target.
+  renderTourText(s,i);
+
+  fitTargetAboveSheet(el);
   // Wait for the scroll to actually paint (fixed timeouts are unreliable across devices)
   // rather than a fixed delay, so the very first measurement is already accurate.
   await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
   positionSpotlight(el);
-  renderTourText(s,i);
 
   if(tourReposition) window.removeEventListener('resize',tourReposition);
   tourReposition=()=>positionSpotlight(el);
@@ -3617,11 +3771,81 @@ async function goToTourStep(i){
   // hides the section it's touring". ResizeObserver watches the actual target element and
   // re-measures the spotlight every time its box changes size, for any reason (a fetch resolving,
   // a Refresh tap, orientation change) — not just the window resize tourReposition already covers.
+  // It also re-runs fitTargetAboveSheet: a section that was short enough to sit fully above the
+  // sheet when the step opened (e.g. a loading spinner) can grow past that once real content
+  // renders, and without re-scrolling, that newly-grown part would end up right back behind the
+  // sheet — the hole would still track it correctly, but the sheet would still cover it.
   if(tourResizeObserver) tourResizeObserver.disconnect();
   if(window.ResizeObserver){
-    tourResizeObserver=new ResizeObserver(()=>positionSpotlight(el));
+    tourResizeObserver=new ResizeObserver(()=>{ fitTargetAboveSheet(el); positionSpotlight(el); });
     tourResizeObserver.observe(el);
   }
+}
+
+// Whether the visitor manually tapped the callout head to read the full description even though
+// it was auto-collapsed — reset on every step change so each new step starts from the auto
+// decision, not whatever state the previous step was left in.
+let calloutUserExpanded=false;
+function toggleCalloutCollapse(){
+  const callout=$('spotCallout');
+  if(callout.classList.contains('collapsed')){
+    callout.classList.remove('collapsed');
+    calloutUserExpanded=true;
+  } else if(calloutUserExpanded){
+    // Only lets them collapse back if THEY expanded it — a step that fits fine normally has no
+    // collapsed state to return to, so tapping its head (which isn't even styled as tappable, see
+    // the .collapsed-only cursor:pointer rule) does nothing.
+    callout.classList.add('collapsed');
+    calloutUserExpanded=false;
+  }
+  const s=tourSteps[tourIdx];
+  const el=s&&document.querySelector(s.sel);
+  if(el){ fitTargetAboveSheet(el); positionSpotlight(el); }
+}
+
+// Scrolls `el` into the space above the docked callout sheet — see the goToTourStep comment above
+// this function's call site for why a plain scrollIntoView isn't enough once a fixed bottom sheet
+// is reserving part of the screen. Shared between the initial step-entry scroll and the
+// ResizeObserver callback above, since a section growing after the step opened needs the exact
+// same recalculation, not just a hole resize.
+//
+// Before picking a scroll position, this also decides whether the sheet should be collapsed: a
+// short step's text fits fine at full size, but a tall target (a busy Your Curation grid, a long
+// Because You Liked row) can be taller than the viewport even with the full sheet's ~46vh reserved
+// at the bottom — top-aligning it in that case still leaves its tail sitting behind the sheet,
+// which is exactly the "hides the section" failure this whole redesign exists to fix. Collapsing
+// the sheet to just its head + footer (no description body) when the target won't fit at full
+// size reclaims most of that reserved space; a manual tap on the head reads the description anyway.
+function fitTargetAboveSheet(el){
+  const callout=$('spotCallout');
+  const r0=el.getBoundingClientRect();
+
+  if(!calloutUserExpanded){
+    const wasCollapsed=callout.classList.contains('collapsed');
+    if(wasCollapsed) callout.classList.remove('collapsed'); // measure the full (expanded) size first
+    const fullSheetH=callout.offsetHeight;
+    const fitsExpanded=r0.height<=(window.innerHeight-fullSheetH)-24;
+    callout.classList.toggle('collapsed', !fitsExpanded);
+  }
+
+  const sheetH=callout.offsetHeight||0;
+  const availH=window.innerHeight-sheetH;
+  const targetTop=r0.height<=availH-24 ? (availH-r0.height)/2 : 16;
+  const delta=r0.top-targetTop;
+  const scrollParent=findScrollParent(el);
+  const spIsWindow=scrollParent===document.scrollingElement||scrollParent===document.documentElement;
+  if(Math.abs(delta)>2){
+    if(spIsWindow) window.scrollBy({top:delta,left:0,behavior:'instant'});
+    else scrollParent.scrollTop+=delta;
+  }
+  // Snapshot where things stand right after fitting, so tourGuard can tell later whether an
+  // off-screen target means content grew above it (self-heal) or the visitor scrolled by hand
+  // (pause) — see tourGuard's off-screen check for how this gets used.
+  tourLastFit={
+    el,
+    scrollTop: spIsWindow ? (window.scrollY||document.documentElement.scrollTop) : scrollParent.scrollTop,
+    scrollHeight: spIsWindow ? document.documentElement.scrollHeight : scrollParent.scrollHeight
+  };
 }
 
 // Keep the spotlight glued to its target through ANY scrolling — not just window
@@ -3634,6 +3858,10 @@ document.addEventListener('scroll',()=>{
   requestAnimationFrame(()=>{ tourReposition&&tourReposition(); tourScrollTicking=false; });
 },{capture:true,passive:true});
 
+// Only sizes/positions the gold-ring hole around the target — the callout is a docked bottom sheet
+// now (fixed via CSS), not something that has to be repositioned relative to the target every time,
+// which is exactly what used to let it end up overlapping the target when it was tall (see the
+// .spot-callout comment in the stylesheet).
 function positionSpotlight(el){
   const r=el.getBoundingClientRect();
   const pad=6;
@@ -3642,16 +3870,6 @@ function positionSpotlight(el){
   hole.style.top=(r.top-pad)+'px';
   hole.style.width=(r.width+pad*2)+'px';
   hole.style.height=(r.height+pad*2)+'px';
-
-  const callout=$('spotCallout');
-  callout.style.top='-9999px'; callout.style.left='0px'; // measure off-screen first
-  const cw=callout.offsetWidth, ch=callout.offsetHeight;
-  const spaceBelow=window.innerHeight-r.bottom;
-  const top=spaceBelow>ch+24 ? r.bottom+pad+12 : Math.max(12,r.top-pad-12-ch);
-  let left=r.left+r.width/2-cw/2;
-  left=Math.min(Math.max(12,left),window.innerWidth-cw-12);
-  callout.style.top=top+'px';
-  callout.style.left=left+'px';
 }
 
 function renderTourText(s,i){
@@ -3661,6 +3879,10 @@ function renderTourText(s,i){
   $('spotDots').innerHTML=tourSteps.map((_,idx)=>`<div class="tour-dot ${idx===i?'on':''}"></div>`).join('');
   $('spotBack').style.visibility=i===0?'hidden':'visible';
   $('spotNext').textContent=i===tourSteps.length-1?'Done':'Next →';
+  // Body scrolled to the top on every step change — otherwise a long step (Because You Liked)
+  // could leave the text mid-scroll when a later, shorter step reuses the same scroll container.
+  const body=document.querySelector('.spot-callout-body');
+  if(body) body.scrollTop=0;
 }
 
 function tourNext(){
@@ -3674,7 +3896,10 @@ function closeTour(){
   $('spotBlock').style.display='none';
   $('spotHole').style.display='none';
   $('spotCallout').style.display='none';
+  $('spotCallout').classList.remove('collapsed');
   $('tourResume').style.display='none';
+  tourPauseReason=null;
+  calloutUserExpanded=false;
   stopTourGuard();
   if(tourReposition){ window.removeEventListener('resize',tourReposition); tourReposition=null; }
   if(tourResizeObserver){ tourResizeObserver.disconnect(); tourResizeObserver=null; }
