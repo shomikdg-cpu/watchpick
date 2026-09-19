@@ -878,7 +878,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span style="font-size:10px">Masters</span></div><div class="gdesc"><strong>Masters of Cinema</strong> &mdash; curated row of directors, writers, and cinematographers grouped by taste: Contemplative, World Cinema, Indian Cinema, Visual Craft, Screenplay, Cinematography. Always visible, no tapping required &mdash; the theme tags and the Contemplative theme's portraits show right away. Tap another theme to switch to its portraits, then tap any thumbnail to open that person's full India-available filmography.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Liked</span></div><div class="gdesc"><strong>Because You Liked</strong> &mdash; built from crew and cast overlap with your own Liked and Want to Watch titles, not an opaque algorithm: every card names exactly who connects it back ("because you liked X &mdash; also directed by Y" or "also stars Y"), so you can judge the recommendation for yourself instead of just trusting it. Right below Masters of Cinema. Before you've Liked or Want-to-Watch'd anything, this section shows a short note instead of a grid &mdash; it fills in automatically the moment you mark your first title.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px">Soon</span></div><div class="gdesc"><strong>Upcoming From Who You Liked</strong> &mdash; same idea as Because You Liked, but looking forward: directors, writers, and actors from your Liked/Want to Watch titles who have something with a real, dated release still to come. Each card shows the release month and names exactly who connects it back, same as Because You Liked. Only counts titles with an actual announced date &mdash; "in production" with no date yet isn't shown. Right below Because You Liked; same empty-state note until you've Liked or Want-to-Watch'd something.</div></div>
-      <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New on Streaming</strong> &mdash; films added to Indian streaming in the last 60 days. Right below Upcoming, above Your Curation &mdash; loads on its own, with its own Refresh button. If you want recency inside your main feed instead, use the Newest or Newest + Rated sort in Your Curation below.</div></div>
+      <div class="grow"><div class="gtag"><span style="font-size:10px">New</span></div><div class="gdesc"><strong>New on Streaming</strong> &mdash; films added to Indian streaming in the last 60 days. Right below Upcoming, above Your Curation &mdash; loads on its own, with its own Refresh button. Every card has the same Want / Liked / Seen / Not Interested quick actions as Discover, right on the poster. Once you've marked something Liked, Seen, or Not Interested, it won't keep reappearing here as if it were still new &mdash; Want to Watch is the one status that stays visible, same as it does in Your Curation. If you want recency inside your main feed instead, use the Newest or Newest + Rated sort in Your Curation below.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Refresh</span></div><div class="gdesc">Fresh batch for your current filters.</div></div>
       <div class="grow"><div class="gtag"><span style="font-size:10px;color:var(--gold)">Load Page &darr;</span></div><div class="gdesc">Next page of results &mdash; genuinely new titles.</div></div>
       <div class="grow"><div class="gtag"><span style="display:inline-flex;gap:6px;align-items:center">
@@ -2137,8 +2137,17 @@ async function loadNewArrivals(forceRefresh=false){
     Promise.all(intlSlice.map(l=>fetchNewArrivalsPool('movie',l,1,fromStr,toStr)))
   ]);
 
+  // Anything already Seen/Hidden/Liked shouldn't resurface here as if it's new — see the comment
+  // above seenIds()'s own definition, which explicitly names New Arrivals as one of the two places
+  // this applies (the other being the main Curation feed, via loadDiscover). That exclusion was
+  // never actually wired up here — this pool was built straight from TMDB's discover results with
+  // no watchlist check at all, so a title you'd already dismissed or finished could keep
+  // reappearing at the top of "New on Streaming" indefinitely. seenIds() (not the full watchlist)
+  // is the right set to use: Want to Watch deliberately stays OUT of it, same reasoning as the
+  // Curation feed — you haven't seen those yet, so they should keep showing up here too.
+  const seen=seenIds();
   const seenIdsHere=new Set();
-  const dedupe=list=>list.filter(i=>{ if(seenIdsHere.has(i.id)) return false; seenIdsHere.add(i.id); return true; });
+  const dedupe=list=>list.filter(i=>{ if(seen.has(i.id)||seenIdsHere.has(i.id)) return false; seenIdsHere.add(i.id); return true; });
 
   // Interleave round-robin ACROSS pools rather than concatenating them — otherwise Indian and
   // International titles just end up stuck at the tail of the row behind however many general-pool
@@ -2162,7 +2171,12 @@ async function loadNewArrivals(forceRefresh=false){
 
   await Promise.all(results.map(enrich));
 
-  const avail=results.filter(i=>i.platforms.length>0);
+  // Re-check against the live watchlist right before rendering, not just the `seen` snapshot taken
+  // before the TMDB calls above — same race guard used in loadDiscover/loadBecauseYouLiked/
+  // loadUpcoming for a status change landing mid-fetch. Want to Watch stays visible here, same as
+  // the seen() filter above.
+  const liveSeen=seenIds();
+  const avail=results.filter(i=>i.platforms.length>0&&!liveSeen.has(i.id));
 
   results.forEach(addToPool);
 
@@ -2174,35 +2188,63 @@ async function loadNewArrivals(forceRefresh=false){
 
   S.newArrivalsLoaded=true;
 
-  scroll.innerHTML=avail.map(s=>{
+  newArrivalsRenderedItems=avail;
+  renderNewArrivalsCardList();
+}
 
-    const plt=s.platforms[0]; const pc=PLAT[plt];
-
-    const labels=Object.values(s.avail||{});
-
-    const avCls=(labels.includes('Stream')||labels.includes('Free'))?'av-stream':'av-rent';
-
-    const avTxt=(labels.includes('Stream')||labels.includes('Free'))?'Stream':'Rent/Buy';
-
-    return`<div class="scard" onclick="openDetail(${s.id},'${s.type||'movie'}')">
-
-      <div class="scard-pw">
-
+// Builds one New Arrivals card, including the same Want/Liked/Seen/Not-Interested quick actions
+// every Discover/Because You Liked/Upcoming card has — previously New Arrivals cards were tap-only
+// (open the detail page to do anything), the only rail without them. Reuses the .byl-card/.byl-pw
+// layout (bottom-pinned .cbtns via flex-column) rather than .scard, since .scard was never built to
+// host a button row — there's no recommendation "reason" line here, so that part's simply omitted.
+function newArrivalsCardHTML(s){
+  const st=S.watchlist.find(w=>w.id===s.id)?.status;
+  const plt=s.platforms[0]; const pc=PLAT[plt];
+  const labels=Object.values(s.avail||{});
+  const avCls=(labels.includes('Stream')||labels.includes('Free'))?'av-stream':'av-rent';
+  const avTxt=(labels.includes('Stream')||labels.includes('Free'))?'Stream':'Rent/Buy';
+  const stico=st==='liked'?`<div class="cstat" style="background:rgba(232,201,122,.35);color:var(--gold)">★</div>`
+    :st==='seen'?`<div class="cstat" style="background:rgba(100,100,100,.35);color:#888">✓</div>`
+    :st==='hidden'?`<div class="cstat" style="background:rgba(224,85,85,.3);color:#ff9090">N</div>`
+    :st==='want'?`<div class="cstat" style="background:rgba(110,170,212,.3);color:var(--blue)">W</div>`:'';
+  return`<div class="byl-card" onclick="openDetail(${s.id},'${s.type||'movie'}')">
+      <div class="byl-pw">
         <div class="scard-fb">${s.type==='tv'?'Series':'Film'}</div>${imgTag(s.poster_path,'w342','')}
-
         ${pc?`<div class="cplt plt-${plt}" style="top:4px;left:4px;font-size:6px;padding:2px 4px">${pc.label}</div>`:''}
-
         <div class="cavail ${avCls}" style="bottom:4px;right:4px">${avTxt}</div>
-
+        ${stico}
       </div>
-
       <div class="scard-title">${s.title}</div>
-
       <div class="scard-year">${s.year}${s.rating?` · ★${s.rating}`:''}</div>
-
+      <div class="cbtns">
+        <div class="cbtn ${st==='want'?'want':''}" title="Want to Watch" onclick="event.stopPropagation();setStatus(${s.id},'want')">${ICON_WANT}</div>
+        <div class="cbtn ${st==='liked'?'liked':''}" title="Liked" onclick="event.stopPropagation();setStatus(${s.id},'liked')">${ICON_LIKED}</div>
+        <div class="cbtn ${st==='seen'?'seen':''}" title="Seen" onclick="event.stopPropagation();setStatus(${s.id},'seen')">${ICON_SEEN}</div>
+        <div class="cbtn ${st==='hidden'?'hidden':''}" title="Not Interested" onclick="event.stopPropagation();setStatus(${s.id},'hidden')">${ICON_HIDDEN}</div>
+      </div>
     </div>`;
+}
 
-  }).join('');
+// Re-renders the rail from the already-fetched newArrivalsRenderedItems, without a re-fetch — same
+// pattern as renderBYLCardList()/renderUpcomingCardList(), called both for the initial render and
+// on every quick-action tap anywhere in the app (see setStatus()). Only Seen/Hidden/Liked drop a
+// card here, same as the fetch-time seenIds() filter above — Want stays (with its button
+// highlighted), matching the main Curation feed's behavior rather than Because You Liked/
+// Upcoming's (those deliberately drop Want too, at Shomik's request — New Arrivals was never asked
+// to match that).
+let newArrivalsRenderedItems=[];
+function renderNewArrivalsCardList(){
+  const scroll=$('newarrivals-scroll');
+  if(!scroll) return;
+  const prevScrollLeft=scroll.scrollLeft;
+  const seen=seenIds();
+  const visible=newArrivalsRenderedItems.filter(i=>!seen.has(i.id));
+  if(!visible.length){
+    scroll.innerHTML=`<div style="font-size:10px;color:var(--t3);font-style:italic;padding:6px 0">Nothing new found in the last 60 days — check back soon.</div>`;
+    return;
+  }
+  scroll.innerHTML=visible.map(newArrivalsCardHTML).join('');
+  scroll.scrollLeft=prevScrollLeft;
 
 }
 
@@ -3484,7 +3526,7 @@ const TOUR_FULL=[
   {tab:null, sel:'#guideBtn', t:'That’s everything', b:'You can reopen this tour anytime from the Guide button in the header.'}
 ];
 
-let tourSteps=[], tourIdx=0, tourReposition=null, tourNavigating=false;
+let tourSteps=[], tourIdx=0, tourReposition=null, tourNavigating=false, tourResizeObserver=null;
 function tourWait(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
 // The tour no longer blocks the page underneath it (see .spot-block, pointer-events:none) —
@@ -3565,6 +3607,21 @@ async function goToTourStep(i){
   if(tourReposition) window.removeEventListener('resize',tourReposition);
   tourReposition=()=>positionSpotlight(el);
   window.addEventListener('resize',tourReposition);
+
+  // Section-level steps (Because You Liked, New Arrivals, Upcoming, Your Curation's grid) target
+  // an element whose real height isn't known yet at this point — its content is often still an
+  // async fetch away (a loading spinner today, several rows of cards a moment later). Without
+  // this, the gold-ring "hole" stays frozen at whatever size the target was WHEN this step opened,
+  // so once the content actually loads and the section grows taller, the newly-rendered part falls
+  // outside that stale hole and gets swallowed by the dark dimming overlay — reported as "the tour
+  // hides the section it's touring". ResizeObserver watches the actual target element and
+  // re-measures the spotlight every time its box changes size, for any reason (a fetch resolving,
+  // a Refresh tap, orientation change) — not just the window resize tourReposition already covers.
+  if(tourResizeObserver) tourResizeObserver.disconnect();
+  if(window.ResizeObserver){
+    tourResizeObserver=new ResizeObserver(()=>positionSpotlight(el));
+    tourResizeObserver.observe(el);
+  }
 }
 
 // Keep the spotlight glued to its target through ANY scrolling — not just window
@@ -3620,6 +3677,7 @@ function closeTour(){
   $('tourResume').style.display='none';
   stopTourGuard();
   if(tourReposition){ window.removeEventListener('resize',tourReposition); tourReposition=null; }
+  if(tourResizeObserver){ tourResizeObserver.disconnect(); tourResizeObserver=null; }
 }
 
 // ════════════ VOICE SEARCH ════════════
@@ -4912,6 +4970,7 @@ function setStatus(id,status){
   // before the first fetch has actually landed.
   if(S.bylLoaded) renderBYLCardList();
   if(S.upcomingLoaded) renderUpcomingCardList();
+  if(S.newArrivalsLoaded) renderNewArrivalsCardList();
 
 }
 
