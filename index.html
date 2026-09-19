@@ -2341,14 +2341,23 @@ async function loadBecauseYouLiked(forceRefresh=false){
   });
   const capped=personEntries.slice(0,bylPersonCap); // bound total API calls
 
-  const seen=seenIds();
+  // Anything already in My List — whatever status, Want to Watch included — isn't a fresh
+  // recommendation. renderBYLCardList() below already drops Want/Liked/Seen/Not-Interested cards
+  // at render time (Shomik asked Want to drop out too, same as the other three), so filtering only
+  // to seenIds() (seen/hidden/liked, NOT want) here let want-listed titles sit in `pool`, count
+  // toward the "X–Y of Z" page label, then get silently dropped at render — the exact mismatch
+  // reported: a page labeled "21–40 of 135" but only ~6 cards actually visible, because most of
+  // that page of 20 turned out to already be on a 700+ title Want to Watch list. Matching the
+  // "Upcoming From Who You Liked" rail's own fix for the same class of bug (see its trackedIds
+  // below) — exclude the full watchlist here so the count and what's shown agree.
+  const alreadyTracked=new Set(S.watchlist.map(w=>w.id));
   const seedIds=new Set(seeds.map(s=>s.id));
 
   const perPerson=await Promise.all(capped.map(async entry=>{
     const p=await tmdbPerson(entry.id);
     const credits=[...(p.combined_credits?.cast||[]),...(p.combined_credits?.crew||[])]
       .filter(c=>c.poster_path&&(c.title||c.name))
-      .filter(c=>!seedIds.has(c.id)&&!seen.has(c.id))
+      .filter(c=>!seedIds.has(c.id)&&!alreadyTracked.has(c.id))
       .sort((a,b)=>(b.vote_count||0)-(a.vote_count||0))
       .slice(0,BYL_PER_PERSON_CREDITS)
       .map(c=>mapItem(c));
@@ -2371,6 +2380,13 @@ async function loadBecauseYouLiked(forceRefresh=false){
   // Favourite button in the first place, long before this rail ever runs.
   const liveIds=new Set(S.results.map(r=>r.id));
   pool=pool.filter(v=>!liveIds.has(v.id)||bylPoolIds.has(v.id)||v.__why?.favSource);
+
+  // Same idea, against the live watchlist this time — a title could get Want/Liked/Seen/Not
+  // Interested tapped elsewhere in the app while these TMDB calls were in flight. Matches
+  // alreadyTracked above (and loadUpcoming's identical liveTracked re-check) so a slow fetch can't
+  // let a since-actioned title slip into the page count.
+  const liveTracked=new Set(S.watchlist.map(w=>w.id));
+  pool=pool.filter(v=>!liveTracked.has(v.id));
 
   // Full candidate pool, sorted best-first — kept whole rather than cut down to one page here, so
   // Refresh can page through the rest instead of only ever showing the same top 20.
