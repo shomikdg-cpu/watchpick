@@ -57,6 +57,7 @@
 :root[data-theme="light"] .av-none{background:rgba(194,63,63,.14);color:#a83232}
 :root[data-theme="light"] .dpill.in-yes{background:rgba(46,139,87,.14);color:#1e6b45}
 :root[data-theme="light"] .dpill.in-no{background:rgba(194,63,63,.14);color:#a83232}
+:root[data-theme="light"] .dpill.in-pending{background:rgba(180,140,20,.14);color:#8a6a10}
 :root[data-theme="light"] .dact.on-hidden{background:rgba(194,63,63,.1);border-color:rgba(194,63,63,.4);color:#a83232}
 :root[data-theme="light"] .cbtn.hidden{background:rgba(194,63,63,.08);border-color:rgba(194,63,63,.35);color:#a83232}
 :root[data-theme="light"] .plt-netflix{background:rgba(229,9,20,.14);color:#c21807}
@@ -330,6 +331,8 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .dpill.in-yes{background:rgba(88,184,133,.18);color:#7dd6a8}
 
 .dpill.in-no{background:rgba(224,85,85,.18);color:#ff9090}
+
+.dpill.in-pending{background:rgba(232,201,122,.16);color:var(--gold)}
 
 .dactions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:16px}
 
@@ -945,6 +948,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
       <div class="grow"><div class="gtag"><span class="cavail av-stream" style="position:static">Stream</span></div><div class="gdesc">Included with subscription &mdash; no extra cost</div></div>
       <div class="grow"><div class="gtag"><span class="cavail av-rent" style="position:static">Rent/Buy</span></div><div class="gdesc">Paid rental or purchase only</div></div>
       <div class="grow"><div class="gtag"><span class="cavail av-none" style="position:static">Not in IN</span></div><div class="gdesc">Not currently streaming in India &mdash; shown in search only</div></div>
+      <div class="grow"><div class="gtag"><span class="dpill in-pending" style="position:static;padding:3px 8px">🕒 Recently added</span></div><div class="gdesc">Shown on the detail page (not in feed cards) when a title's listed network/producer is a platform we track, but that platform hasn't shown up yet in the live India availability check &mdash; common for very new releases, since India catalog data usually lags a title's release by days to weeks. Comes with a direct link to check that platform yourself.</div></div>
       <div class="gh2">Status icons</div>
       <div class="grow"><div class="gtag"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--blue)" stroke="none"><path d="M6 3a1 1 0 0 0-1 1v16a1 1 0 0 0 1.55.83L12 17.1l5.45 3.73A1 1 0 0 0 19 20V4a1 1 0 0 0-1-1z"/></svg></div><div class="gdesc">Want to Watch (bookmark) &mdash; saved to My List</div></div>
       <div class="grow"><div class="gtag"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)" stroke="none"><path d="M12 2.5l2.97 6.53 7.03.86-5.2 5 1.38 7.1L12 18.6l-6.18 3.4 1.38-7.1-5.2-5 7.03-.86z"/></svg></div><div class="gdesc">Liked It (star) &mdash; gold border on card, surfaces similar titles in More Like This, and shows up in My List under the Liked chip. Since liking something means you've already seen it, it also drops out of Discover going forward &mdash; same as Seen.</div></div>
@@ -4218,6 +4222,17 @@ function detailHTML(item,det,st,sims){
   const episodes=det.number_of_episodes?`${det.number_of_episodes} ep${det.number_of_episodes>1?'s':''}`:null;
   const tvInfo=[seasons,episodes].filter(Boolean).join(' · ');
   const network=det.networks?.[0]?.name||null;
+
+  // A show's TMDB "network" (who produced/commissioned it) is a different signal from live
+  // watch/providers availability, computed separately by enrich()/fetchProviders() above. When
+  // the network name matches one of our tracked platforms but that platform never showed up in
+  // the actual watch/providers check (item.platforms), don't flatly claim "Not streaming in
+  // India" — that's usually a data-lag gap (very new releases, or smaller platforms like MX
+  // Player, take longer for JustWatch/TMDB to index regional availability for), not a confirmed
+  // absence. Softens the message instead of asserting something we haven't verified.
+  const networkPlatKey=network?Object.entries(PLAT).find(([,conf])=>conf.match.test(network))?.[0]:null;
+  const networkUnconfirmed=!!(networkPlatKey && !(item.platforms||[]).includes(networkPlatKey));
+
   const cast=(det.credits?.cast||[]).slice(0,12);
 
   const directors=(det.credits?.crew||[]).filter(c=>c.job==='Director').slice(0,2);
@@ -4283,6 +4298,8 @@ function detailHTML(item,det,st,sims){
     ?`<div class="dpill in-yes">✓ Available in India</div>`
 
     :item.inIndia?`<div class="dpill in-yes">✓ In India (other platforms)</div>`
+
+    :networkUnconfirmed?`<div class="dpill in-pending">🕒 Recently added — unconfirmed</div>`
 
     :`<div class="dpill in-no">✕ Not streaming in India</div>`;
 
@@ -4444,6 +4461,8 @@ function detailHTML(item,det,st,sims){
     ${plinks?`<div class="dsect"><div class="dsectl">Where to Watch — India</div>${plinks}${othersRow}</div>`
 
       :item.inIndia?`<div class="dsect"><div class="dsectl">Where to Watch — India</div><div style="font-size:11px;color:var(--t2)">Not on your configured platforms, but streaming in India${item.others&&item.others.length?` on: <span style="color:var(--t1)">${item.others.join(', ')}</span>`:''}.</div></div>`
+
+      :networkUnconfirmed?`<div class="dsect"><div class="dsectl">Where to Watch</div><div style="font-size:11px;color:var(--t2)">Produced for <span style="color:var(--t1)">${PLAT[networkPlatKey].label}</span> — likely available there, but not yet confirmed on tracked India listings (common for very recent releases). <a class="glink" href="${PLAT[networkPlatKey].url(title)}" target="_blank">Check ${PLAT[networkPlatKey].label} directly →</a></div></div>`
 
       :`<div class="dsect"><div class="dsectl">Where to Watch</div><div style="font-size:11px;color:var(--t2)">Not currently streaming in India on tracked services.</div></div>`}
 
