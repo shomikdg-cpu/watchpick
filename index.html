@@ -6,7 +6,7 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -30,10 +30,10 @@
 
   --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.11);
 
-  --t1:#cacac7;--t2:#9a9a9a;--t3:#555;
+  --t1:#f2f2f2;--t2:#9a9a9a;--t3:#555;
 
-  --gold:#cacac7;--gold2:rgba(202,202,199,.12);--gold-rgb:202,202,199;--gold-on:#0a0a0a;
-  --fill:#cacac7;--fill-on:#0a0a0a;
+  --gold:#e8c97a;--gold2:rgba(232,201,122,.12);--gold-rgb:232,201,122;--gold-on:#0a0a0a;
+  --fill:#e8c97a;--fill-on:#0a0a0a;
 
   --red:#e05555;--green:#58b885;--blue:#6aaad4;
 
@@ -47,9 +47,9 @@
 :root[data-theme="light"]{
   --bg:#f7f5f1;--s1:#ffffff;--s2:#eeece7;--s3:#e4e1da;--s4:#d8d4cb;
   --b1:rgba(0,0,0,.07);--b2:rgba(0,0,0,.13);
-  --t1:#3d3d3d;--t2:#5c5c5c;--t3:#9a9a9a;
-  --gold:#3d3d3d;--gold2:rgba(61,61,61,.12);--gold-rgb:61,61,61;--gold-on:#f7f5f1;
-  --fill:#ffffff;--fill-on:#3d3d3d;
+  --t1:#1a1a1a;--t2:#5c5c5c;--t3:#9a9a9a;
+  --gold:#7d5a0a;--gold2:rgba(125,90,10,.12);--gold-rgb:125,90,10;--gold-on:#0a0a0a;
+  --fill:#7d5a0a;--fill-on:#0a0a0a;
   --red:#c23f3f;--green:#2e8b57;--blue:#2f7fb0;
 }
 /* Hardcoded accent colors below were tuned for a near-black backdrop (posters, dark cards).
@@ -76,7 +76,7 @@
 
 html,body{height:100%;overflow:hidden;background:var(--bg)}
 
-body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;flex-direction:column}
+body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 
 .hdr{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--b1);flex-shrink:0}
 
@@ -84,7 +84,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .logo-cam{margin-left:7px;vertical-align:middle;position:relative;top:-1px;flex-shrink:0}
 
-.logo small{display:block;font-family:'Inter',sans-serif;font-size:8px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--t2);margin-top:-3px}
+.logo small{display:block;font-family:'Inter',sans-serif;font-size:8px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:-3px}
 
 .tagline-short{display:none}
 
@@ -109,7 +109,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .ntab{padding:5px 13px;border-radius:var(--pill);font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;border:.5px solid transparent;transition:all .15s;color:var(--t2);user-select:none}
 
-.ntab.on{background:var(--fill);color:var(--fill-on);border-color:var(--fill);font-weight:700}
+.ntab.on{background:var(--gold2);color:var(--gold);border-color:var(--gold)}
 
 .ntab:active{opacity:.7}
 
@@ -120,7 +120,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .fpill{padding:4px 10px;border-radius:var(--pill);font-size:10px;font-weight:500;white-space:nowrap;cursor:pointer;border:.5px solid var(--b2);color:var(--t3);background:transparent;transition:all .15s;user-select:none;flex-shrink:0}
 .fpill-sub{opacity:.85;font-size:9px}
 
-.fpill.on{background:var(--fill);border-color:var(--fill);color:var(--fill-on);font-weight:700}
+.fpill.on{background:var(--gold2);border-color:var(--gold);color:var(--gold)}
 
 .fpill:active{opacity:.7}
 
@@ -183,7 +183,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .filter-sheet-body .subhead{margin:16px 0 8px;padding-top:16px;border-top:.5px solid var(--b1)}
 .filter-sheet-body .fbar-wrap{border-bottom:none}
 .filter-sheet-body .fbar-row1,.filter-sheet-body .fbar-row2{flex-wrap:wrap;overflow-x:visible}
-.filter-sheet-cta{padding:12px 16px 18px;border-top:.5px solid var(--b1);flex-shrink:0}
+.filter-sheet-cta{padding:12px 16px calc(18px + env(safe-area-inset-bottom));border-top:.5px solid var(--b1);flex-shrink:0}
 .filter-sheet-cta-btn{background:var(--fill);color:var(--fill-on);border-radius:var(--rs);height:40px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;user-select:none}
 .masters-body{display:block}
 .masters-hint{font-size:10px;color:var(--t3);font-style:italic;padding:0 0 6px}
@@ -195,7 +195,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .masters-tags{display:flex;gap:6px;padding:0 0 6px;overflow-x:auto;scrollbar-width:none}
 .masters-tags::-webkit-scrollbar{display:none}
 .mtag{padding:4px 12px;border-radius:var(--pill);font-size:9px;font-weight:600;white-space:nowrap;cursor:pointer;border:.5px solid var(--b2);color:var(--t3);background:transparent;transition:all .15s;flex-shrink:0;user-select:none}
-.mtag.on{background:var(--fill);border-color:var(--fill);color:var(--fill-on);font-weight:700}
+.mtag.on{background:var(--gold2);border-color:var(--gold);color:var(--gold)}
 .mtag:active{opacity:.7}
 .mscroll{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
 .mscroll::-webkit-scrollbar{display:none}
@@ -216,6 +216,14 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .more{font-size:10px;color:var(--gold);cursor:pointer;padding:2px 6px;user-select:none}
 
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+/* Fixed 3 columns reads fine at phone widths, but on a tablet/foldable/landscape screen it just
+   stretches 3 posters wider rather than using the space — this app's Play Store listing allows any
+   orientation (see manifest.json), so a wide viewport is a real, expected case now, not an edge
+   case. Widening the grid instead keeps poster size roughly phone-like and uses the room for more
+   columns, same idea as the sticky-header/tour fixes elsewhere: don't assume phone width. */
+@media (min-width:600px){ .grid{grid-template-columns:repeat(4,1fr)} }
+@media (min-width:900px){ .grid{grid-template-columns:repeat(5,1fr)} }
+@media (min-width:1200px){ .grid{grid-template-columns:repeat(6,1fr)} }
 
 .card{background:var(--s1);border:.5px solid var(--b1);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:opacity .15s;position:relative}
 
@@ -272,7 +280,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .cbtn.want{background:rgba(110,170,212,.12);border-color:rgba(110,170,212,.4);color:var(--blue)}
 
-.cbtn.liked{background:var(--fill);border-color:var(--fill);color:var(--fill-on);font-weight:700}
+.cbtn.liked{background:var(--gold2);border-color:rgba(var(--gold-rgb),.4);color:var(--gold)}
 
 .cbtn.seen{background:rgba(150,150,150,.1);border-color:rgba(150,150,150,.25);color:var(--t3)}
 
@@ -294,7 +302,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .plt-none{background:rgba(120,120,120,.2);color:#999}
 .mtbtn{flex:1;padding:6px 4px;border-radius:var(--rs);border:.5px solid var(--b2);background:var(--s2);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s}
-.mtbtn.active{background:var(--fill);border-color:var(--fill);color:var(--fill-on);font-weight:700}
+.mtbtn.active{background:var(--gold2);border-color:rgba(var(--gold-rgb),.5);color:var(--gold);font-weight:600}
 .mtbtn:active{opacity:.7}
 
 .overlay{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -355,7 +363,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .dact .ai{font-size:16px;display:block;margin-bottom:3px}
 
-.dact.on{background:var(--fill);border-color:var(--fill);color:var(--fill-on);font-weight:700}
+.dact.on{background:var(--gold2);border-color:rgba(var(--gold-rgb),.4);color:var(--gold)}
 
 .dact.on-seen{background:rgba(150,150,150,.1);border-color:rgba(150,150,150,.25);color:var(--t2)}
 
@@ -536,7 +544,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .tog:active .tk{transform:scale(.92)}
 
-.tk{width:14px;height:14px;border-radius:50%;background:#cacac7;position:absolute;top:3px;left:3px;transition:left .16s}
+.tk{width:14px;height:14px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .16s}
 
 .tog.on .tk{left:19px}
 
@@ -546,9 +554,9 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .brow button:active{background:var(--s3)}
 
-.brow button.pri{background:var(--fill);border-color:var(--fill);color:var(--fill-on);font-weight:700}
+.brow button.pri{background:var(--gold2);border-color:rgba(var(--gold-rgb),.4);color:var(--gold)}
 
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(44px);background:var(--s3);border:.5px solid var(--b2);border-radius:var(--pill);padding:7px 14px;font-size:10px;font-weight:500;color:var(--t1);z-index:400;transition:transform .18s;white-space:nowrap;pointer-events:none}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(44px);background:var(--s3);border:.5px solid var(--b2);border-radius:var(--pill);padding:7px 14px;font-size:10px;font-weight:500;color:var(--t1);z-index:400;transition:transform .18s;white-space:nowrap;pointer-events:none}
 
 .toast.show{transform:translateX(-50%) translateY(0)}
 
@@ -564,7 +572,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 .addrow{display:flex;gap:6px;margin-bottom:10px}
 
-.addbtn{background:transparent;color:var(--gold);border:1.3px solid var(--gold);border-radius:var(--rs);padding:8px 16px;font-weight:600;cursor:pointer;font-size:11px;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.addbtn{background:var(--gold);color:#0a0a0a;border:none;border-radius:var(--rs);padding:0 12px;font-weight:600;cursor:pointer;font-size:11px;white-space:nowrap;flex-shrink:0}
 
 /* GUIDE TAB */
 
@@ -645,7 +653,7 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .welcome-btn{width:100%;padding:14px;border-radius:var(--r);background:var(--fill);color:var(--fill-on);font-size:13px;font-weight:700;border:none;cursor:pointer;letter-spacing:.3px}
 .welcome-skip{width:100%;padding:8px;background:transparent;border:none;color:var(--t3);font-size:10px;cursor:pointer;margin-top:6px}
 .spot-block{position:fixed;inset:0;z-index:440;background:transparent;display:none;pointer-events:none}
-.tour-resume{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:443;background:var(--fill);color:var(--fill-on);font-size:11px;font-weight:700;letter-spacing:.3px;padding:10px 14px 10px 16px;border-radius:var(--pill);box-shadow:0 8px 28px rgba(0,0,0,.55);display:none;align-items:center;gap:10px;cursor:pointer;user-select:none;max-width:calc(100vw - 32px)}
+.tour-resume{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:443;background:var(--fill);color:var(--fill-on);font-size:11px;font-weight:700;letter-spacing:.3px;padding:10px 14px 10px 16px;border-radius:var(--pill);box-shadow:0 8px 28px rgba(0,0,0,.55);display:none;align-items:center;gap:10px;cursor:pointer;user-select:none;max-width:calc(100vw - 32px)}
 .tour-resume-x{font-size:14px;font-weight:400;opacity:.65;line-height:1;padding:2px 2px 2px 6px;border-left:1px solid rgba(0,0,0,.25)}
 .tour-resume-x:hover{opacity:1}
 .spot-hole{position:fixed;z-index:441;border-radius:var(--r);box-shadow:0 0 0 9999px rgba(0,0,0,.78);pointer-events:none;border:2px solid var(--gold);display:none;transition:all .25s ease}
@@ -3997,7 +4005,7 @@ function renderFbar(){
   // ── ROW 1: Film Genres ──
   const filmMaster=
     `<div class="fbar-label">Film Genres</div>`+
-    `<div class="fpill ${allOn?'on':''}" onclick="discoverAllOn()" style="border-color:var(--gold)">All</div>`+
+    `<div class="fpill ${allOn?'on':''}" onclick="discoverAllOn()" style="border-color:var(--gold);color:${allOn?'var(--gold)':'var(--t3)'}">All</div>`+
     `<div class="fpill ${allOff?'on':''}" onclick="discoverAllOff()" style="${allOff?'border-color:var(--red);color:var(--red)':''}">None</div>`;
 
   const ghtml=S.mediaType!=='tv'?Object.entries(GENRES).filter(([k])=>S.genres[k])
@@ -4008,7 +4016,7 @@ function renderFbar(){
   const showTV=S.mediaType!=='movie';
   const tvRow=showTV?
     `<div class="fbar-label">Series Genres</div>`+
-    `<div class="fpill ${tvAllOn?'on':''}" onclick="tvGenreAllOn()" style="border-color:var(--gold)">All</div>`+
+    `<div class="fpill ${tvAllOn?'on':''}" onclick="tvGenreAllOn()" style="border-color:var(--gold);color:var(--gold)">All</div>`+
     `<div class="fpill ${S.activeTVG&&S.activeTVG.size===0?'on':''}" onclick="tvGenreAllOff()" style="${S.activeTVG&&S.activeTVG.size===0?'border-color:var(--red);color:var(--red)':''}">None</div>`+
     Object.entries(TV_GENRES).map(([k,v])=>`<div class="fpill ${S.activeTVG&&S.activeTVG.has(k)?'on':''}" onclick="togTVGenre('${k}')">${v.label}</div>`).join('')
     :'';
