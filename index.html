@@ -3584,6 +3584,10 @@ const TOUR_FULL=[
   {tab:'watchlist', sel:'#syncpanel', t:'Cloud Sync', b:'Set a passphrase here to back your list up online — use the same phrase on any device to load it.'},
   {tab:'settings', sel:'#ptogs', t:'Platform', b:'Turn streaming services on or off, or pin a specific custom title so it always shows up. Genres are managed from the Filters sheet on Discover, where you actually pick them.'},
   {tab:'discover', sel:'#cgrid .card', t:'The Title Detail Page', b:'Tap any card for the full page — where to watch, trailers, IMDb and Letterboxd links, cast and crew (tap any name for their filmography), and a Did You Know trivia section when there’s something notable.'},
+  {tab:'discover', sel:'#dsect-trailer', t:'Trailer', b:'Tap a thumbnail to play it right here in the app — official trailers first. If TMDB has nothing listed for this title, a direct YouTube search link takes its place instead.', overlay:'detail'},
+  {tab:'discover', sel:'#dsect-trivia', t:'Did You Know', b:'Trivia surfaced from the credits themselves — special-thanks mentions, notable roles like composer or executive producer, and recurring director–cinematographer pairings — each linking to IMDb for more. Shows a short note instead when nothing stood out.', overlay:'detail'},
+  {tab:'discover', sel:'#dsect-castcrew', t:'Cast & Crew', b:'Tap any name — director, writer, cinematographer, or actor — to open their own page. From there, tap ☆ Favourite to make them a seed for Because You Liked, so more of their work surfaces on Discover even before you\'ve liked anything of theirs.', overlay:'detail'},
+  {tab:'discover', sel:'#dsect-links', t:'IMDb & Letterboxd', b:'Quick links out to this title\'s IMDb page (reviews, parental guidance, fuller credits) and a Letterboxd search — sitting at the bottom of every detail page.', overlay:'detail'},
   {tab:null, sel:'#guideBtn', t:'That’s everything', b:'You can reopen this tour anytime from the Guide button in the header.'}
 ];
 
@@ -3634,6 +3638,21 @@ function isAnyBlockingOverlayOpen(){
     document.getElementById('notifOverlay')?.classList.contains('open') ||
     document.getElementById('filterSheet')?.classList.contains('open'));
 }
+// Same idea as isAnyBlockingOverlayOpen, but a handful of steps (Trailer, Did You Know, Cast &
+// Crew, IMDb/Letterboxd) deliberately target content INSIDE the open title detail page — for
+// those, #overlay being open is the step working as intended, not the visitor wandering off, so
+// it must not trigger a pause. It's still unexpected — and still pauses — if a step that ISN'T
+// one of those sees #overlay open (old behavior, unchanged), or if one of those steps sees
+// #overlay unexpectedly CLOSED (the visitor backed all the way out mid-drill-down). Filters,
+// Notifications and the Guide legend have no steps inside them, so they keep pausing regardless.
+function isUnexpectedOverlayOpen(s){
+  const detailOpen=!!document.getElementById('overlay')?.classList.contains('open');
+  const expectsDetail=!!(s&&s.overlay==='detail');
+  if(detailOpen!==expectsDetail) return true;
+  return !!(document.getElementById('legendOverlay')?.classList.contains('open') ||
+    document.getElementById('notifOverlay')?.classList.contains('open') ||
+    document.getElementById('filterSheet')?.classList.contains('open'));
+}
 function pauseTourVisuals(reason){
   tourPauseReason=reason||'tab';
   $('spotHole').style.display='none';
@@ -3652,9 +3671,14 @@ function resumeTourStep(){
   // If they're still inside a detail/person page, Filters, etc. when they tap Resume, back out of
   // it first — resuming while an overlay still covers the app would otherwise position the
   // spotlight against a target that's there in the DOM but hidden behind that overlay, which reads
-  // as the tour randomly dimming the wrong screen.
+  // as the tour randomly dimming the wrong screen. Exception: the step we're about to land on (the
+  // next one, when this pause was the "you tapped a card" kind) may itself live inside the title
+  // detail page — Trailer, Did You Know, Cast & Crew, IMDb/Letterboxd — in which case leaving it
+  // open is exactly the point, not something to back out of.
+  const nextIdx=reason==='overlay' ? Math.min(tourIdx+1,tourSteps.length-1) : tourIdx;
+  const keepDetailOpen=tourSteps[nextIdx]?.overlay==='detail';
   if(isAnyBlockingOverlayOpen()){
-    if(document.getElementById('overlay')?.classList.contains('open') && typeof closeDetail==='function') closeDetail();
+    if(!keepDetailOpen && document.getElementById('overlay')?.classList.contains('open') && typeof closeDetail==='function') closeDetail();
     if(document.getElementById('filterSheet')?.classList.contains('open') && typeof closeFilterSheet==='function') closeFilterSheet();
     if(document.getElementById('notifOverlay')?.classList.contains('open')) document.getElementById('notifOverlay').classList.remove('open');
     if(document.getElementById('legendOverlay')?.classList.contains('open')) document.getElementById('legendOverlay').classList.remove('open');
@@ -3674,7 +3698,7 @@ function startTourGuard(){
     const curTab=document.querySelector('.ntab.on')?.dataset.tab;
     const tabOk=!s.tab||s.tab===curTab;
     if(!tabOk){ pauseTourVisuals('tab'); return; }
-    if(isAnyBlockingOverlayOpen()){ pauseTourVisuals('overlay'); return; }
+    if(isUnexpectedOverlayOpen(s)){ pauseTourVisuals('overlay'); return; }
     // Target scrolled mostly out of view under its own steam (not via "Go to section") — same
     // failure mode a frozen, un-resizing hole used to cause, just from manual scrolling instead of
     // async content growth. Pausing here (rather than leaving a hole with nothing visible inside it,
@@ -3697,9 +3721,17 @@ function startTourGuard(){
         const spIsWindow=sp===document.scrollingElement||sp===document.documentElement;
         const spScrollTop=spIsWindow?(window.scrollY||document.documentElement.scrollTop):sp.scrollTop;
         const spScrollHeight=spIsWindow?document.documentElement.scrollHeight:sp.scrollHeight;
+        const spClientHeight=spIsWindow?window.innerHeight:sp.clientHeight;
         const contentGrewNotUserScroll=tourLastFit && tourLastFit.el===el
           && spScrollHeight!==tourLastFit.scrollHeight && spScrollTop===tourLastFit.scrollTop;
-        if(contentGrewNotUserScroll){ fitTargetAboveSheet(el); positionSpotlight(el); }
+        // The title detail page's last couple of sections (IMDb & Letterboxd, right before the
+        // closing disclaimer line) can sit too close to the end of the page for fitTargetAboveSheet
+        // to ever center them — there's nothing left below to scroll into view, so the container is
+        // already pinned at its natural maximum. That's the page's own shape, not the visitor
+        // scrolling away; only worth checking for these detail-page steps, since it's the one place
+        // a target is reliably this close to its container's actual end.
+        const pinnedAtScrollEnd=s.overlay==='detail' && (spScrollHeight-spClientHeight-spScrollTop)<=2;
+        if(contentGrewNotUserScroll || pinnedAtScrollEnd){ fitTargetAboveSheet(el); positionSpotlight(el); }
         else pauseTourVisuals('tab');
       }
     }
@@ -3736,6 +3768,10 @@ async function goToTourStep(i){
   $('spotHole').style.display='block';
   $('spotCallout').style.display='flex';
   calloutUserExpanded=false; // each step starts from its own auto collapse/expand decision
+  // A step that doesn't live inside the title detail page shouldn't find it still open underneath
+  // it (e.g. arriving here straight off the last Cast & Crew / IMDb step via Next →) — back out
+  // first so the spotlight lands on the actual app, not a page hidden behind the overlay.
+  if(s.overlay!=='detail' && document.getElementById('overlay')?.classList.contains('open') && typeof closeDetail==='function') closeDetail();
   const curTab=document.querySelector('.ntab.on')?.dataset.tab;
   if(s.tab && curTab!==s.tab){ tourNavigating=true; showTab(s.tab); tourNavigating=false; await tourWait(200); }
 
@@ -3747,13 +3783,26 @@ async function goToTourStep(i){
   // awaited refresh of the feed itself before giving up — the same Refresh the Curation section's
   // own button triggers — then keep retrying; a genuinely empty result (every filter combined
   // narrows to zero) still skips gracefully after that, same as before.
-  let el=null, tries=0, refreshedOnce=false;
-  while(!el && tries<14){
+  let el=null, tries=0, refreshedOnce=false, autoOpenedDetail=false;
+  // Trailer/Did You Know/Cast & Crew/IMDb steps only exist once a title's detail page has actually
+  // loaded — real data, several TMDB calls deep, not just a DOM toggle — so they get a longer
+  // budget than the default 14 tries (~2s) before giving up and skipping ahead.
+  const maxTries=(s.overlay==='detail')?40:14;
+  while(!el && tries<maxTries){
     el=document.querySelector(s.sel);
     if(!el){
       if(!refreshedOnce && s.sel.startsWith('#cgrid') && (!S.results||!S.results.length)){
         refreshedOnce=true;
         try{ await refreshDiscover(); }catch(e){}
+      } else if(s.overlay==='detail' && !autoOpenedDetail && !document.getElementById('overlay')?.classList.contains('open')){
+        // Reached one of these steps without the visitor ever tapping a card themselves (e.g. they
+        // hit Next → straight through the previous step instead) — open the first available one
+        // automatically, the same way tapping it would have, rather than stalling out for four
+        // steps in a row waiting on content that will never appear.
+        autoOpenedDetail=true;
+        const card=document.querySelector('#cgrid .card')||document.querySelector('.card');
+        if(card) card.click();
+        await tourWait(200);
       } else {
         await tourWait(150);
       }
@@ -4712,12 +4761,15 @@ function detailHTML(item,det,st,sims){
     );
   }
 
-  const triviaHTML=triviaItems.length?
-    `<div class="dsect">
+  // Always rendered (with an empty-state note when nothing surfaced) rather than omitted outright —
+  // same reasoning as Because You Liked / Upcoming's empty states: a tour step (Did You Know) needs
+  // a stable target to point at even on a title with no notable trivia, instead of silently vanishing.
+  const triviaHTML=`<div class="dsect" id="dsect-trivia">
       <div class="dsectl">Did You Know</div>
-      <div class="trivia-list">${triviaItems.join('')}</div>
-      ${det.imdb_id?`<a href="https://www.imdb.com/title/${det.imdb_id}/trivia/" target="_blank" class="trivia-more">More trivia on IMDB →</a>`:''}
-    </div>`:'';
+      ${triviaItems.length?`<div class="trivia-list">${triviaItems.join('')}</div>
+      ${det.imdb_id?`<a href="https://www.imdb.com/title/${det.imdb_id}/trivia/" target="_blank" class="trivia-more">More trivia on IMDB →</a>`:''}`
+      :`<div style="font-size:11px;color:var(--t2)">Nothing notable surfaced for this title — thanks credits, standout crew roles, or a recurring director–cinematographer pairing show up here when there's something to share.</div>`}
+    </div>`;
 
   const crewChips=[
 
@@ -4811,7 +4863,7 @@ function detailHTML(item,det,st,sims){
 
       :`<div class="dsect"><div class="dsectl">Where to Watch</div><div style="font-size:11px;color:var(--t2)">Not currently streaming in India on tracked services.</div></div>`}
 
-    ${trailers.length?`<div class="dsect"><div class="dsectl">Trailer${trailers.length>1?'s':''} — tap to play</div>
+    ${trailers.length?`<div class="dsect" id="dsect-trailer"><div class="dsectl">Trailer${trailers.length>1?'s':''} — tap to play</div>
 
       <div class="trailer-scroll">${trailers.map(v=>`
 
@@ -4823,7 +4875,7 @@ function detailHTML(item,det,st,sims){
 
           <div class="trailer-label">${v.type}${v.official?' · Official':''}</div>
 
-        </div>`).join('')}</div></div>`:`<div class="dsect"><div class="dsectl">Trailer</div><div style="font-size:11px;color:var(--t2)">No trailer listed on TMDB for this title — <a class="glink" href="https://www.youtube.com/results?search_query=${enc(title+' trailer')}" target="_blank">search YouTube directly &rarr;</a></div></div>`}
+        </div>`).join('')}</div></div>`:`<div class="dsect" id="dsect-trailer"><div class="dsectl">Trailer</div><div style="font-size:11px;color:var(--t2)">No trailer listed on TMDB for this title — <a class="glink" href="https://www.youtube.com/results?search_query=${enc(title+' trailer')}" target="_blank">search YouTube directly &rarr;</a></div></div>`}
 
     ${overview?`<div class="dsect"><div class="dsectl">Synopsis</div>
 
@@ -4831,8 +4883,10 @@ function detailHTML(item,det,st,sims){
 
       ${overview.length>280?`<span class="readmore" id="rmbtn" onclick="expandSynopsis()">Read more</span>`:''}</div>`:''}
 
-    ${crewChips?`<div class="dsect"><div class="dsectl">Crew — tap for filmography</div><div class="crew-row">${crewChips}</div></div>`:''}
     ${triviaHTML}
+
+    <div id="dsect-castcrew">
+    ${crewChips?`<div class="dsect"><div class="dsectl">Crew — tap for filmography</div><div class="crew-row">${crewChips}</div></div>`:''}
 
     ${cast.length?`<div class="dsect"><div class="dsectl">Cast — tap for more from each actor</div>
 
@@ -4847,6 +4901,8 @@ function detailHTML(item,det,st,sims){
           <div class="castchar">${c.character||''}</div>
 
         </div>`).join('')}</div></div>`:''}
+    ${(!crewChips&&!cast.length)?`<div class="dsect"><div class="dsectl">Cast & Crew</div><div style="font-size:11px;color:var(--t2)">No cast or crew credits listed on TMDB for this title.</div></div>`:''}
+    </div>
 
     ${sims.length?`<div class="dsect"><div class="dsectl">More Like This — Streaming in India</div>
 
@@ -4878,7 +4934,7 @@ function detailHTML(item,det,st,sims){
 
         </div>`;}).join('')}</div></div>`:''}
 
-    <div style="font-size:8px;color:var(--t3);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+    <div id="dsect-links" style="font-size:8px;color:var(--t3);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
       <span>India availability: JustWatch via TMDB</span>
       <div style="display:flex;gap:6px;align-items:center">
         ${det.imdb_id?`<a href="https://www.imdb.com/title/${det.imdb_id}/" target="_blank"
