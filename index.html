@@ -3839,6 +3839,8 @@ function toggleCalloutCollapse(){
 function fitTargetAboveSheet(el){
   const callout=$('spotCallout');
   const r0=el.getBoundingClientRect();
+  const scrollParent=findScrollParent(el);
+  const spIsWindow=scrollParent===document.scrollingElement||scrollParent===document.documentElement;
 
   // The Discover tab's search/filter/media-toggle bar (.discover-sticky-hdr) stays pinned to the
   // top of the scroll area (position:sticky, z-index 50) over whatever's scrolled underneath it.
@@ -3851,8 +3853,20 @@ function fitTargetAboveSheet(el){
   // height here — same idea as the bottom sheet's reserved space — keeps every section's own
   // header inside the visible area, never tucked under it.
   const stickyHdr=document.querySelector('.discover-sticky-hdr');
-  const topReserve=(stickyHdr && stickyHdr.offsetParent!==null && getComputedStyle(stickyHdr).position==='sticky' && !stickyHdr.contains(el))
+  const stickyReserve=(stickyHdr && stickyHdr.offsetParent!==null && getComputedStyle(stickyHdr).position==='sticky' && !stickyHdr.contains(el))
     ? Math.max(0,stickyHdr.getBoundingClientRect().bottom) : 0;
+
+  // Every tab's own scroll container (#tab-discover, #tab-watchlist, ...) sits below the app's
+  // fixed header+nav bar (~98px), not at the very top of the viewport — that container's own top
+  // edge, not y:0, is the highest a target inside it can ever usefully be scrolled to. Without this
+  // floor, a target near the start of a tall section (e.g. My List's "Want to Watch" header plus
+  // the Liked/Seen chips, sitting right above a long card grid) computes a scroll position ABOVE
+  // the container's own visible edge — the browser just clips it there, so the tour lands on the
+  // right section but its own header ends up hidden above the scrollable area instead of at the
+  // top of it, landing straight on the card grid instead. Reported: tour step 12/17 (My List)
+  // never showing the Want to Watch header or the Liked/Seen chips beside it.
+  const containerTop=spIsWindow ? 0 : Math.max(0,scrollParent.getBoundingClientRect().top);
+  const topReserve=Math.max(stickyReserve, containerTop);
 
   if(!calloutUserExpanded){
     const wasCollapsed=callout.classList.contains('collapsed');
@@ -3866,8 +3880,6 @@ function fitTargetAboveSheet(el){
   const availH=window.innerHeight-sheetH-topReserve;
   const targetTop=topReserve+(r0.height<=availH-24 ? (availH-r0.height)/2 : 16);
   const delta=r0.top-targetTop;
-  const scrollParent=findScrollParent(el);
-  const spIsWindow=scrollParent===document.scrollingElement||scrollParent===document.documentElement;
   if(Math.abs(delta)>2){
     if(spIsWindow) window.scrollBy({top:delta,left:0,behavior:'instant'});
     else scrollParent.scrollTop+=delta;
