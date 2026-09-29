@@ -3692,6 +3692,10 @@ const TOUR_FULL=[
 ];
 
 let tourSteps=[], tourIdx=0, tourReposition=null, tourNavigating=false, tourResizeObserver=null;
+// Phone fix (Sep 2026): each step gets a short grace period and a few quiet re-fit attempts before the
+// guard decides its target has gone off-screen — on phones a programmatic scroll can be ignored or land
+// late, and pausing within 400ms made "Tour paused — tap to continue" look like it did nothing.
+let tourStepStartedAt=0, tourRefitTries=0;
 // Records where fitTargetAboveSheet last placed the scroll for the current target, so tourGuard can
 // tell "content loaded above the target and silently pushed it down" (self-heal, no pause needed)
 // apart from "the visitor actually scrolled away by hand" (pause, same as always) — see the guard's
@@ -3798,6 +3802,11 @@ function startTourGuard(){
     const curTab=document.querySelector('.ntab.on')?.dataset.tab;
     const tabOk=!s.tab||s.tab===curTab;
     if(!tabOk){ pauseTourVisuals('tab'); return; }
+    // The visitor did exactly what the step asked (tapped a card and the detail page opened) and the
+    // next step lives inside that page: just move on, instead of pausing and asking for another tap.
+    const detailNowOpen=!!document.getElementById('overlay')?.classList.contains('open');
+    const nextStep=tourSteps[tourIdx+1];
+    if(detailNowOpen && s.overlay!=='detail' && nextStep && nextStep.overlay==='detail'){ goToTourStep(tourIdx+1); return; }
     if(isUnexpectedOverlayOpen(s)){ pauseTourVisuals('overlay'); return; }
     // Target scrolled mostly out of view under its own steam (not via "Go to section") — same
     // failure mode a frozen, un-resizing hole used to cause, just from manual scrolling instead of
@@ -3831,7 +3840,11 @@ function startTourGuard(){
         // scrolling away; only worth checking for these detail-page steps, since it's the one place
         // a target is reliably this close to its container's actual end.
         const pinnedAtScrollEnd=s.overlay==='detail' && (spScrollHeight-spClientHeight-spScrollTop)<=2;
-        if(contentGrewNotUserScroll || pinnedAtScrollEnd){ fitTargetAboveSheet(el); positionSpotlight(el); }
+        const inGrace=(performance.now()-tourStepStartedAt)<1500;
+        if(contentGrewNotUserScroll || pinnedAtScrollEnd || inGrace || tourRefitTries<3){
+          if(!contentGrewNotUserScroll && !pinnedAtScrollEnd && !inGrace) tourRefitTries++;
+          fitTargetAboveSheet(el); positionSpotlight(el);
+        }
         else pauseTourVisuals('tab');
       }
     }
@@ -3863,6 +3876,7 @@ function jumpToTourFromGuide(sel){
 
 async function goToTourStep(i){
   tourIdx=i;
+  tourStepStartedAt=performance.now(); tourRefitTries=0;
   const s=tourSteps[i];
   $('tourResume').style.display='none';
   $('spotHole').style.display='block';
@@ -3887,7 +3901,7 @@ async function goToTourStep(i){
   // Trailer/Did You Know/Cast & Crew/IMDb steps only exist once a title's detail page has actually
   // loaded — real data, several TMDB calls deep, not just a DOM toggle — so they get a longer
   // budget than the default 14 tries (~2s) before giving up and skipping ahead.
-  const maxTries=(s.overlay==='detail')?40:14;
+  const maxTries=(s.overlay==='detail')?100:14; // ~15s: a title page makes several requests in a row, slow on mobile data
   while(!el && tries<maxTries){
     el=document.querySelector(s.sel);
     if(!el){
@@ -3920,6 +3934,12 @@ async function goToTourStep(i){
   // on this step's text (a short step vs. Because You Liked's long one), and scrolling needs that
   // final height to know how much room is actually left above the sheet for the target.
   renderTourText(s,i);
+  tourStepStartedAt=performance.now(); tourRefitTries=0;
+  // The last title-page sections (IMDb & Letterboxd) sit at the very end of the page, so without extra
+  // room below them they can never scroll up above the tour sheet. Add that room only while the tour is
+  // on a title-page step; it's removed again on the next non-detail step and when the tour closes.
+  const dpg=document.getElementById('dpage');
+  if(dpg) dpg.style.paddingBottom = s.overlay==='detail' ? (($('spotCallout').offsetHeight||0)+24)+'px' : '';
 
   fitTargetAboveSheet(el);
   // Wait for the scroll to actually paint (fixed timeouts are unreliable across devices)
@@ -4031,7 +4051,13 @@ function fitTargetAboveSheet(el){
   const delta=r0.top-targetTop;
   if(Math.abs(delta)>2){
     if(spIsWindow) window.scrollBy({top:delta,left:0,behavior:'instant'});
-    else scrollParent.scrollTop+=delta;
+    else {
+      const before=scrollParent.scrollTop;
+      scrollParent.scrollTop=before+delta;
+      // Some mobile browsers ignore scrollTop writes on a touch-scrolling panel (e.g. mid-momentum):
+      // if nothing moved, fall back to the browser's own scroll-into-view so the target isn't stranded.
+      if(Math.abs(scrollParent.scrollTop-before)<1 && (scrollParent.scrollHeight-scrollParent.clientHeight)>1) el.scrollIntoView({block:'center',behavior:'instant'});
+    }
   }
   // Snapshot where things stand right after fitting, so tourGuard can tell later whether an
   // off-screen target means content grew above it (self-heal) or the visitor scrolled by hand
@@ -4088,6 +4114,7 @@ function tourBack(){
   if(tourIdx>0) goToTourStep(tourIdx-1);
 }
 function closeTour(){
+  { const dpg=document.getElementById('dpage'); if(dpg) dpg.style.paddingBottom=''; }
   $('spotBlock').style.display='none';
   $('spotHole').style.display='none';
   $('spotCallout').style.display='none';
