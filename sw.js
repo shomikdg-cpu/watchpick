@@ -1,46 +1,66 @@
 // WatchPick Service Worker
-// v2 (Sep 2026): the old v1 fetch handler only ever cached '/' ONCE, at install time, and never
-// wrote to the cache again — so the offline/failure fallback stayed frozen at whichever build was
-// live the very first time a device installed the app, potentially many deploys behind. On a
-// flaky/failing connection (very common for testers on mobile data, and inside the Play Store
-// Trusted Web Activity wrapper, which is just Chrome pointed at this same origin), that stale
-// snapshot got served silently instead of an error, looking exactly like "not seeing the latest
-// version" — and the visible stall while the network attempt ran its course before falling back
-// read as "latency". Fixed below: every successful fetch now refreshes the cache, so the fallback
-// is always the most recently-seen good version, not a permanently frozen first-install snapshot.
-const CACHE = 'watchpick-v2'; // bumped from v1 so activate() actually purges the old, stale cache
-const ASSETS = ['/'];
+// v3 (Sep 2026) - keeps v2's guarantee (every successful GET refreshes the cache, so the offline
+// fallback is never a frozen first-install snapshot) and fixes the launch stall:
+//  * network-first navigations now fall back to the cached copy after NAV_TIMEOUT_MS instead of
+//    waiting out a dead/slow connection (the cache still refreshes in the background)
+//  * navigation preload lets the network request start in parallel with SW boot
+//  * only same-origin + Google Fonts requests go through the SW; TMDB posters (wsrv.nl / image.tmdb.org)
+//    go straight to the browser, removing a SW hop from every poster
+//  * install pre-caches the app shell so the very first offline launch works
+const CACHE = 'watchpick-v3';
+const ASSETS = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png'];
+const NAV_TIMEOUT_MS = 3500;
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS))
+    caches.open(CACHE).then(c => Promise.all(ASSETS.map(a => c.add(a).catch(() => {}))))
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
-  );
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
+    if (self.registration.navigationPreload) {
+      try { await self.registration.navigationPreload.enable(); } catch (err) {}
+    }
+  })());
   self.clients.claim();
 });
 
+function cachePut(e, req, res) {
+  const p = caches.open(CACHE).then(c => c.put(req, res)).catch(() => {});
+  try { e.waitUntil(p); } catch (err) { /* event already settled (timeout fallback served) - put still runs */ }
+}
+
 self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-  if (e.request.url.includes('api.themoviedb.org') ||
-      e.request.url.includes('pythonanywhere.com/api')) return;
-  e.respondWith(
-    fetch(e.request).then(res => {
-      // Keep the offline/failure fallback fresh: cache every successful same-origin GET response
-      // as it comes in, so a later failure falls back to the last version this device actually
-      // saw succeed — not to a snapshot frozen at first install.
-      if (res && res.ok) {
-        const resClone = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, resClone)).catch(() => {});
-      }
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.href.includes('pythonanywhere.com/api')) return;
+  const sameOrigin = url.origin === self.location.origin;
+  const fontHost = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
+  if (!sameOrigin && !fontHost) return; // posters etc. bypass the SW
+  if (sameOrigin && url.pathname.startsWith('/api/')) return; // TMDB proxy: HTTP/CDN caching handles it
+
+  e.respondWith((async () => {
+    const isNav = req.mode === 'navigate';
+    const net = (async () => {
+      const pre = e.preloadResponse ? await e.preloadResponse : null;
+      const res = pre || await fetch(req);
+      if (res && res.ok) cachePut(e, req, res.clone());
       return res;
-    }).catch(() => caches.match(e.request))
-  );
+    })();
+    const fallback = () => caches.match(req, { ignoreSearch: isNav });
+    if (!isNav) {
+      try { return await net; } catch (err) { return (await fallback()) || Response.error(); }
+    }
+    const timeout = new Promise(r => setTimeout(() => r(null), NAV_TIMEOUT_MS));
+    const first = await Promise.race([net.catch(() => null), timeout]);
+    if (first) return first;
+    const cached = await fallback();
+    if (cached) return cached;
+    try { return await net; } catch (err) { return Response.error(); }
+  })());
 });
