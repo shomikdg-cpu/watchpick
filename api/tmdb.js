@@ -51,8 +51,17 @@ module.exports = async (req, res) => {
   } catch (e) {
     return deny(504, 'upstream timeout');
   }
-  const body = await upstream.text();
+  let body = await upstream.text();
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  // Watch-provider responses carry every country (~55 KB); WatchPick only reads India. Trimming to IN cuts
+  // them to ~1-2 KB, which is what keeps the proxy inside the Hobby plan's 10 GB/month origin-transfer allowance.
+  if (upstream.ok && path.endsWith('/watch/providers')) {
+    try {
+      const j = JSON.parse(body);
+      const IN = j && j.results && j.results.IN;
+      body = JSON.stringify({ id: j.id, results: IN ? { IN } : {} });
+    } catch (e) { /* leave body untouched if TMDB ever sends something unexpected */ }
+  }
   if (!upstream.ok) {
     res.setHeader('Cache-Control', 'no-store');
     const ra = upstream.headers.get('retry-after');
