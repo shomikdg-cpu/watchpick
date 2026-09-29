@@ -3695,7 +3695,7 @@ let tourSteps=[], tourIdx=0, tourReposition=null, tourNavigating=false, tourResi
 // Phone fix (Sep 2026): each step gets a short grace period and a few quiet re-fit attempts before the
 // guard decides its target has gone off-screen — on phones a programmatic scroll can be ignored or land
 // late, and pausing within 400ms made "Tour paused — tap to continue" look like it did nothing.
-let tourStepStartedAt=0, tourRefitTries=0;
+let tourStepStartedAt=0, tourRefitTries=0, tourLoadingDetail=false, pendingPops=0;
 // Records where fitTargetAboveSheet last placed the scroll for the current target, so tourGuard can
 // tell "content loaded above the target and silently pushed it down" (self-heal, no pause needed)
 // apart from "the visitor actually scrolled away by hand" (pause, same as always) — see the guard's
@@ -3779,7 +3779,9 @@ function resumeTourStep(){
   // next one, when this pause was the "you tapped a card" kind) may itself live inside the title
   // detail page — Trailer, Did You Know, Cast & Crew, IMDb/Letterboxd — in which case leaving it
   // open is exactly the point, not something to back out of.
-  const nextIdx=reason==='overlay' ? Math.min(tourIdx+1,tourSteps.length-1) : tourIdx;
+  const onDetailStep=tourSteps[tourIdx]?.overlay==='detail';
+  const advance=reason==='overlay' && !onDetailStep;
+  const nextIdx=advance ? Math.min(tourIdx+1,tourSteps.length-1) : tourIdx;
   const keepDetailOpen=tourSteps[nextIdx]?.overlay==='detail';
   if(isAnyBlockingOverlayOpen()){
     if(!keepDetailOpen && document.getElementById('overlay')?.classList.contains('open') && typeof closeDetail==='function') closeDetail();
@@ -3787,7 +3789,7 @@ function resumeTourStep(){
     if(document.getElementById('notifOverlay')?.classList.contains('open')) document.getElementById('notifOverlay').classList.remove('open');
     if(document.getElementById('legendOverlay')?.classList.contains('open')) document.getElementById('legendOverlay').classList.remove('open');
   }
-  if(reason==='overlay'){
+  if(advance){
     if(tourIdx<tourSteps.length-1) goToTourStep(tourIdx+1); else closeTour();
   } else {
     goToTourStep(tourIdx);
@@ -3797,6 +3799,7 @@ function startTourGuard(){
   stopTourGuard();
   tourGuardTimer=setInterval(()=>{
     if(!tourSteps.length || tourNavigating) return;
+    if(tourLoadingDetail) return;
     if($('tourResume').style.display==='flex') return; // already paused — wait for an explicit tap to resume
     const s=tourSteps[tourIdx];
     const curTab=document.querySelector('.ntab.on')?.dataset.tab;
@@ -3898,13 +3901,22 @@ async function goToTourStep(i){
   // own button triggers — then keep retrying; a genuinely empty result (every filter combined
   // narrows to zero) still skips gracefully after that, same as before.
   let el=null, tries=0, refreshedOnce=false, autoOpenedDetail=false;
+  tourLoadingDetail=(s.overlay==='detail');
+  try{
   // Trailer/Did You Know/Cast & Crew/IMDb steps only exist once a title's detail page has actually
   // loaded — real data, several TMDB calls deep, not just a DOM toggle — so they get a longer
   // budget than the default 14 tries (~2s) before giving up and skipping ahead.
   const maxTries=(s.overlay==='detail')?100:14; // ~15s: a title page makes several requests in a row, slow on mobile data
   while(!el && tries<maxTries){
-    el=document.querySelector(s.sel);
+    // A closed title page keeps its old sections in the DOM (hidden), so a plain querySelector "finds"
+    // them and the step never re-opens the page — treat detail targets as absent while it is closed.
+    el=(s.overlay==='detail' && !document.getElementById('overlay')?.classList.contains('open')) ? null : document.querySelector(s.sel);
     if(!el){
+      if(s.overlay==='detail' && document.getElementById('overlay')?.classList.contains('open') && navStack.length && navStack[navStack.length-1].type==='person'){
+        // Visitor explored a cast/crew page and came back via Resume: return to the title page underneath.
+        let k=0; while(navStack.length && navStack[navStack.length-1].type==='person'){ navStack.pop(); k++; }
+        if(navStack.length){ pendingPops+=k; setTimeout(()=>{pendingPops=0;},1200); history.go(-k); renderDetailView(navStack[navStack.length-1].id); await tourWait(300); tries++; continue; }
+      }
       if(!refreshedOnce && s.sel.startsWith('#cgrid') && (!S.results||!S.results.length)){
         refreshedOnce=true;
         try{ await refreshDiscover(); }catch(e){}
@@ -3914,14 +3926,20 @@ async function goToTourStep(i){
         // automatically, the same way tapping it would have, rather than stalling out for four
         // steps in a row waiting on content that will never appear.
         autoOpenedDetail=true;
-        const card=document.querySelector('#cgrid .card')||document.querySelector('.card');
-        if(card) card.click();
+        const first=(S.results||[])[0];
+        if(first && typeof openDetail==='function') openDetail(first.id,first.type);
+        else { const card=document.querySelector('#cgrid .card')||document.querySelector('.card'); if(card) card.click(); }
         await tourWait(200);
       } else {
         await tourWait(150);
       }
       tries++;
     }
+  }
+  }finally{ tourLoadingDetail=false; }
+  if(!el && s.overlay==='detail'){
+    // Never silently skip title-page steps (that read as "jumps to 21"): wait for the visitor to tap Resume.
+    pauseTourVisuals('tab'); return;
   }
   if(!el){
     // couldn't find this step's target even after a refresh attempt (e.g. filters that currently
@@ -4620,6 +4638,8 @@ function goBack(){ history.back(); }
 
 window.addEventListener('popstate',()=>{
 
+  if(pendingPops>0){ pendingPops--; return; }
+
   if(!$('overlay').classList.contains('open')) return;
 
   navStack.pop();
@@ -4648,7 +4668,7 @@ function closeDetail(){
 
   renderGrid(S.results); // refresh feed view
 
-  if(n) history.go(-n);
+  if(n){ pendingPops+=n; setTimeout(()=>{pendingPops=0;},1200); history.go(-n); }
 
 }
 
