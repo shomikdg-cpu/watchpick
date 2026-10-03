@@ -3221,14 +3221,21 @@ function discoverSettledCount(){
 // (or nothing is pending). Items that turn out not to match the Stream/Rent filter are dropped from the
 // pool, exactly as the old eager fetchAndEnrich did. Because enrichment follows display order, the first
 // `target` visible titles are identical to what enriching everything would have produced.
+// Pending items ensureEnriched can actually work on (Seen titles and ones hidden by the Language filter
+// are skipped). renderGrid must use this SAME predicate: it used to test "any item pending", so with a
+// Language filter on, pending-but-filtered items made it call ensureEnriched, which found nothing to do,
+// then re-render, which called it again — an endless async loop that froze the app.
+function pendingEnrichable(){
+  const seen=seenIds();
+  return S.results.filter(i=>i._pending&&!seen.has(i.id)&&passesLang(i));
+}
 let _enrichRun=null;
 async function ensureEnriched(target){
   if(_enrichRun) { await _enrichRun; }
   _enrichRun=(async()=>{
     const CHUNK=16;
     while(discoverSettledCount()<target){
-      const seen=seenIds();
-      const batch=S.results.filter(i=>i._pending&&!seen.has(i.id)&&passesLang(i)).slice(0,CHUNK);
+      const batch=pendingEnrichable().slice(0,CHUNK);
       if(!batch.length) break;
       await Promise.all(batch.map(enrich));
       const failed=new Set();
@@ -4473,7 +4480,7 @@ function renderGrid(items){
 
     vis=vis.filter(i=>(i.platforms||[]).some(p=>S.activeP.has(p)));
 
-    if(!_enrichRun&&S.results.some(i=>i._pending)&&discoverSettledCount()<S.visibleCount){
+    if(!_enrichRun&&pendingEnrichable().length&&discoverSettledCount()<S.visibleCount){
       ensureEnriched(S.visibleCount).then(()=>{ if(!S.searchMode) renderGrid(S.results); });
     }
 
