@@ -1958,6 +1958,24 @@ async function fetchProviders(id,type,opts){
   return job;
 }
 
+const _cinemaCache=new Map();
+async function inCinemasNow(item){
+  try{
+    if(item.type==='tv'||!item.releaseDate) return false;
+    const age=(Date.now()-Date.parse(item.releaseDate))/864e5;
+    if(!(age>=-1&&age<=45)) return false;               // only recent releases need the extra check
+    if(_cinemaCache.has(item.id)) return _cinemaCache.get(item.id);
+    const d=await tmdbRaw(`/movie/${item.id}?append_to_response=release_dates`);
+    const IN=((d&&d.release_dates&&d.release_dates.results)||[]).find(r=>r.iso_3166_1==='IN');
+    const dates=(IN&&IN.release_dates)||[];
+    const now=Date.now()+864e5;
+    const theatrical=dates.some(x=>(x.type===2||x.type===3)&&Date.parse(x.release_date)<=now);
+    const digital=dates.some(x=>(x.type===4||x.type===6)&&Date.parse(x.release_date)<=now);
+    const res=theatrical&&!digital;
+    if(d) _cinemaCache.set(item.id,res);               // don't cache a failed lookup
+    return res;
+  }catch(e){ return false; }
+}
 async function enrich(item){
 
   const p=await fetchProviders(item.id,item.type);
@@ -1969,6 +1987,13 @@ async function enrich(item){
   item.others=p.others;
 
   item.inIndia=p.anyIN;
+
+  // TMDB/JustWatch sometimes lists a streaming service for a film that is still in cinemas (e.g. a sequel
+  // mixed up with the earlier films' or another language version's listing). A film whose India release is
+  // theatrical, within the last 45 days, with no digital/TV release dated yet cannot be streaming, so drop it.
+  if(item.platforms.length && await inCinemasNow(item)){
+    item.platforms=[]; item.avail={}; item.others=[]; item.inIndia=false; item.inCinemas=true;
+  }
 
   return item;
 
@@ -1987,6 +2012,8 @@ function mapItem(r,type){
     voteCount:r.vote_count||0,
 
     poster_path:r.poster_path||null,backdrop_path:r.backdrop_path||null,
+
+    releaseDate:r.release_date||r.first_air_date||'',
 
     platforms:[],avail:{},type:r.media_type||type||'movie',
 
@@ -4522,6 +4549,8 @@ function availTag(item){
 
   if(!item.platforms||!item.platforms.length){
 
+    if(item.inCinemas) return `<div class="cavail av-none">In cinemas</div>`;
+
     return item.inIndia===false&&S.searchMode?`<div class="cavail av-none">Not in IN</div>`:'';
 
   }
@@ -4865,6 +4894,8 @@ function detailHTML(item,det,st,sims){
   const inPill=availPlats.length
 
     ?`<div class="dpill in-yes">✓ Available in India</div>`
+
+    :item.inCinemas?`<div class="dpill in-pending">🎬 In cinemas — not streaming yet</div>`
 
     :item.inIndia?`<div class="dpill in-yes">✓ In India (other platforms)</div>`
 
