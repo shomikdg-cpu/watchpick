@@ -5109,6 +5109,8 @@ function detailHTML(item,det,st,sims){
 
     </div>
 
+    <div class="dact" id="dact-share" style="margin:-8px 0 16px" onclick="shareTitle(${item.id})" tabindex="0" role="button"><span class="ai" style="display:inline;margin:0 6px 0 0">↗</span>Share this title</div>
+
     ${plinks?`<div class="dsect"><div class="dsectl">Where to Watch — India</div>${plinks}${othersRow}</div>`
 
       :item.inIndia?`<div class="dsect"><div class="dsectl">Where to Watch — India</div><div style="font-size:11px;color:var(--t2)">Not on your configured platforms, but streaming in India${item.others&&item.others.length?` on: <span style="color:var(--t1)">${esc(item.others.join(', '))}</span>`:''}.</div></div>`
@@ -6160,6 +6162,24 @@ function updateBadge(){
 
   b.style.display=n?'inline-flex':'none'; b.textContent=n;
 
+}
+
+const PLAY_URL='https://play.google.com/store/apps/details?id=com.examinedscreen.watchpick&referrer=utm_source%3Dshare%26utm_medium%3Dapp';
+// Share a title: "<title> (<year>) — streaming on Netflix in India. Found on WatchPick: <Play link>".
+// Built at tap time from the stored item (never from strings spliced into onclick), so titles can't break it.
+async function shareTitle(id){
+  const it=S.results.find(r=>r.id===id)||S.watchlist.find(w=>w.id===id);
+  if(!it){ toast('Could not share this title'); return; }
+  const labels=(it.platforms||[]).map(k=>(PLAT[k]&&PLAT[k].label)||k);
+  const where=labels.length?`streaming on ${labels.join(', ')} in India`:it.inCinemas?'in cinemas now':'not streaming in India yet';
+  const text=`${it.title}${it.year?` (${it.year})`:''} — ${where}.\nFound on WatchPick:`;
+  try{
+    if(navigator.share){ await navigator.share({title:it.title,text,url:PLAY_URL}); return; }
+    await navigator.clipboard.writeText(`${text} ${PLAY_URL}`); toast('Link copied');
+  }catch(e){
+    if(e&&e.name==='AbortError') return;           // user closed the share sheet
+    try{ await navigator.clipboard.writeText(`${text} ${PLAY_URL}`); toast('Link copied'); }catch(e2){ toast('Could not share'); }
+  }
 }
 
 let tt;
