@@ -2048,7 +2048,8 @@ async function fetchAvgVoteCount(mediaType,genreId,lang){
     avgVoteCache[key]=avg;
     return avg;
   }catch(e){
-    avgVoteCache[key]=null;
+    // Don't cache failures: a single 429/timeout used to blank "votes/avg" for every title in that
+    // genre+language until the app was reloaded. Returning null just means "try again next render".
     return null;
   }
 }
@@ -2056,7 +2057,11 @@ async function fetchAvgVoteCount(mediaType,genreId,lang){
 // language. Safe to call on anything mapItem() produced — items with no genre_ids just get no
 // average (nothing to compare against), same as items enrich() can't find providers for.
 async function enrichVoteAvg(item){
-  const genreId=(item.genre_ids||[])[0];
+  // Same genre the card shows as its tag (first KNOWN genre), so e.g. a title whose first TMDB genre id is
+  // one the app has no label for still gets an average from the genre it is displayed under.
+  const ids=item.genre_ids||[];
+  const genreId=ids.find(g=>GENRE_NAMES[g])||ids[0];
+  item._avgTries=(item._avgTries||0)+1;
   if(!genreId){ item.avgVoteCount=null; return item; }
   item.avgVoteCount=await fetchAvgVoteCount(item.type==='tv'?'tv':'movie',genreId,item.lang);
   return item;
@@ -3276,7 +3281,7 @@ async function ensureEnriched(target){
 
 async function loadDiscover(reset=true){
   S.searchMode=false;
-  if(reset){S.page=1;S.results=[...S.custom];S.visibleCount=40;}
+  if(reset){S.page=1;S.results=[...S.custom];S.visibleCount=40;S.shownIds=new Set();}
   const active=[...S.activeG];
   if(!active.length&&S.mediaType!=='tv'){setLoading(false);renderGrid([]);return;}
   if(reset)setLoading(true);
@@ -4513,6 +4518,21 @@ function renderGrid(items){
 
     vis=vis.filter(passesDiscoverFilters);
 
+    // Always display in the ACTIVE sort order, whatever order S.results happens to be in. Items reach
+    // S.results from several places (Discover pages, New Arrivals, Because You Liked, My List, detail
+    // pages) and a late arrival must never show up out of order, e.g. a higher-rated title on Page 2.
+    // Stable sort, so equal ratings keep their existing order. 'Mix' (shuffle) returns null: left alone.
+    const _cmp=sortComparator(S.sort);
+    if(_cmp){
+      vis=vis.slice().sort(_cmp);
+      // Titles still waiting for their availability lookup could turn out visible and belong ABOVE some
+      // already-visible ones. Only show titles that sort at/above the best still-pending one, so a page is
+      // never reshuffled (or a higher-rated title slipped in later) after it has been shown.
+      let bestPending=null;
+      for(const i of pendingEnrichable()) if(!bestPending||_cmp(i,bestPending)<0) bestPending=i;
+      if(bestPending) vis=vis.filter(i=>_cmp(i,bestPending)<=0);
+    }
+
   }
 
   const personHTML=S.searchPersons.map(personCardHTML).join('');
@@ -4527,7 +4547,35 @@ function renderGrid(items){
 
   // Discover shows 40 results at a time (in whatever sort order is active) instead of
   // dumping every fetched candidate on screen at once; "Load Page" reveals 40 more.
-  const shown=S.searchMode?vis:vis.slice(0,S.visibleCount);
+  // PAGING RULE: whatever was already revealed stays put, and every NEW page only reveals titles that sort at
+  // or below the last title already shown (so with Rating, Page 2 is never rated above Page 1). A title that
+  // arrives late and sorts above the last revealed one (a straggler from another section or a freshly fetched
+  // page) is slotted into the already-revealed part in its correct position instead of landing on a later page.
+  let shown;
+  const _pcmp=S.searchMode?null:sortComparator(S.sort);
+  if(!_pcmp){ shown=S.searchMode?vis:vis.slice(0,S.visibleCount); }
+  else {
+    const set=S.shownIds||(S.shownIds=new Set());
+    const prefix=vis.filter(i=>set.has(i.id));
+    const rest=vis.filter(i=>!set.has(i.id));
+    const last=prefix.length?prefix[prefix.length-1]:null;
+    const stragglers=last?rest.filter(i=>_pcmp(i,last)<0):[];
+    const fill=last?rest.filter(i=>_pcmp(i,last)>=0):rest;
+    const budget=Math.max(0,S.visibleCount-prefix.length);
+    shown=[...prefix,...stragglers,...fill.slice(0,budget)].sort(_pcmp);
+    // Only freeze once the page is actually full; while it is still filling (titles enriching in), keep re-slicing.
+    S.shownIds=shown.length>=S.visibleCount?new Set(shown.map(i=>i.id)):new Set();
+  }
+
+  // Titles that reached the grid without a genre-average lookup (arrived via New Arrivals / My List /
+  // recommendations, or an earlier lookup failed) get one now, once per render burst, then re-render.
+  if(!S.searchMode){
+    const miss=shown.filter(i=>i.voteCount&&!i.avgVoteCount&&(i._avgTries||0)<2&&!i._avgBusy).slice(0,40);
+    if(miss.length){
+      miss.forEach(i=>{ i._avgBusy=true; });
+      Promise.all(miss.map(enrichVoteAvg)).finally(()=>{ miss.forEach(i=>{ i._avgBusy=false; }); scheduleGridRender(); });
+    }
+  }
 
   _wlMap=new Map();
   for(const w of S.watchlist) if(!_wlMap.has(w.id)) _wlMap.set(w.id,w);
