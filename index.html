@@ -3107,8 +3107,9 @@ function matchesAvail(item){
 // screen (the "Page 2 has higher ratings than Page 1" bug). frontierT = the best rating among the lowest ratings
 // read so far in each unfinished list; anything below it waits until the lists are read deeper.
 function frontierOn(){ return S.sort==='rating'&&!S.searchMode; }
-function noteStream(path,d,type){
+function noteStream(path,d,type,gen){
   if(S.sort!=='rating'||!d||!Array.isArray(d.results)) return;
+  if(gen!==undefined&&gen!==S.loadGen) return; // a superseded load (filters changed meanwhile) must not touch the new load's lists
   const q=new URLSearchParams((path.split('?')[1])||''); const page=+q.get('page')||1; q.delete('page');
   const key=type+'|'+q.toString(); const cur=S.streams[key];
   if(cur&&cur.page>=page) return;
@@ -3120,12 +3121,12 @@ function noteStream(path,d,type){
 function streamsExhausted(){ for(const k in S.streams) if(!S.streams[k].done) return false; return true; }
 function passesFrontier(i){ return !frontierOn()||S.frontierT==null||(i.rating||0)>=S.frontierT; }
 
-async function fetchAndEnrich(path, seen){
+async function fetchAndEnrich(path, seen, gen){
 
   if(!path) return [];
 
   const d=await tmdb(path);
-  noteStream(path,d,'movie');
+  noteStream(path,d,'movie',gen);
 
   const raw=(d.results||[]).filter(r=>r.poster_path&&(r.title||r.name));
 
@@ -3164,7 +3165,7 @@ async function fetchAndEnrich(path, seen){
   // PERF: provider lookups are no longer done for every fetched title up front (~480 per load, to show 40).
   // Items enter the pool as _pending and ensureEnriched() looks up providers lazily, in display order,
   // only until enough visible titles exist. Same visible result, a fraction of the requests.
-  items.forEach(i=>{ i._pending=true; });
+  items.forEach(i=>{ i._pending=true; i._disc=true; });
 
   return items;
 
@@ -3237,10 +3238,10 @@ async function buildTVQuery(page, tvGenreKey, langOverride){
   return `/discover/tv?${params.toString()}`;
 }
 
-async function fetchAndEnrichTV(path, seen){
+async function fetchAndEnrichTV(path, seen, gen){
   if(!path) return [];
   const d=await tmdb(path);
-  noteStream(path,d,'tv');
+  noteStream(path,d,'tv',gen);
   const raw=(d.results||[]).filter(r=>r.poster_path&&(r.title||r.name));
   let items=raw.map(r=>mapItem(r,'tv')).filter(v=>!seen.has(v.id));
 
@@ -3255,7 +3256,7 @@ async function fetchAndEnrichTV(path, seen){
     items=items.filter(item=>!(item.genre_ids||[]).some(id=>disabledTmdbIds.has(id)));
   }
 
-  items.forEach(i=>{ i._pending=true; }); // see fetchAndEnrich: providers are looked up lazily
+  items.forEach(i=>{ i._pending=true; i._disc=true; }); // see fetchAndEnrich: providers are looked up lazily
   return items;
 }
 
@@ -3307,9 +3308,14 @@ async function ensureEnriched(target){
   try{ await _enrichRun; } finally { _enrichRun=null; }
 }
 
-async function loadDiscover(reset=true,hops=0,wasReset=reset){
+async function loadDiscover(reset=true,hops=0,wasReset=reset,gen){
+  // Generation token: every fresh load (filter/sort/media change, refresh) supersedes any load still in flight.
+  // Without it, a slow load from the PREVIOUS filter state kept running after a quick second tap, bumping S.page,
+  // registering its own lists and adding its titles, which stalled Load Page and let stray titles in.
+  if(reset) S.loadGen=(S.loadGen||0)+1;
+  if(gen===undefined) gen=S.loadGen;
   S.searchMode=false;
-  if(reset){S.page=1;S.results=[...S.custom];S.visibleCount=40;S.shownIds=new Set();S.lastShownIds=[];S.streams={};S.frontierT=null;}
+  if(reset){S.page=1;S.results=[...S.custom];S.visibleCount=40;S.shownIds=new Set();S.lastShownIds=[];S.streams={};S.frontierT=null; S.custom.forEach(c=>{ c._disc=true; });}
   const active=[...S.activeG];
   if(!active.length&&S.mediaType!=='tv'){setLoading(false);renderGrid([]);return;}
   if(reset)setLoading(true);
@@ -3348,12 +3354,12 @@ async function loadDiscover(reset=true,hops=0,wasReset=reset){
           active.includes('superhero')?buildSuperheroQuery(S.page+1,lang):null,
         ]);
       return Promise.all([
-        fetchAndEnrich(uP1,seen), fetchAndEnrich(uP2,seen),
-        fetchAndEnrich(phP1,seen), fetchAndEnrich(phP2,seen),
-        fetchAndEnrich(crP1,seen), fetchAndEnrich(crP2,seen),
-        fetchAndEnrich(scP1,seen), fetchAndEnrich(scP2,seen),
-        fetchAndEnrich(ciP1,seen), fetchAndEnrich(ciP2,seen),
-        fetchAndEnrich(suP1,seen), fetchAndEnrich(suP2,seen),
+        fetchAndEnrich(uP1,seen,gen), fetchAndEnrich(uP2,seen,gen),
+        fetchAndEnrich(phP1,seen,gen), fetchAndEnrich(phP2,seen,gen),
+        fetchAndEnrich(crP1,seen,gen), fetchAndEnrich(crP2,seen,gen),
+        fetchAndEnrich(scP1,seen,gen), fetchAndEnrich(scP2,seen,gen),
+        fetchAndEnrich(ciP1,seen,gen), fetchAndEnrich(ciP2,seen,gen),
+        fetchAndEnrich(suP1,seen,gen), fetchAndEnrich(suP2,seen,gen),
       ]);
     }));
     // World Cinema keeps rotating its own fixed set of non-English languages regardless of the
@@ -3362,11 +3368,11 @@ async function loadDiscover(reset=true,hops=0,wasReset=reset){
     let wcBatch;
     if(frontierOn()&&active.includes('worldcinema')){
       // Top Rated: read EVERY rotation language each round, so each is a proper sorted list the merge guarantee can track.
-      wcBatch=await Promise.all(LANG_ROTATION.map(async l=>fetchAndEnrich(await buildWorldCinemaLangQuery(S.page,l),seen)));
+      wcBatch=await Promise.all(LANG_ROTATION.map(async l=>fetchAndEnrich(await buildWorldCinemaLangQuery(S.page,l),seen,gen)));
     } else {
       const wcP1=active.includes('worldcinema')?await buildWorldCinemaQuery(S.page):null;
       const wcP2=active.includes('worldcinema')?await buildWorldCinemaQuery(S.page+1):null;
-      wcBatch=await Promise.all([fetchAndEnrich(wcP1,seen), fetchAndEnrich(wcP2,seen)]);
+      wcBatch=await Promise.all([fetchAndEnrich(wcP1,seen,gen), fetchAndEnrich(wcP2,seen,gen)]);
     }
     movieBatches=[...perLangBatches.flat(),...wcBatch];
   }
@@ -3386,8 +3392,14 @@ async function loadDiscover(reset=true,hops=0,wasReset=reset){
         ])
       )
     )).flat();
-    tvBatches=await Promise.all(tvPaths.map(p=>fetchAndEnrichTV(p,seen)));
+    tvBatches=await Promise.all(tvPaths.map(p=>fetchAndEnrichTV(p,seen,gen)));
   }
+
+  if(gen!==S.loadGen) return; // superseded while fetching
+
+  // Titles this fetch returned that were already in the pool (e.g. added earlier via New Arrivals) are Discover
+  // titles too: flag them, so only genuine Discover results (never stray cache entries) reach the Top Rated grid.
+  { const _byId=new Map(S.results.map(r=>[r.id,r])); for(const v of [...movieBatches.flat(),...tvBatches.flat()]){ const e=_byId.get(v.id); if(e) e._disc=true; } }
 
   let newItems=[...movieBatches.flat(),...tvBatches.flat()]
     
@@ -3420,12 +3432,13 @@ async function loadDiscover(reset=true,hops=0,wasReset=reset){
   }
 
   await ensureEnriched(S.visibleCount);
+  if(gen!==S.loadGen) return;
 
   // Top Rated: if the lists have not yet been read deep enough to fill the page with titles that are safe to show,
   // read the next page of every list (bounded) before rendering, so the page is complete AND in order.
   if(frontierOn()&&hops<5&&discoverSettledCount()<S.visibleCount&&!streamsExhausted()){
     S.page++;
-    return loadDiscover(false,hops+1,wasReset);
+    return loadDiscover(false,hops+1,wasReset,gen);
   }
 
   if(wasReset)setLoading(false);
@@ -4567,6 +4580,7 @@ function renderGrid(items){
 
     vis=vis.filter(passesDiscoverFilters);
     vis=vis.filter(passesFrontier);
+    if(frontierOn()) vis=vis.filter(i=>i._disc); // New Arrivals / recommendations / My List cache entries are not part of this ordered feed
 
     // Always display in the ACTIVE sort order, whatever order S.results happens to be in. Items reach
     // S.results from several places (Discover pages, New Arrivals, Because You Liked, My List, detail
