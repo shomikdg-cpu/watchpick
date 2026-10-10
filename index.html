@@ -1599,6 +1599,7 @@ let S={
 
   page:1,
 
+  streams:{}, frontierT:null,   // Top Rated merge guarantee: see noteStream()
   visibleCount:40,  // how many (sorted, filtered) Discover results are shown at once — grows by 40 per "Load Page" tap
 
   sort:'rating', // WatchPick positions as quality cinema discovery, so the feed should open ranked
@@ -2911,6 +2912,11 @@ async function buildWorldCinemaQuery(page){
 
 // Philosophy — keyword query, own vote floor, never merged
 
+async function buildWorldCinemaLangQuery(page,lang){
+  const p=baseParams(page,200); p.set('with_original_language',lang);
+  return `/discover/movie?${p.toString()}`;
+}
+
 async function buildPhilosophyQuery(page,lang){
 
   const k=await keywordId('philosophy');
@@ -3094,11 +3100,32 @@ function matchesAvail(item){
   return (item.platforms||[]).length>0;
 }
 
+// ════════════ TOP RATED MERGE GUARANTEE ════════════
+// Discover is several independent TMDB lists (one per genre group / language / movie vs TV), each already sorted
+// by rating, merged client-side. A title may only be SHOWN once every list that is not yet exhausted has been read
+// down to that rating — otherwise a later fetch could bring in something rated higher than what is already on
+// screen (the "Page 2 has higher ratings than Page 1" bug). frontierT = the best rating among the lowest ratings
+// read so far in each unfinished list; anything below it waits until the lists are read deeper.
+function frontierOn(){ return S.sort==='rating'&&!S.searchMode; }
+function noteStream(path,d,type){
+  if(S.sort!=='rating'||!d||!Array.isArray(d.results)) return;
+  const q=new URLSearchParams((path.split('?')[1])||''); const page=+q.get('page')||1; q.delete('page');
+  const key=type+'|'+q.toString(); const cur=S.streams[key];
+  if(cur&&cur.page>=page) return;
+  const res=d.results; let low=Infinity; for(const r of res) low=Math.min(low,r.vote_average?+(+r.vote_average).toFixed(1):0);
+  S.streams[key]={page,low:res.length?low:0,done:!res.length||page>=(d.total_pages||1)};
+  let t=null; for(const k in S.streams){ const st=S.streams[k]; if(!st.done&&(t===null||st.low>t)) t=st.low; }
+  S.frontierT=t;
+}
+function streamsExhausted(){ for(const k in S.streams) if(!S.streams[k].done) return false; return true; }
+function passesFrontier(i){ return !frontierOn()||S.frontierT==null||(i.rating||0)>=S.frontierT; }
+
 async function fetchAndEnrich(path, seen){
 
   if(!path) return [];
 
   const d=await tmdb(path);
+  noteStream(path,d,'movie');
 
   const raw=(d.results||[]).filter(r=>r.poster_path&&(r.title||r.name));
 
@@ -3213,6 +3240,7 @@ async function buildTVQuery(page, tvGenreKey, langOverride){
 async function fetchAndEnrichTV(path, seen){
   if(!path) return [];
   const d=await tmdb(path);
+  noteStream(path,d,'tv');
   const raw=(d.results||[]).filter(r=>r.poster_path&&(r.title||r.name));
   let items=raw.map(r=>mapItem(r,'tv')).filter(v=>!seen.has(v.id));
 
@@ -3235,7 +3263,7 @@ async function fetchAndEnrichTV(path, seen){
 function discoverVisibleCount(){
   const seen=seenIds();
   return uniqueById(S.results.filter(passesLang)).filter(i=>!i._pending&&!seen.has(i.id)
-    &&(i.platforms||[]).some(p=>S.activeP.has(p))&&passesDiscoverFilters(i)).length;
+    &&(i.platforms||[]).some(p=>S.activeP.has(p))&&passesDiscoverFilters(i)&&passesFrontier(i)).length;
 }
 // Visible titles that come BEFORE the first still-pending item in display order. Only these are
 // final: a pending item above them might turn out visible and belong higher up the grid.
@@ -3245,7 +3273,7 @@ function discoverSettledCount(){
     if(ids.has(i.id)||!passesLang(i)||seen.has(i.id)) continue;
     ids.add(i.id);
     if(i._pending) return n;
-    if((i.platforms||[]).some(p=>S.activeP.has(p))&&passesDiscoverFilters(i)) n++;
+    if((i.platforms||[]).some(p=>S.activeP.has(p))&&passesDiscoverFilters(i)&&passesFrontier(i)) n++;
   }
   return n;
 }
@@ -3259,7 +3287,7 @@ function discoverSettledCount(){
 // then re-render, which called it again — an endless async loop that froze the app.
 function pendingEnrichable(){
   const seen=seenIds();
-  return S.results.filter(i=>i._pending&&!seen.has(i.id)&&passesLang(i));
+  return S.results.filter(i=>i._pending&&!seen.has(i.id)&&passesLang(i)&&passesFrontier(i));
 }
 let _enrichRun=null;
 async function ensureEnriched(target){
@@ -3279,9 +3307,9 @@ async function ensureEnriched(target){
   try{ await _enrichRun; } finally { _enrichRun=null; }
 }
 
-async function loadDiscover(reset=true){
+async function loadDiscover(reset=true,hops=0,wasReset=reset){
   S.searchMode=false;
-  if(reset){S.page=1;S.results=[...S.custom];S.visibleCount=40;S.shownIds=new Set();}
+  if(reset){S.page=1;S.results=[...S.custom];S.visibleCount=40;S.shownIds=new Set();S.lastShownIds=[];S.streams={};S.frontierT=null;}
   const active=[...S.activeG];
   if(!active.length&&S.mediaType!=='tv'){setLoading(false);renderGrid([]);return;}
   if(reset)setLoading(true);
@@ -3331,9 +3359,15 @@ async function loadDiscover(reset=true){
     // World Cinema keeps rotating its own fixed set of non-English languages regardless of the
     // user's Language filter — that internal rotation is this genre's whole purpose — so it's
     // fetched once, not once per selected language.
-    const wcP1=active.includes('worldcinema')?await buildWorldCinemaQuery(S.page):null;
-    const wcP2=active.includes('worldcinema')?await buildWorldCinemaQuery(S.page+1):null;
-    const wcBatch=await Promise.all([fetchAndEnrich(wcP1,seen), fetchAndEnrich(wcP2,seen)]);
+    let wcBatch;
+    if(frontierOn()&&active.includes('worldcinema')){
+      // Top Rated: read EVERY rotation language each round, so each is a proper sorted list the merge guarantee can track.
+      wcBatch=await Promise.all(LANG_ROTATION.map(async l=>fetchAndEnrich(await buildWorldCinemaLangQuery(S.page,l),seen)));
+    } else {
+      const wcP1=active.includes('worldcinema')?await buildWorldCinemaQuery(S.page):null;
+      const wcP2=active.includes('worldcinema')?await buildWorldCinemaQuery(S.page+1):null;
+      wcBatch=await Promise.all([fetchAndEnrich(wcP1,seen), fetchAndEnrich(wcP2,seen)]);
+    }
     movieBatches=[...perLangBatches.flat(),...wcBatch];
   }
 
@@ -3387,7 +3421,14 @@ async function loadDiscover(reset=true){
 
   await ensureEnriched(S.visibleCount);
 
-  if(reset)setLoading(false);
+  // Top Rated: if the lists have not yet been read deep enough to fill the page with titles that are safe to show,
+  // read the next page of every list (bounded) before rendering, so the page is complete AND in order.
+  if(frontierOn()&&hops<5&&discoverSettledCount()<S.visibleCount&&!streamsExhausted()){
+    S.page++;
+    return loadDiscover(false,hops+1,wasReset);
+  }
+
+  if(wasReset)setLoading(false);
   $('rlabel').textContent=`Your Curation · ${modeLabel}`;
   $('pagerow').style.display='flex';
   $('nextpage').textContent=S.page+1;
@@ -3411,6 +3452,14 @@ async function loadMore(){
   }
 
   const before=discoverVisibleCount();
+
+  if(frontierOn()){
+    if(streamsExhausted()){ renderGrid(S.results); toast('Feed exhausted for these filters — that is every title'); return; }
+    S.page++; toast(`Loading page ${S.page}…`);
+    await loadDiscover(false);
+    if(discoverVisibleCount()<=before&&streamsExhausted()) toast('Feed exhausted for these filters — that is every title');
+    return;
+  }
 
   for(let i=0;i<3;i++){
 
@@ -4517,6 +4566,7 @@ function renderGrid(items){
     }
 
     vis=vis.filter(passesDiscoverFilters);
+    vis=vis.filter(passesFrontier);
 
     // Always display in the ACTIVE sort order, whatever order S.results happens to be in. Items reach
     // S.results from several places (Discover pages, New Arrivals, Because You Liked, My List, detail
@@ -4564,7 +4614,9 @@ function renderGrid(items){
     const budget=Math.max(0,S.visibleCount-prefix.length);
     shown=[...prefix,...stragglers,...fill.slice(0,budget)].sort(_pcmp);
     // Only freeze once the page is actually full; while it is still filling (titles enriching in), keep re-slicing.
-    S.shownIds=shown.length>=S.visibleCount?new Set(shown.map(i=>i.id)):new Set();
+    if(shown.length>=S.visibleCount) S.shownIds=new Set(shown.map(i=>i.id));
+    else S.shownIds=new Set();
+    S.lastShownIds=shown.map(i=>i.id);
   }
 
   // Titles that reached the grid without a genre-average lookup (arrived via New Arrivals / My List /
