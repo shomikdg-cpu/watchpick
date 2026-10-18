@@ -38,7 +38,8 @@ function page({ entry, d, prov, checked }) {
     : '<li>No India streaming, rent or buy listing was found on this check.</li>';
   const genres = (d.genres || []).map((g) => g.name).filter(Boolean);
   const desc = (d.overview || '').trim();
-  const metaDesc = `Where to watch ${title} (${year}) in India. ${groups.length ? 'Streaming options listed as of ' + checked + '.' : 'Availability checked ' + checked + '.'} ${desc}`.replace(/\s+/g, ' ').slice(0, 300);
+  const clip = (t, n) => (t.length <= n ? t : t.slice(0, t.lastIndexOf(' ', n)).replace(/[,;:.\s]+$/, '') + '...');
+  const metaDesc = clip(`Where to watch ${title} (${year}) in India. ${groups.length ? 'Streaming options listed as of ' + checked + '.' : 'Availability checked ' + checked + '.'} ${desc}`.replace(/\s+/g, ' ').trim(), 300);
   const url = `${SITE}/watch/${entry.slug}`;
   const poster = d.poster_path ? `https://image.tmdb.org/t/p/w342${d.poster_path}` : '';
   const ld = {
@@ -115,10 +116,16 @@ module.exports = async (req, res) => {
   const key = process.env.TMDB_API_KEY;
   if (!key) return fail(res, 500, 'Temporarily unavailable');
   try {
-    const q = `/search/movie?query=${encodeURIComponent(entry.title)}&year=${entry.year}&language=en-US&include_adult=false`;
+    const q = `/search/movie?query=${encodeURIComponent(entry.title)}&language=en-US&include_adult=false`;
     const found = await tmdb(q, key);
+    // Exact (normalised) title match, release year within 1 of the pilot entry: TMDB's release_date is often
+    // the festival or international date, a year off the Indian release the slug is named for.
     const hits = (found.results || [])
-      .filter((r) => (norm(r.title) === norm(entry.title) || norm(r.original_title) === norm(entry.title)) && String(r.release_date || '').slice(0, 4) === String(entry.year))
+      .filter((r) => {
+        const titleOk = norm(r.title) === norm(entry.title) || norm(r.original_title) === norm(entry.title);
+        const y = parseInt(String(r.release_date || '').slice(0, 4), 10);
+        return titleOk && Number.isInteger(y) && Math.abs(y - entry.year) <= 1;
+      })
       .sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
     if (!hits.length) return fail(res, 404, 'Page not found');
     const id = hits[0].id;
