@@ -6276,8 +6276,10 @@ async function shareTitle(id){
 
 // ════════════ REVIEW NUDGE ════════════
 // A plain, one-time, dismissible note with a link to the Play listing. Rules it follows:
-//  * only inside the Play-installed app (the Trusted Web Activity launch carries an android-app:// referrer,
-//    remembered in localStorage); never on the website
+//  * only inside the Play-installed app. The Trusted Web Activity launch carries an android-app://
+//    referrer, remembered in localStorage - but a TWA shares Chrome's profile on the device, so that
+//    same flag is visible to ordinary Chrome tabs on that phone. The card therefore also requires the
+//    window to be running standalone, which a browser tab never is.
 //  * only after the person has actually marked 3+ titles Liked or Seen, and never while a detail view is open
 //  * no "do you like it?" question first, no reward, no rating gate: the same link is shown to everyone
 //  * shown at most once ever; either button ends it. Storage failures fail closed (nothing is shown).
@@ -6286,6 +6288,12 @@ function maybeAskForReview(){
   try{
     if(localStorage.getItem('wp_twa')!=='1') return;
     if(localStorage.getItem('wp_rv')) return;
+    // Launched from Play at some point AND running as an app right now, rather than a browser tab
+    // that merely shares storage with the installed app.
+    const mm=q=>!!(window.matchMedia&&window.matchMedia(q).matches);
+    const standalone=mm('(display-mode: standalone)')||mm('(display-mode: fullscreen)')||window.navigator.standalone===true;
+    const launchedFromPlay=(document.referrer||'').indexOf('android-app://')===0;
+    if(!standalone&&!launchedFromPlay) return;
     const n=S.watchlist.filter(w=>w.status==='liked'||w.status==='seen').length;
     if(n<3) return;
     setTimeout(()=>{
