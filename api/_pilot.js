@@ -1,9 +1,11 @@
 // Pilot list for /watch/<slug> title pages. Slug -> how to find the title on TMDB.
-// The handler resolves each entry by title + release year and refuses to render unless TMDB returns
-// an exact title match for that year, so a wrong guess here produces a 404, never a wrong page.
+// The handler resolves each entry by title + release year and refuses to render unless TMDB returns an
+// exact title match within a year of it, so a wrong guess here produces a 404, never a wrong page.
+// `alt` holds other exact spellings TMDB may use for the same film.
 // Availability is NOT stored here; it is read live from TMDB (JustWatch data) on every cache refresh.
 module.exports.PILOT = [
-  { slug: 'gangs-of-wasseypur-2012', title: 'Gangs of Wasseypur', year: 2012 },
+  // TMDB lists this as two films; 'Gangs of Wasseypur' alone matches neither, so name Part 1 exactly.
+  { slug: 'gangs-of-wasseypur-part-1-2012', title: 'Gangs of Wasseypur - Part 1', alt: ['Gangs of Wasseypur Part 1'], year: 2012 },
   { slug: 'andhadhun-2018', title: 'Andhadhun', year: 2018 },
   { slug: 'tumbbad-2018', title: 'Tumbbad', year: 2018 },
   { slug: 'masaan-2015', title: 'Masaan', year: 2015 },
@@ -19,7 +21,7 @@ module.exports.PILOT = [
   { slug: 'super-deluxe-2019', title: 'Super Deluxe', year: 2019 },
   { slug: 'jai-bhim-2021', title: 'Jai Bhim', year: 2021 },
   { slug: 'soorarai-pottru-2020', title: 'Soorarai Pottru', year: 2020 },
-  { slug: 'visaranai-2015', title: 'Visaranai', year: 2015 },
+  { slug: 'visaranai-2016', title: 'Visaranai', year: 2016 },
   { slug: 'pather-panchali-1955', title: 'Pather Panchali', year: 1955 },
   { slug: 'parasite-2019', title: 'Parasite', year: 2019 },
   { slug: 'black-friday-2004', title: 'Black Friday', year: 2004 },

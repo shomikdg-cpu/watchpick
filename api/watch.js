@@ -122,7 +122,8 @@ module.exports = async (req, res) => {
     // the festival or international date, a year off the Indian release the slug is named for.
     const hits = (found.results || [])
       .filter((r) => {
-        const titleOk = norm(r.title) === norm(entry.title) || norm(r.original_title) === norm(entry.title);
+        const wanted = [entry.title].concat(entry.alt || []).map(norm);
+        const titleOk = wanted.includes(norm(r.title)) || wanted.includes(norm(r.original_title));
         const y = parseInt(String(r.release_date || '').slice(0, 4), 10);
         return titleOk && Number.isInteger(y) && Math.abs(y - entry.year) <= 1;
       })
