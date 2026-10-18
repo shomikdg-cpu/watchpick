@@ -18,7 +18,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<title>WatchPick</title>
+<title>WatchPick: what to watch in India, sorted by rating</title>
+<meta name="description" content="WatchPick shows which films and series stream on Netflix, Prime Video, JioHotstar and more in India, sorted by rating. Free cinema discovery with Want, Liked and Seen lists.">
+<link rel="canonical" href="https://watchpick-dun.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="WatchPick">
+<meta property="og:title" content="WatchPick: what to watch in India, sorted by rating">
+<meta property="og:description" content="See which films and series stream on Netflix, Prime Video, JioHotstar and more in India, sorted by rating.">
+<meta property="og:url" content="https://watchpick-dun.vercel.app/">
+<meta property="og:image" content="https://watchpick-dun.vercel.app/icon-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WatchPick: what to watch in India, sorted by rating">
+<meta name="twitter:description" content="See which films and series stream on Netflix, Prime Video, JioHotstar and more in India, sorted by rating.">
+<meta name="twitter:image" content="https://watchpick-dun.vercel.app/icon-512.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
@@ -562,6 +574,12 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 .toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(44px);background:var(--s3);border:.5px solid var(--b2);border-radius:var(--pill);padding:7px 14px;font-size:10px;font-weight:500;color:var(--t1);z-index:400;transition:transform .18s;white-space:nowrap;pointer-events:none}
 
 .toast.show{transform:translateX(-50%) translateY(0)}
+.rv-card{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:401;background:var(--s2);border:.5px solid var(--b2);border-radius:14px;padding:12px 14px;box-shadow:0 8px 28px rgba(0,0,0,.45);display:none;max-width:420px;margin:0 auto}
+.rv-card.show{display:block}
+.rv-card p{font-size:12px;line-height:1.45;color:var(--t1);margin:0 0 10px}
+.rv-row{display:flex;gap:8px;justify-content:flex-end}
+.rv-btn{font:inherit;font-size:12px;font-weight:600;border-radius:var(--pill);padding:8px 14px;border:.5px solid var(--b2);background:transparent;color:var(--t2);cursor:pointer}
+.rv-btn.go{background:var(--gold2);color:var(--gold);border-color:rgba(var(--gold-rgb),.45);text-decoration:none;display:inline-flex;align-items:center}
 
 .loading{text-align:center;padding:30px 0;color:var(--t3);font-size:11px;grid-column:1/-1}
 
@@ -793,6 +811,13 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
 
 
 <div class="toast" id="toast"></div>
+<div class="rv-card" id="rvCard" role="dialog" aria-label="Review WatchPick">
+  <p>If WatchPick has been useful, a short review on Google Play helps other people find it.</p>
+  <div class="rv-row">
+    <button type="button" class="rv-btn" onclick="rvDismiss(false)">Not now</button>
+    <a class="rv-btn go" href="https://play.google.com/store/apps/details?id=com.examinedscreen.watchpick" target="_blank" rel="noopener" onclick="rvDismiss(true)">Open Google Play</a>
+  </div>
+</div>
 
 <div class="overlay" id="overlay"><div class="dpage" id="dpage"></div></div>
 
@@ -1193,10 +1218,10 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   </div>
 
   <div style="padding:12px 16px;text-align:center">
-    <a href="https://www.themoviedb.org" target="_blank" style="opacity:.4;display:inline-block">
-      <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" height="12" alt="TMDB" style="vertical-align:middle">
+    <a href="https://www.themoviedb.org" target="_blank" rel="noopener" style="opacity:.9;display:inline-block">
+      <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" height="16" alt="TMDB" style="vertical-align:middle">
     </a>
-    <div style="font-size:7px;color:var(--t3);margin-top:4px;opacity:.5">This product uses the TMDB API but is not endorsed or certified by TMDB.</div>
+    <div style="font-size:11px;line-height:1.4;color:var(--t2);margin-top:6px">This product uses the TMDB API but is not endorsed or certified by TMDB. Streaming availability data is provided by JustWatch via TMDB.</div>
   </div>
 
 </div>
@@ -5265,7 +5290,7 @@ function detailHTML(item,det,st,sims){
           style="color:var(--gold);font-size:9px;font-weight:500;text-decoration:none;padding:3px 8px;border:.5px solid rgba(var(--gold-rgb),.3);border-radius:5px;background:var(--gold2)">Letterboxd →</a>
       </div>
     </div>
-    <div style="font-size:7px;color:var(--t3);margin-bottom:16px;opacity:.6">This product uses the TMDB API but is not endorsed or certified by TMDB.</div>
+    <div style="font-size:11px;line-height:1.4;color:var(--t2);margin-bottom:16px">This product uses the TMDB API but is not endorsed or certified by TMDB.</div>
 
     <div style="height:24px"></div>
 
@@ -5601,6 +5626,7 @@ function setStatus(id,status){
   }else{S.watchlist.push({...item,status,addedAt:Date.now()});toast(stMsg(status));}
 
   persist();updateBadge();
+  if(status==='liked'||status==='seen') maybeAskForReview();
 
   if($('tab-watchlist').style.display!=='none')renderWatchlist();
 
@@ -6246,6 +6272,34 @@ async function shareTitle(id){
     if(e&&e.name==='AbortError') return;           // user closed the share sheet
     try{ await navigator.clipboard.writeText(`${text} ${PLAY_URL}`); toast('Link copied'); }catch(e2){ toast('Could not share'); }
   }
+}
+
+// ════════════ REVIEW NUDGE ════════════
+// A plain, one-time, dismissible note with a link to the Play listing. Rules it follows:
+//  * only inside the Play-installed app (the Trusted Web Activity launch carries an android-app:// referrer,
+//    remembered in localStorage); never on the website
+//  * only after the person has actually marked 3+ titles Liked or Seen, and never while a detail view is open
+//  * no "do you like it?" question first, no reward, no rating gate: the same link is shown to everyone
+//  * shown at most once ever; either button ends it. Storage failures fail closed (nothing is shown).
+try{ if((document.referrer||'').indexOf('android-app://')===0) localStorage.setItem('wp_twa','1'); }catch(e){}
+function maybeAskForReview(){
+  try{
+    if(localStorage.getItem('wp_twa')!=='1') return;
+    if(localStorage.getItem('wp_rv')) return;
+    const n=S.watchlist.filter(w=>w.status==='liked'||w.status==='seen').length;
+    if(n<3) return;
+    setTimeout(()=>{
+      try{
+        if(localStorage.getItem('wp_rv')) return;
+        if($('overlay').classList.contains('open')) return;      // try again after the next qualifying action
+        $('rvCard').classList.add('show');
+      }catch(e){}
+    },2500);
+  }catch(e){}
+}
+function rvDismiss(opened){
+  try{ localStorage.setItem('wp_rv',(opened?'opened:':'dismissed:')+Date.now()); }catch(e){}
+  $('rvCard').classList.remove('show');
 }
 
 let tt;
