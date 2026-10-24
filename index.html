@@ -832,6 +832,13 @@ body{font-family:'Inter',sans-serif;color:var(--t1);font-size:14px;display:flex;
   </div>
 </div>
 
+<!-- WANT TO WATCH FILTERS SHEET (opens over whatever part of My List you are scrolled to) -->
+<div class="filter-scrim" id="wantFilterScrim" onclick="closeWantFilters()"></div>
+<div class="filter-sheet" id="wantFilterSheet">
+  <div class="filter-sheet-body" id="wantFilterBody"></div>
+  <div class="filter-sheet-cta"><div class="filter-sheet-cta-btn" id="wantFilterCta" onclick="closeWantFilters()" tabindex="0" role="button">Done</div></div>
+</div>
+
 <!-- FILTERS SHEET -->
 <div class="filter-scrim" id="filterScrim" onclick="closeFilterSheet()"></div>
 <div class="filter-sheet" id="filterSheet">
@@ -5346,6 +5353,18 @@ function wantFiltersActive(){
 }
 
 function toggleWantFiltersPanel(){ wantFiltersOpen=!wantFiltersOpen; renderWatchlist(); }
+function closeWantFilters(){ wantFiltersOpen=false; renderWatchlist(); }
+// The Want to Watch filters live in a bottom sheet (like Discover's), not inline above the grid: inline, they opened at the
+// top of the list, out of sight whenever you had scrolled down. Kept in sync from renderWatchlist() so toggles update live.
+function syncWantFilterSheet(wantUnfiltered){
+  const sheet=$('wantFilterSheet'), scrim=$('wantFilterScrim'); if(!sheet||!scrim) return;
+  const open=!!(wantFiltersOpen&&wantUnfiltered&&wantUnfiltered.length&&$('tab-watchlist').style.display!=='none');
+  sheet.classList.toggle('open',open); scrim.classList.toggle('open',open);
+  if(!open) return;
+  $('wantFilterBody').innerHTML=wantFilterPanelHTML(wantUnfiltered);
+  const n=applyWantFilters(wantUnfiltered).length;
+  $('wantFilterCta').textContent=n===1?'Show 1 title':`Show ${n} titles`;
+}
 
 function setWantMediaType(t){ wantFilters.mediaType=t; renderWatchlist(); }
 
@@ -5825,7 +5844,7 @@ function renderWatchlist(){
   const sortPills=WSORTS.map(([k,l])=>
     `<div class="fpill ${wantSort===k?'on':''}" style="font-size:9px;padding:3px 10px" onclick="setWantSort('${k}')">${l}</div>`
   ).join('');
-  const sortBar=`<div style="display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap;align-items:center">
+  const sortBar=`<div style="display:flex;gap:6px;margin:8px 0 0;flex-wrap:wrap;align-items:center">
     <span style="font-size:9px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:1px">Sort</span>
     ${sortPills}
   </div>`;
@@ -5851,8 +5870,7 @@ function renderWatchlist(){
     +wlChipHTML('Seen',seenItems,seenSectionOpen,'toggleSeenSection');
   const chipRow=chipsHTML?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px">${chipsHTML}</div>`:'';
 
-  const inlineBlocks=(wantFiltersOpen&&wantUnfiltered.length?wantFilterPanelHTML(wantUnfiltered):'')
-    +favPeopleInlineBlockHTML(favPeopleItems,favPeopleSectionOpen)
+  const inlineBlocks=favPeopleInlineBlockHTML(favPeopleItems,favPeopleSectionOpen)
     +wlInlineBlockHTML('Liked',likedItems,likedSectionOpen)
     +wlInlineBlockHTML('Seen',seenItems,seenSectionOpen);
 
@@ -5861,9 +5879,9 @@ function renderWatchlist(){
         <div class="whead wl-sticky" style="flex-direction:column;align-items:stretch">
           <div style="display:flex;align-items:center;gap:5px;cursor:pointer" onclick="showWantOnly()" tabindex="0" role="button"><span>Want to Watch</span><span class="wcount">${wantItems.length}</span></div>
           ${chipRow}
+          ${sortBar}
         </div>
         ${inlineBlocks}
-        ${sortBar}
         <div class="grid">${wantItems.map(watchlistCardHTML).join('')}</div>
       </div>`
     : `<div class="wsect">
@@ -5875,7 +5893,10 @@ function renderWatchlist(){
         <div class="empty" style="padding:16px 0"><div class="et">${wantFiltersActive()&&wantUnfiltered.length?'No titles match these filters':'Nothing in your watch queue'}</div><div style="font-size:10px;color:var(--t3)">${wantFiltersActive()&&wantUnfiltered.length?'Try Reset in the Filters panel above':'Mark titles Want to Watch from the Discover tab'}</div></div>
       </div>`;
 
+  const _sc=$('tab-watchlist'), _st=_sc?_sc.scrollTop:0;   // re-rendering must not throw you back to the top
   el.innerHTML=wantBlockHTML;
+  if(_sc&&_sc.scrollTop!==_st) _sc.scrollTop=_st;
+  syncWantFilterSheet(wantUnfiltered);
   refreshWLAvail();
 
 }
@@ -6242,6 +6263,8 @@ function restoreSyncToken(){
 // ════════════ TABS / UTILS ════════════
 
 function showTab(t){
+
+  if(t!=='watchlist'&&wantFiltersOpen){ wantFiltersOpen=false; $('wantFilterSheet')?.classList.remove('open'); $('wantFilterScrim')?.classList.remove('open'); }
 
   ['discover','watchlist','settings'].forEach(x=>{
 
